@@ -7,7 +7,7 @@
     </picture>
   </a>
 </p>
-<p align="center">Like "oh-my-zsh" but for Cursor — multi-agent orchestration, natively.</p>
+<p align="center">Like "oh-my-opencode" but for Cursor — multi-agent orchestration, natively.</p>
 
 ---
 
