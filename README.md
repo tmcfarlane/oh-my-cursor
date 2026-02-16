@@ -1,190 +1,211 @@
 <p align="center">
-  <a href="https://github.com/tmcfarlane/oh-my-cursor">
+  <a href="https://github.com/tmcfarlane/cursor-agents">
     <picture>
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: dark)">
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/prompt.png" alt="Oh My Cursor">
+      <img src="screenshots/prompt.png" alt="cursor-agents: Cursor Agent Swarms" width="560" style="box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
     </picture>
   </a>
 </p>
-<p align="center">Like "oh-my-opencode" but for Cursor — multi-agent orchestration, natively.</p>
 
----
+<div align="center">
+
+### **CURSOR CAN SPAWN AGENT SWARMS NOW**
+
+Like “oh-my-opencode”, but for [Cursor IDE](https://cursor.com) — **multi-agent orchestration, natively**, using nothing but a few config files.
+
+*Yes, “Agent Swarms” is clickbait. No, you don’t get actual self-replicating agent colonies (subagents can’t subdelegate). It still absolutely rips.*
+
+</div>
+
+## Quick Start (One Command)
+
+Install to **user scope** (applies to all Cursor projects):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash
+```
 
 ## What Is This?
 
-**Oh My Cursor** is a curated set of AI agent configurations for [Cursor IDE](https://cursor.com). One install gives you a team of specialized agents that coordinate autonomously through Cursor's native subagent system.
+`oh-my-cursor` is a curated set of Cursor agent manifests plus **one** always-on orchestration rule:
 
-No CLI wrapper. No external runtime. Just `.cursor/agents/` files and one orchestrator rule that turns Cursor into a multi-agent IDE.
+- **agents**: specialized roles (explore, librarian, planner, executor, reviewer…)
+- **orchestrator**: a single rule (`orchestrator.mdc`) that tells the root thread **when** to delegate, **who** to delegate to, and **how** to verify results
 
-### The Problem
+No external runtime. No wrapper CLI. **Just Cursor’s built-in `Task` subagents** (this capability landed in January and makes this whole setup surprisingly clean).
 
-Cursor's subagent system (`Task` tool) is powerful but underutilized. Out of the box, every agent is generic. Oh My Cursor gives each agent a distinct role, personality, and set of operating procedures — so the orchestrator knows *when* to delegate, *who* to delegate to, and *how* to verify the work.
 
-### The Solution
+## The Origin Story (aka: Token Optimization for Degenerates)
 
-```
-You (Root Thread) — orchestrator.mdc always applied
- ├── Task(explore)        → searches codebase, returns structured results
- ├── Task(librarian)      → searches external docs with GitHub permalinks
- ├── Task(prometheus)     → creates detailed work plans
- ├── Task(hephaestus)     → deep autonomous implementation
- ├── Task(atlas)          → systematic task list execution
- ├── Task(oracle)         → architecture advice and hard debugging
- ├── Task(metis)          → pre-planning analysis for ambiguous requests
- ├── Task(momus)          → reviews plans before execution
- ├── Task(sisyphus)       → disciplined multi-step execution
- ├── Task(generalPurpose) → focused single-domain work
- └── Task(multimodal)     → PDF, image, and diagram analysis
+I upgraded my Cursor account to Ultra right before my usage was going to roll over.
+
+Then I realized I had **9 days** to burn roughly **$300 worth of tokens** to truly min/max the subscription rollover period.
+
+So I did what any natural-born crayon eating ape would do:
+
+- I tried overengineering around CursorCLI
+- I decided it wasn’t ready for the kind of nonsense I had planned
+- I jumped back into the UI
+- I realized I could basically clone the methodology behind **oh-my-opencode**
+- and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
+
+Result: **oh-my-cursor Agent Swarms** (not really swarms) that do real work and also help you responsibly (irresponsibly) “optimize” your token burn.
+
+## How The “Swarm” Works (Mermaid Diagram)
+
+Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The “swarm” is the root thread orchestrating them.
+
+```mermaid
+flowchart TD
+  U["You (root thread)"] --> R["orchestrator.mdc<br/>(alwaysApply: true)"]
+
+  R --> IG{"Intent gate<br/>what did the user ask?"}
+
+  IG -->|2+ files / 'find' / 'how does X work?'| EX["Task(explore)<br/>codebase search"]
+  IG -->|external lib / best practices| LI["Task(librarian)<br/>docs + examples"]
+  IG -->|ambiguous scope| ME["Task(metis)<br/>pre-planning analysis"]
+
+  IG -->|complex feature| PR["Task(prometheus)<br/>work plan + acceptance criteria"]
+  PR --> MO["Task(momus)<br/>plan sanity check"]
+  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>implementation"]
+
+  EX --> U
+  LI --> U
+  ME --> U
+
+  IM --> V{"Verification<br/>lints / build / tests"}
+  V -->|pass| DONE["Done"]
+  V -->|fail| FR["Failure recovery<br/>(retry, revert, escalate)"]
+  FR --> OR["Task(oracle)<br/>architecture / hard debugging"]
+  OR --> U
+
+  subgraph NOTE["Reality check"]
+    N1["Subagents do not subdelegate.<br/>The root thread is the only orchestrator."]
+  end
 ```
 
 ---
 
-## Quick Start
 
+## How to Install
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh)
+# Install to user scope (applies to all Cursor projects)
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash
+
+# Install to this project only (./.cursor/)
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --project
+
+# Preview changes
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --dry-run
+
+# Update/overwrite existing files
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --force
+
+# Uninstall
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --uninstall
 ```
 
-That's it. The installer places agent manifests into `~/.cursor/agents/` and the orchestrator rule into `~/.cursor/rules/`. They apply globally to all your Cursor projects.
+### What Gets Installed
 
-### Options
+| Scope | Agents | Rules |
+|------|--------|-------|
+| `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/orchestrator.mdc` |
+| `--project` | `./.cursor/agents/` | `./.cursor/rules/orchestrator.mdc` |
 
-```bash
-# Install to current project only (instead of globally)
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --project
+### Rule Priority (Important)
 
-# Preview what would be installed
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --dry-run
+If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it’s applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
 
-# Overwrite existing files
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --force
 
-# Remove all installed files
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --uninstall
+## Prompting Tips (Most Effective Pattern)
+
+The orchestrator rule does a great job on its own, but I’ve found it’s still most effective to:
+
+- **tag agents in the starting prompt**, and
+- explicitly tell the model to **orchestrate among them**
+
+Example:
+
+```text
+You are the orchestrator. Use @explore to map the codebase, @prometheus to draft a plan, @momus to review it,
+and @hephaestus/@atlas to implement. Verify with lints/build/tests. Keep going until done.
 ```
 
-### Installation Scope
 
-| Flag | Directory | Applies To |
-|------|-----------|------------|
-| `--user` (default) | `~/.cursor/agents/` | All Cursor projects |
-| `--project` | `./.cursor/agents/` | Current project only |
+## Agents Included
 
----
+You get a cast of specialists (all just Markdown manifests):
 
-## Agents
+| Agent | Role |
+|------|------|
+| `explore` | Codebase search & pattern discovery |
+| `librarian` | External docs + OSS examples |
+| `prometheus` | Planning |
+| `momus` | Plan review (blocking issues only) |
+| `hephaestus` | Deep multi-file implementation |
+| `atlas` | Step-by-step executor with obsessive verification |
+| `sisyphus` | Disciplined multi-step execution + codebase assessment |
+| `oracle` | Architecture / hard debugging |
+| `generalPurpose` | Focused single-domain work |
+| `metis` | Ambiguity / intent analysis |
+| `multimodal-looker` | PDFs/images/diagrams |
 
-The orchestrator auto-detects what kind of work you're asking for and dispatches the right agent. You don't need to invoke them manually — just ask Cursor to do something and the orchestrator handles delegation.
 
-### Orchestrator
+## Downsides / Current Limitations (Honest Section)
 
-The `orchestrator.mdc` rule is applied to every conversation. It classifies your request, fires background agents proactively (e.g., `explore` when multiple files are involved, `librarian` when an external library is mentioned), and chains multi-phase workflows automatically.
+- **Not a real swarm**: subagents can’t subdelegate. They’re leaf nodes by design.
+- **Same model everywhere**: subagents inherit the same model/mode as the root thread (so if you’re running “Opus 4.5 Max Mode (now 4.6)”, they’re all on that too).
+- **Skills aren’t scoped per agent**: it’d be fantastic if subagents could see a curated subset of skills instead of “all or nothing”.
 
-| Phase | What Happens |
-|-------|-------------|
-| **Intent Gate** | Classifies request type, fires auto-triggers |
-| **Codebase Assessment** | Evaluates project maturity and conventions |
-| **Agent Dispatch** | Delegates to the right agent(s) in parallel |
-| **Verification** | Confirms lints, builds, and tests pass |
-| **Failure Recovery** | Reverts and escalates after 3 consecutive failures |
-
-### Available Agents
-
-| Agent | Role | When It's Used |
-|-------|------|----------------|
-| **sisyphus** | Disciplined complex executor | Multi-step tasks needing structured approach and verification |
-| **hephaestus** | Autonomous deep worker | Complex multi-file tasks requiring thorough exploration + implementation |
-| **prometheus** | Strategic planner | Complex features needing detailed work plans before implementation |
-| **atlas** | Systematic task executor | Working through ordered task lists with verification at each step |
-| **oracle** | Architecture consultant | Complex design decisions, hard debugging after 2+ failed fixes |
-| **metis** | Pre-planning analyst | Ambiguous scope, hidden requirements, intent classification |
-| **momus** | Plan reviewer | Validates work plans before execution — catches blocking issues only |
-| **explore** | Codebase search specialist | Multiple search angles, unfamiliar modules, pattern discovery |
-| **librarian** | External docs researcher | Unfamiliar libraries, official API docs, OSS implementation examples |
-| **generalPurpose** | Focused task executor | Clear implementation tasks, single-domain work |
-| **multimodal-looker** | Media file analyzer | PDFs, images, diagrams needing interpretation |
-
----
-
-## How It Works
-
-### Multi-Phase Orchestration
-
-For complex tasks, agents are chained sequentially. The orchestrator passes results between phases — subagents have no shared context.
-
-```
-Phase 1: Pre-planning (optional, for ambiguous requests)
-  → metis analyzes intent, surfaces hidden requirements
-
-Phase 2: Planning
-  → prometheus creates detailed work plan with acceptance criteria
-
-Phase 3: Plan Review (optional)
-  → momus validates the plan, catches blocking issues
-
-Phase 4: Execution
-  → hephaestus / atlas / sisyphus implements the plan end-to-end
-
-Phase 5: Verification
-  → oracle reviews implementation quality
-```
-
-### Auto-Triggers
-
-The orchestrator scans every request for signals and fires agents proactively:
-
-| Signal | Action |
-|--------|--------|
-| 2+ modules/files involved | Fires `explore` in background |
-| External library mentioned | Fires `librarian` in background |
-| "How does X work?" | Fires `explore` (1-3 parallel) |
-| Ambiguous or complex scope | Fires `metis` for pre-planning |
-| Complex architecture decision | Consults `oracle` before acting |
-| 2+ failed fix attempts | Consults `oracle` with full failure context |
-
-### Verification Protocol
-
-After every delegation that modifies code:
-
-1. `ReadLints` on changed files — zero errors
-2. Build command — exit code 0
-3. Test suite — all pass
-4. Read changed files — confirm requirements met
-
-**No evidence = not complete.**
+If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight.
 
 ---
 
 ## Screenshots
 
-![Orchestration phases](screenshots/phase_breakdown.png)
+**1. Prompt** — Subagents and Phase 1 exploration
 
-![Phase 1: Codebase Assessment](screenshots/phase1.png)
+<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
-![Phase 2: Agent Dispatch](screenshots/phase2.png)
+**2. Orchestration phases** — Phase breakdown diagram
+
+<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**3. Phase 1** — Codebase Assessment
+
+<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**4. Phase 2** — Agent Dispatch
+
+<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**5. Phase final** — Phase 5 complete, final build status
+
+<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
 ---
 
 ## Project Structure
 
-```
-oh-my-cursor/
+```text
+cursor-agents/
 ├── agents/
-│   ├── atlas.md              # Systematic task executor
-│   ├── explore.md            # Codebase search specialist
-│   ├── generalPurpose.md     # Focused task executor
-│   ├── hephaestus.md         # Autonomous deep worker
-│   ├── librarian.md          # External docs researcher
-│   ├── metis.md              # Pre-planning consultant
-│   ├── momus.md              # Plan reviewer
-│   ├── multimodal-looker.md  # Media file analyzer
-│   ├── oracle.md             # Architecture consultant
-│   ├── orchestrator.mdc      # Root orchestration rule
-│   ├── prometheus.md         # Strategic planner
-│   └── sisyphus.md           # Disciplined complex executor
-├── install.sh                # Self-contained installer
-├── vercel.json               # Serves install.sh at opencode.ai/install
+│   ├── atlas.md
+│   ├── explore.md
+│   ├── generalPurpose.md
+│   ├── hephaestus.md
+│   ├── librarian.md
+│   ├── metis.md
+│   ├── momus.md
+│   ├── multimodal-looker.md
+│   ├── oracle.md
+│   ├── prometheus.md
+│   └── sisyphus.md
+├── rules/
+│   └── orchestrator.mdc
+├── install.sh
+├── screenshots/
 └── README.md
 ```
 
@@ -194,38 +215,34 @@ oh-my-cursor/
 
 #### Do I need to manually choose agents?
 
-No. The orchestrator classifies your request and dispatches the right agent automatically. Just talk to Cursor normally.
+Not strictly — the orchestrator can auto-trigger delegation — but it’s often best to **explicitly tag agents** in your first prompt for maximum determinism.
 
-#### Does this work with Cursor's free tier?
+#### Will this work on any Cursor plan?
 
-It works with any Cursor plan that supports agent mode. The agents are just markdown files — they configure how Cursor's existing subagent system behaves.
-
-#### Can I add my own agents?
-
-Yes. Drop a `.md` file into `~/.cursor/agents/` (or `.cursor/agents/` in your project). The orchestrator will recognize it if you reference it in your conversations or update the orchestrator rule to include it.
+If your plan supports agent mode / subagents, yes. These files don’t “add” capabilities; they **shape** the capabilities Cursor already has.
 
 #### How do I update?
 
-Run the installer again with `--force`:
+Re-run the installer with `--force`:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --force
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --force
 ```
 
 #### How do I uninstall?
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh) --uninstall
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --uninstall
 ```
 
 ---
 
 ## Inspiration
 
-- **[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** — The original OpenCode plugin that heavily inspired this project. Oh My Cursor adapts the multi-agent philosophy for Cursor's native subagent system.
+- **[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** — the original inspiration. This repo adapts the “multi-agent philosophy” to Cursor’s native subagent system.
 
 ---
 
 ## License
 
-SUL-1.0
+MIT. See [LICENSE](LICENSE).
