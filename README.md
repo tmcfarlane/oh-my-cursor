@@ -10,11 +10,10 @@
 
 <div align="center">
 
-### **CURSOR CAN SPAWN AGENT SWARMS NOW**
+### **oh-my-cursor** by [ZeroClickDev](https://zeroclickdev.ai/)
 
-Like “oh-my-opencode”, but for [Cursor IDE](https://cursor.com) — **multi-agent orchestration, natively**, using nothing but a few config files.
-
-*Yes, “Agent Swarms” is clickbait. No, you don’t get actual self-replicating agent colonies (subagents can’t subdelegate). It still absolutely rips.*
+Like “oh-my-opencode”, but for [Cursor IDE](https://cursor.com)<br>
+**Multi-agent orchestration, natively**, using nothing but a few config files.
 
 </div>
 
@@ -52,42 +51,6 @@ So I did what any natural-born crayon eating ape would do:
 
 Result: **oh-my-cursor Agent Swarms** (not really swarms) that do real work and also help you responsibly (irresponsibly) “optimize” your token burn.
 
-## How The “Swarm” Works (Mermaid Diagram)
-
-Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The “swarm” is the root thread orchestrating them.
-
-```mermaid
-flowchart TD
-  U["You (root thread)"] --> R["orchestrator.mdc<br/>(alwaysApply: true)"]
-
-  R --> IG{"Intent gate<br/>what did the user ask?"}
-
-  IG -->|2+ files / 'find' / 'how does X work?'| EX["Task(explore)<br/>codebase search"]
-  IG -->|external lib / best practices| LI["Task(librarian)<br/>docs + examples"]
-  IG -->|ambiguous scope| ME["Task(metis)<br/>pre-planning analysis"]
-
-  IG -->|complex feature| PR["Task(prometheus)<br/>work plan + acceptance criteria"]
-  PR --> MO["Task(momus)<br/>plan sanity check"]
-  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>implementation"]
-
-  EX --> U
-  LI --> U
-  ME --> U
-
-  IM --> V{"Verification<br/>lints / build / tests"}
-  V -->|pass| DONE["Done"]
-  V -->|fail| FR["Failure recovery<br/>(retry, revert, escalate)"]
-  FR --> OR["Task(oracle)<br/>architecture / hard debugging"]
-  OR --> U
-
-  subgraph NOTE["Reality check"]
-    N1["Subagents do not subdelegate.<br/>The root thread is the only orchestrator."]
-  end
-```
-
----
-
-
 ## How to Install
 ```bash
 # Install to user scope (applies to all Cursor projects)
@@ -113,7 +76,7 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 | `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/orchestrator.mdc` |
 | `--project` | `./.cursor/agents/` | `./.cursor/rules/orchestrator.mdc` |
 
-### Rule Priority (Important)
+<span style="color: red;">***Rule Priority (Important)***</span>
 
 If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it’s applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
 
@@ -158,58 +121,66 @@ You get a cast of specialists (all just Markdown manifests):
 - **Same model everywhere**: subagents inherit the same model/mode as the root thread (so if you’re running “Opus 4.5 Max Mode (now 4.6)”, they’re all on that too).
 - **Skills aren’t scoped per agent**: it’d be fantastic if subagents could see a curated subset of skills instead of “all or nothing”.
 
-If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight.
+>If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight!!!
 
----
 
 ## Screenshots
 
 **1. Prompt** — Subagents and Phase 1 exploration
 
-<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
 **2. Orchestration phases** — Phase breakdown diagram
 
-<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
 **3. Phase 1** — Codebase Assessment
 
-<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
 **4. Phase 2** — Agent Dispatch
 
-<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
 **5. Phase final** — Phase 5 complete, final build status
 
-<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="560" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
----
 
-## Project Structure
 
-```text
-oh-my-cursor/
-├── agents/
-│   ├── atlas.md
-│   ├── explore.md
-│   ├── generalPurpose.md
-│   ├── hephaestus.md
-│   ├── librarian.md
-│   ├── metis.md
-│   ├── momus.md
-│   ├── multimodal-looker.md
-│   ├── oracle.md
-│   ├── prometheus.md
-│   └── sisyphus.md
-├── rules/
-│   └── orchestrator.mdc
-├── install.sh
-├── screenshots/
-└── README.md
+## How The “Swarm” Works (Mermaid Diagram)
+
+Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The “swarm” is the root thread orchestrating them.
+
+```mermaid
+flowchart TD
+  U["You (root thread)"] --> R["orchestrator.mdc<br/>(alwaysApply: true)"]
+
+  R --> IG{"Intent gate<br/>what did the user ask?"}
+
+  IG -->|2+ files / 'find' / 'how does X work?'| EX["Task(explore)<br/>codebase search"]
+  IG -->|external lib / best practices| LI["Task(librarian)<br/>docs + examples"]
+  IG -->|ambiguous scope| ME["Task(metis)<br/>pre-planning analysis"]
+
+  IG -->|complex feature| PR["Task(prometheus)<br/>work plan + acceptance criteria"]
+  PR --> MO["Task(momus)<br/>plan sanity check"]
+  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>implementation"]
+
+  EX --> U
+  LI --> U
+  ME --> U
+
+  IM --> V{"Verification<br/>lints / build / tests"}
+  V -->|pass| DONE["Done"]
+  V -->|fail| FR["Failure recovery<br/>(retry, revert, escalate)"]
+  FR --> OR["Task(oracle)<br/>architecture / hard debugging"]
+  OR --> U
+
+  subgraph NOTE["Reality check"]
+    N1["Subagents do not subdelegate.<br/>The root thread is the only orchestrator."]
+  end
 ```
 
----
 
 ## FAQ
 
