@@ -1,9 +1,9 @@
 <p align="center">
-  <a href="https://github.com/tmcfarlane/cursor-agents">
+  <a href="https://github.com/tmcfarlane/oh-my-cursor">
     <picture>
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: dark)">
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/prompt.png" alt="cursor-agents: Cursor Agent Swarms" width="560" style="box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+      <img src="screenshots/prompt.png" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
     </picture>
   </a>
 </p>
@@ -23,7 +23,7 @@ Like “oh-my-opencode”, but for [Cursor IDE](https://cursor.com) — **multi-
 Install to **user scope** (applies to all Cursor projects):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 ```
 
 ## What Is This?
@@ -91,19 +91,19 @@ flowchart TD
 ## How to Install
 ```bash
 # Install to user scope (applies to all Cursor projects)
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 
 # Install to this project only (./.cursor/)
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --project
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --project
 
 # Preview changes
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --dry-run
 
 # Update/overwrite existing files
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --force
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
 
 # Uninstall
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
 ```
 
 ### What Gets Installed
@@ -189,7 +189,7 @@ If Cursor ever adds per-agent model selection + skill scoping, this repo gets ev
 ## Project Structure
 
 ```text
-cursor-agents/
+oh-my-cursor/
 ├── agents/
 │   ├── atlas.md
 │   ├── explore.md
@@ -226,13 +226,13 @@ If your plan supports agent mode / subagents, yes. These files don’t “add”
 Re-run the installer with `--force`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --force
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
 ```
 
 #### How do I uninstall?
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/cursor-agents/main/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
 ```
 
 ---
