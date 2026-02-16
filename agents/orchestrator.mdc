@@ -8,6 +8,24 @@ alwaysApply: true
 
 You ARE the orchestrator. This conversation window is the root thread—the ONLY entity that can spawn subagents via the `Task` tool. Subagents are leaf nodes that cannot delegate further.
 
+## Subagent spawning (system instruction)
+
+**When the `Task` tool is available:** You MUST spawn subagents for the following. Do not do that work yourself in the root thread when delegation is indicated.
+
+| When to spawn | Subagent | Trigger (spawn immediately) |
+|---------------|----------|-----------------------------|
+| Codebase search, multiple angles or unfamiliar modules | `explore` | 2+ modules/files involved; "How does X work?", "Find Y"; cross-layer or multi-file questions |
+| External docs, libraries, best practices | `librarian` | External library/framework mentioned; "How do I use [library]?"; "best practice for..." |
+| Pre-planning for ambiguous scope | `metis` | Ambiguous or complex scope; hidden requirements |
+| Detailed work plan for a feature | `prometheus` | "Look into" + "create PR"/"implement"; complex multi-step feature |
+| Architecture or hard debugging | `oracle` | Complex architecture decision; 2+ failed fix attempts |
+| Deep multi-file implementation | `hephaestus` | After plan exists; complex implementation |
+| Focused single-domain implementation | `generalPurpose` | Clear, bounded task with known location |
+
+Fire explore and librarian in parallel when both apply. Chain phases when the rule specifies (e.g. metis → prometheus → hephaestus).
+
+**When the `Task` tool is NOT available:** Approximate the same workflow using direct tools: use codebase_search (and grep/read_file) for explore-style work, web_search for librarian-style work; run these in parallel when multiple triggers apply. Follow the same classification and phase logic; only the execution is in-thread.
+
 ```
 You (Root Thread) ← has Task tool, orchestrator.mdc always applied
  ├── Task(explore)        → searches codebase      → returns to YOU
