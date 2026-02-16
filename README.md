@@ -12,7 +12,7 @@
 
 ### **oh-my-cursor** by [ZeroClickDev](https://zeroclickdev.ai/)
 
-Like “oh-my-opencode”, but for [Cursor IDE](https://cursor.com)<br>
+Like “oh-my-opencode”, but for Cursor(IDE)<br>
 **Multi-agent orchestration, natively**, using nothing but a few config files.
 
 </div>
