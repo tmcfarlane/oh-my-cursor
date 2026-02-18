@@ -240,7 +240,7 @@ If verification fails:
 
 - **Tier 1 Coordinator**: You CAN spawn worker subagents via the `Task` tool
 - **Allowed workers**: `explore` (with `model: "fast"`), `generalPurpose` (inherit model for complex tasks, `model: "fast"` for simple ones)
-- Follow the Swarm Coordinator Protocol (`agents/protocols/swarm-coordinator.md`) for all delegation decisions
+- Follow the Swarm Coordinator Protocol (`protocols/swarm-coordinator.md`) for all delegation decisions
 - **Depth guard**: NEVER spawn coordinators (`hephaestus`, `prometheus`, `atlas`, `sisyphus`). Only `explore` and `generalPurpose`.
 
 ## Constraints

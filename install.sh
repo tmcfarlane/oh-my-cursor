@@ -62,8 +62,8 @@ ${BOLD}cursor-agents installer${RESET} v${VERSION}
 Install curated Cursor AI agent configurations.
 
 ${BOLD}USAGE${RESET}
-  curl -fsSL https://opencode.ai/install | bash
-  curl -fsSL https://opencode.ai/install | bash -s -- [OPTIONS]
+  curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- [OPTIONS]
   bash install.sh [OPTIONS]
 
 ${BOLD}OPTIONS${RESET}
@@ -125,8 +125,92 @@ resolve_dirs() {
 # Embedded source files (all 12 agent/rule files)
 # ---------------------------------------------------------------------------
 
+SOURCE_BASE_URL_DEFAULT="https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main"
+# Override for forks/dev:
+#   OH_MY_CURSOR_SOURCE_BASE_URL="https://raw.githubusercontent.com/<you>/<repo>/<ref>" bash install.sh
+OH_MY_CURSOR_SOURCE_BASE_URL="${OH_MY_CURSOR_SOURCE_BASE_URL:-$SOURCE_BASE_URL_DEFAULT}"
+
+get_script_dir() {
+  local src="${BASH_SOURCE[0]:-}"
+  if [ -n "$src" ] && [ -f "$src" ]; then
+    (cd "$(dirname "$src")" && pwd)
+    return 0
+  fi
+  return 1
+}
+
+copy_sources_from_local_repo() {
+  local out_dir="$1"
+  local script_dir
+
+  script_dir="$(get_script_dir)" || return 1
+  [ -d "${script_dir}/agents" ] || return 1
+  [ -d "${script_dir}/rules" ] || return 1
+
+  local file
+  for file in "${AGENT_FILES[@]}"; do
+    cp "${script_dir}/agents/${file}" "${out_dir}/${file}" || return 1
+  done
+
+  for file in "${PROTOCOL_FILES[@]}"; do
+    mkdir -p "${out_dir}/$(dirname "$file")"
+    cp "${script_dir}/agents/${file}" "${out_dir}/${file}" || return 1
+  done
+
+  cp "${script_dir}/rules/${RULE_FILE}" "${out_dir}/${RULE_FILE}" || return 1
+  return 0
+}
+
+download_sources_from_github() {
+  local out_dir="$1"
+
+  if ! command -v curl >/dev/null 2>&1; then
+    log_verbose "curl not found; cannot download sources"
+    return 1
+  fi
+
+  local base="$OH_MY_CURSOR_SOURCE_BASE_URL"
+  local file url
+
+  for file in "${AGENT_FILES[@]}"; do
+    url="${base}/agents/${file}"
+    curl -fsSL "$url" -o "${out_dir}/${file}" || return 1
+  done
+
+  for file in "${PROTOCOL_FILES[@]}"; do
+    mkdir -p "${out_dir}/$(dirname "$file")"
+    url="${base}/agents/${file}"
+    curl -fsSL "$url" -o "${out_dir}/${file}" || return 1
+  done
+
+  url="${base}/rules/${RULE_FILE}"
+  curl -fsSL "$url" -o "${out_dir}/${RULE_FILE}" || return 1
+
+  return 0
+}
+
 create_source_files() {
   local dir="$1"
+  mkdir -p "$dir"
+
+  if copy_sources_from_local_repo "$dir"; then
+    log_verbose "Using local repo sources"
+    return 0
+  fi
+
+  if download_sources_from_github "$dir"; then
+    log_verbose "Downloaded sources from ${OH_MY_CURSOR_SOURCE_BASE_URL}"
+    return 0
+  fi
+
+  log "${RED}Failed to acquire source files.${RESET}" >&2
+  log "${DIM}Tried local repo checkout and GitHub raw download.${RESET}" >&2
+  log "${DIM}Override the download base with OH_MY_CURSOR_SOURCE_BASE_URL=...${RESET}" >&2
+  return 1
+
+  # ---------------------------------------------------------------------------
+  # Legacy embedded fallback (kept for now; no longer used)
+  # ---------------------------------------------------------------------------
   mkdir -p "$dir"
 
   # -- atlas.md ---------------------------------------------------------------
@@ -2320,6 +2404,16 @@ __AGENT_SISYPHUS__
 # Swarm Coordinator Protocol
 
 You are a **Tier 1 Coordinator** in the Cursor Swarm architecture. You can spawn subagents via the `Task` tool to parallelize research and implementation.
+
+---
+
+## How this file is used
+
+- **Location**: Installed as `protocols/swarm-coordinator.md` under the Cursor agents directory (user or project scope).
+- **Referenced by**: Coordinator agent manifests (`hephaestus`, `prometheus`, `atlas`, `sisyphus`) each instruct their agent to follow this protocol for delegation decisions.
+- **At runtime**: This file is the single source of truth. Coordinator manifests also embed a short summary (allowed workers, depth guard). For the full protocol to apply, this file can be brought into context (e.g. @-mention or read from workspace); otherwise the in-manifest summary governs behavior.
+
+---
 
 ## Architecture
 

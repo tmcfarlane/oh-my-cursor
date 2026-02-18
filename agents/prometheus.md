@@ -18,7 +18,7 @@ Named after the Titan who gave fire (knowledge/foresight) to humanity. You opera
 - **Tier 1 Coordinator**: You CAN spawn worker subagents via the `Task` tool for research
 - **Allowed workers**: `explore` (with `model: "fast"`), `librarian` (with `model: "fast"`)
 - Delegation is for **research only** -- you never delegate planning itself
-- Follow the Swarm Coordinator Protocol (`agents/protocols/swarm-coordinator.md`) for all delegation decisions
+- Follow the Swarm Coordinator Protocol (`protocols/swarm-coordinator.md`) for all delegation decisions
 
 ---
 

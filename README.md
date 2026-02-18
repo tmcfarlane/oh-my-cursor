@@ -3,7 +3,7 @@
     <picture>
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: dark)">
       <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/prompt.png" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+      <img src="screenshots/prompt.png" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
     </picture>
   </a>
 </p>
@@ -16,6 +16,22 @@ Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-ope
 **Multi-agent orchestration, natively**, using nothing but a few config files.
 
 > *"If Claude Code does in 7 days what a human does in 3 months, Sisyphus does it in 1 hour."* — on oh-my-opencode
+
+**Updated for Cursor 2.5 — SWARM MODE ENGAGE.** Coordinators can now spawn workers; async subagents and a two-tier swarm architecture are supported.
+<p align="center">
+  <a href="https://cursor.com/changelog#async-subagents" style="display: flex; flex-direction: column; align-items: center;">
+    <picture style="display: block;">
+      <source srcset="screenshots/cursor_update_1.png" media="(prefers-color-scheme: dark)">
+      <source srcset="screenshots/cursor_update_1.png" media="(prefers-color-scheme: light)">
+      <img src="screenshots/cursor_update_1.png" alt="Cursor Version 2.5 Update: Subagents" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
+    </picture>
+    <picture style="display: block;">
+      <source srcset="screenshots/cursor_update_2.png" media="(prefers-color-scheme: dark)">
+      <source srcset="screenshots/cursor_update_2.png" media="(prefers-color-scheme: light)">
+      <img src="screenshots/cursor_update_2.png" alt="Cursor Version 2.5 Update: Subagents" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
+    </picture>
+  </a>
+</p>
 
 </div>
 
@@ -128,13 +144,22 @@ You get a cast of specialists (all just Markdown manifests):
 With Cursor 2.5, subagents can spawn their own subagents asynchronously. This repo now uses a **two-tier swarm architecture**:
 
 - **Coordinators** (Tier 1): `hephaestus`, `prometheus`, `atlas`, `sisyphus` -- can spawn worker subagents for parallel research and implementation
-- **Workers** (Tier 2): `explore`, `librarian`, `generalPurpose`, `oracle`, `metis`, `momus`, `multimodal-looker` -- leaf nodes that execute focused tasks
+- **Workers** (Tier 2): `explore`, `librarian`, `generalPurpose` -- leaf nodes that execute focused, bounded tasks
+- **Root-only workers** (Tier 2): `oracle`, `metis`, `momus`, `multimodal-looker` -- leaf nodes dispatched exclusively by the root thread (never by coordinators)
 
 Max depth is 2: root thread spawns coordinators, coordinators spawn workers. Workers never delegate further.
 
 Coordinators use the **fast model tier** for search workers (`explore`, `librarian`) and inherit the parent model for implementation workers requiring deeper reasoning.
 
-See `agents/protocols/swarm-coordinator.md` for the full coordination protocol.
+### Swarm Coordinator Protocol
+
+The shared coordination rules live in **`agents/protocols/swarm-coordinator.md`**. It defines depth guards, delegation decision matrix, model selection, async patterns, and context relay rules.
+
+**How it's used:**
+
+- **Installation**: The installer copies `protocols/swarm-coordinator.md` into your agents directory (e.g. `~/.cursor/agents/protocols/` or `./.cursor/agents/protocols/`), alongside the agent manifests.
+- **Reference**: Each coordinator manifest (`hephaestus`, `prometheus`, `atlas`, `sisyphus`) instructs the agent to "Follow the Swarm Coordinator Protocol" and points to `protocols/swarm-coordinator.md` (installed location). The protocol is the single source of truth; coordinator manifests also embed a short summary (allowed workers, depth guard) so basic rules are always in context.
+- **At runtime**: Coordinators get their manifest text by default. For the full protocol to apply, the protocol file can be brought into context (e.g. by @-mentioning `@agents/protocols/swarm-coordinator.md` when delegating, or by the agent reading it from the workspace). The in-manifest summary is always available even if the full file is not loaded.
 
 ## Remaining Limitations (Honest Section)
 

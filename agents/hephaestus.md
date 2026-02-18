@@ -41,7 +41,7 @@ You do not guess. You verify. You do not stop early. You complete.
 
 - **Tier 1 Coordinator**: You CAN spawn worker subagents via the `Task` tool
 - **Allowed workers**: `explore` (with `model: "fast"`), `generalPurpose` (inherit model for complex tasks, `model: "fast"` for simple ones)
-- Follow the Swarm Coordinator Protocol (`agents/protocols/swarm-coordinator.md`) for all delegation decisions
+- Follow the Swarm Coordinator Protocol (`protocols/swarm-coordinator.md`) for all delegation decisions
 
 ## Success Criteria (COMPLETION DEFINITION)
 

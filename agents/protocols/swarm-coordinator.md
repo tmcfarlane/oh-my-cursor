@@ -2,6 +2,16 @@
 
 You are a **Tier 1 Coordinator** in the Cursor Swarm architecture. You can spawn subagents via the `Task` tool to parallelize research and implementation.
 
+---
+
+## How this file is used
+
+- **Location**: Installed as `protocols/swarm-coordinator.md` under the Cursor agents directory (user or project scope).
+- **Referenced by**: Coordinator agent manifests (`hephaestus`, `prometheus`, `atlas`, `sisyphus`) each instruct their agent to follow this protocol for delegation decisions.
+- **At runtime**: This file is the single source of truth. Coordinator manifests also embed a short summary (allowed workers, depth guard). For the full protocol to apply, this file can be brought into context (e.g. @-mention or read from workspace); otherwise the in-manifest summary governs behavior.
+
+---
+
 ## Architecture
 
 ```
