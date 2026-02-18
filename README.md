@@ -57,7 +57,7 @@ So I did what any natural-born crayon eating ape would do:
 - I realized I could basically clone the methodology behind **oh-my-opencode**
 - and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
 
-Result: **oh-my-cursor Agent Swarms** (not really swarms) that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
+Result: **oh-my-cursor Agent Swarms** that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
 
 ## How to Install
 ```bash
@@ -123,10 +123,22 @@ You get a cast of specialists (all just Markdown manifests):
 | `multimodal-looker` | PDFs/images/diagrams |
 
 
-## Downsides / Current Limitations (Honest Section)
+## Cursor Swarm Mode (v2.5+)
 
-- **Not a real swarm**: subagents can't subdelegate. They're leaf nodes by design.
-- **Same model everywhere**: subagents inherit the same model/mode as the root thread (so if you're running "Opus 4.5 Max Mode (now 4.6)", they're all on that too).
+With Cursor 2.5, subagents can spawn their own subagents asynchronously. This repo now uses a **two-tier swarm architecture**:
+
+- **Coordinators** (Tier 1): `hephaestus`, `prometheus`, `atlas`, `sisyphus` -- can spawn worker subagents for parallel research and implementation
+- **Workers** (Tier 2): `explore`, `librarian`, `generalPurpose`, `oracle`, `metis`, `momus`, `multimodal-looker` -- leaf nodes that execute focused tasks
+
+Max depth is 2: root thread spawns coordinators, coordinators spawn workers. Workers never delegate further.
+
+Coordinators use the **fast model tier** for search workers (`explore`, `librarian`) and inherit the parent model for implementation workers requiring deeper reasoning.
+
+See `agents/protocols/swarm-coordinator.md` for the full coordination protocol.
+
+## Remaining Limitations (Honest Section)
+
+- **Two model tiers only**: subagents can run on the parent model or a faster/cheaper model -- no arbitrary per-agent model routing (unlike oh-my-opencode which routes to different providers per agent).
 - **Skills aren't scoped per agent**: it'd be fantastic if subagents could see a curated subset of skills instead of "all or nothing".
 
 >If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight!!!
@@ -156,9 +168,9 @@ You get a cast of specialists (all just Markdown manifests):
 
 
 
-## How The "Swarm" Works (Mermaid Diagram)
+## How The Swarm Works (Mermaid Diagram)
 
-Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The "swarm" is the root thread orchestrating them.
+The root thread orchestrates **coordinators** (Tier 1) which can spawn their own **workers** (Tier 2). Max depth = 2.
 
 ```mermaid
 flowchart TD
@@ -170,9 +182,14 @@ flowchart TD
   IG -->|external lib / best practices| LI["Task(librarian)<br/>docs + examples"]
   IG -->|ambiguous scope| ME["Task(metis)<br/>pre-planning analysis"]
 
-  IG -->|complex feature| PR["Task(prometheus)<br/>work plan + acceptance criteria"]
+  IG -->|complex feature| PR["Task(prometheus)<br/>Coordinator"]
+  PR -->|"spawns"| PR_EX["explore (fast)"]
+  PR -->|"spawns"| PR_LI["librarian (fast)"]
   PR --> MO["Task(momus)<br/>plan sanity check"]
-  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>implementation"]
+  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>Coordinator"]
+
+  IM -->|"spawns"| IM_EX["explore (fast)"]
+  IM -->|"spawns"| IM_GP["generalPurpose"]
 
   EX --> U
   LI --> U
@@ -184,8 +201,8 @@ flowchart TD
   FR --> OR["Task(oracle)<br/>architecture / hard debugging"]
   OR --> U
 
-  subgraph NOTE["Reality check"]
-    N1["Subagents do not subdelegate.<br/>The root thread is the only orchestrator."]
+  subgraph swarmNote ["Swarm Mode (Cursor 2.5+)"]
+    N1["Coordinators spawn workers async.<br/>Max depth = 2. Workers are leaf nodes."]
   end
 ```
 
