@@ -10,36 +10,34 @@
 
 <div align="center">
 
-### **oh-my-cursor** by [ZeroClickDev](https://zeroclickdev.ai/)
+<div style="font-size: 2.2em; font-weight: 800; line-height: 1.15;">
+  <strong>oh-my-cursor</strong> by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>
+</div>
 
 Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) to Cursor subagents.<br>
 **Multi-agent orchestration, natively**, using nothing but a few config files.
 
-> *"If Claude Code does in 7 days what a human does in 3 months, Sisyphus does it in 1 hour."* — on oh-my-opencode
+<details>
+<summary><strong>Cursor 2.5 — Released Feb 17th, 2026 — <span style="color: red;">SWARM MODE ACTIVATED!</span></strong><br>Updated to take advantage of new features and improvements.</summary>
 
-**Updated for Cursor 2.5 — SWARM MODE ENGAGE.** Coordinators can now spawn workers; async subagents and a two-tier swarm architecture are supported.
 <p align="center">
   <a href="https://cursor.com/changelog#async-subagents" style="display: flex; flex-direction: column; align-items: center;">
     <picture style="display: block;">
       <source srcset="screenshots/cursor_update_1.png" media="(prefers-color-scheme: dark)">
       <source srcset="screenshots/cursor_update_1.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/cursor_update_1.png" alt="Cursor Version 2.5 Update: Subagents" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
+      <img src="screenshots/cursor_update_1.png" alt="Cursor Version 2.5 Update: Subagents" width="400" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
     </picture>
     <picture style="display: block;">
       <source srcset="screenshots/cursor_update_2.png" media="(prefers-color-scheme: dark)">
       <source srcset="screenshots/cursor_update_2.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/cursor_update_2.png" alt="Cursor Version 2.5 Update: Subagents" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
+      <img src="screenshots/cursor_update_2.png" alt="Cursor Version 2.5 Update: Subagents" width="400" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
     </picture>
   </a>
 </p>
+</details>
 
 </div>
 
----
-
-**[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** is the 32k+ star project that turned OpenCode into a multi-agent orchestration platform — so impactful that **Anthropic cited it by name** when restricting third-party OAuth access in January 2026. This repo adapts its philosophy (agent specialization, parallel dispatch, phased orchestration, todo enforcement) to Cursor's native `Task` subagents. No plugin system, no wrapper CLI — just Markdown config files.
-
----
 
 ## Quick Start (One Command)
 
@@ -58,22 +56,6 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents** (this capability landed in January and makes this whole setup surprisingly clean).
 
-
-## The Origin Story (aka: Token Optimization for Degenerates)
-
-I upgraded my Cursor account to Ultra right before my usage was going to roll over.
-
-Then I realized I had **9 days** to burn roughly **$300 worth of tokens** to truly min/max the subscription rollover period.
-
-So I did what any natural-born crayon eating ape would do:
-
-- I tried overengineering around CursorCLI
-- I decided it wasn't ready for the kind of nonsense I had planned
-- I jumped back into the UI
-- I realized I could basically clone the methodology behind **oh-my-opencode**
-- and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
-
-Result: **oh-my-cursor Agent Swarms** that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
 
 ## How to Install
 ```bash
@@ -100,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 | `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/orchestrator.mdc` |
 | `--project` | `./.cursor/agents/` | `./.cursor/rules/orchestrator.mdc` |
 
-<span style="color: red;">***Rule Priority (Important)***</span>
+<span style="color: lightsteelblue;">***Rule Priority (Important)***</span>
 
 If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it's applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
 
@@ -118,6 +100,22 @@ Example:
 You are the orchestrator. Use @explore to map the codebase, @prometheus to draft a plan, @momus to review it,
 and @hephaestus/@atlas to implement. Verify with lints/build/tests. Keep going until done.
 ```
+
+## The Origin Story (aka: Token Optimization for Degenerates)
+
+I upgraded my Cursor account to Ultra right before my usage was going to roll over.
+
+Then I realized I had **9 days** to burn roughly **$300 worth of tokens** to truly min/max the subscription rollover period.
+
+So I did what any natural-born crayon eating ape would do:
+
+- I tried overengineering around CursorCLI
+- I decided it wasn't ready for the kind of nonsense I had planned
+- I jumped back into the UI
+- I realized I could basically clone the methodology behind **oh-my-opencode**
+- and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
+
+Result: **oh-my-cursor Agent Swarms** that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
 
 
 ## Agents Included
@@ -139,7 +137,32 @@ You get a cast of specialists (all just Markdown manifests):
 | `multimodal-looker` | PDFs/images/diagrams |
 
 
-## Cursor Swarm Mode (v2.5+)
+
+## Screenshots
+
+**1. Prompt** — Subagents and Phase 1 exploration
+
+<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**2. Orchestration phases** — Phase breakdown diagram
+
+<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**3. Phase 1** — Codebase Assessment
+
+<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**4. Phase 2** — Agent Dispatch
+
+<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**5. Phase final** — Phase 5 complete, final build status
+
+<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+
+
+## <span style="color: red;">Cursor Swarm Mode (v2.5+)</span>
 
 With Cursor 2.5, subagents can spawn their own subagents asynchronously. This repo now uses a **two-tier swarm architecture**:
 
@@ -167,30 +190,6 @@ The shared coordination rules live in **`agents/protocols/swarm-coordinator.md`*
 - **Skills aren't scoped per agent**: it'd be fantastic if subagents could see a curated subset of skills instead of "all or nothing".
 
 >If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight!!!
-
-
-## Screenshots
-
-**1. Prompt** — Subagents and Phase 1 exploration
-
-<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**2. Orchestration phases** — Phase breakdown diagram
-
-<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**3. Phase 1** — Codebase Assessment
-
-<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**4. Phase 2** — Agent Dispatch
-
-<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**5. Phase final** — Phase 5 complete, final build status
-
-<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
 
 
 ## How The Swarm Works (Mermaid Diagram)
@@ -261,6 +260,10 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Inspiration
+
+**[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** is the 32k+ star project that turned OpenCode into a multi-agent orchestration platform — so impactful that **Anthropic cited it by name** when restricting third-party OAuth access in January 2026. This repo adapts its philosophy (agent specialization, parallel dispatch, phased orchestration, todo enforcement) to Cursor's native `Task` subagents. No plugin system, no wrapper CLI — just Markdown config files.
 
 ## Star History
 

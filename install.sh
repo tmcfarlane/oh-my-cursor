@@ -4,6 +4,7 @@
 set -euo pipefail
 
 VERSION="0.1.0"
+CURSOR_MODE_LABEL="Swarm Mode (Cursor 2.5+)"
 
 AGENT_FILES=(atlas.md explore.md generalPurpose.md hephaestus.md librarian.md metis.md momus.md multimodal-looker.md oracle.md prometheus.md sisyphus.md)
 PROTOCOL_FILES=(protocols/swarm-coordinator.md)
@@ -58,6 +59,7 @@ log_verbose() {
 usage() {
   cat <<EOF
 ${BOLD}cursor-agents installer${RESET} v${VERSION}
+${DIM}${CURSOR_MODE_LABEL}${RESET}
 
 Install curated Cursor AI agent configurations.
 
@@ -3048,6 +3050,7 @@ install_agents() {
   # Summary
   log ""
   log "${BOLD}Summary${RESET}"
+  log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
   if [ "$installed" -gt 0 ]; then
     log "  ${GREEN}Installed: ${installed}${RESET}"
   fi
@@ -3074,6 +3077,7 @@ uninstall_agents() {
   local not_found=0
 
   log "${BOLD}cursor-agents${RESET} v${VERSION}"
+  log "${DIM}${CURSOR_MODE_LABEL}${RESET}"
   log ""
 
   if [ "$DRY_RUN" = true ]; then
@@ -3149,6 +3153,7 @@ uninstall_agents() {
 
   log ""
   log "${BOLD}Summary${RESET}"
+  log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
   if [ "$removed" -gt 0 ]; then
     log "  ${RED}Removed: ${removed}${RESET}"
   fi
@@ -3174,6 +3179,7 @@ main() {
   WORK_DIR=$(mktemp -d)
 
   log "${BOLD}cursor-agents${RESET} v${VERSION}"
+  log "${DIM}${CURSOR_MODE_LABEL}${RESET}"
   log ""
 
   if [ "$DRY_RUN" = true ]; then
