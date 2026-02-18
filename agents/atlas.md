@@ -47,9 +47,21 @@ TASK ANALYSIS:
 
 1. Mark task `in_progress` (only ONE at a time)
 2. Read relevant files to understand context
-3. Implement the changes
+3. Implement the changes (directly, or delegate to `generalPurpose` workers)
 4. Verify (ReadLints, build, tests)
 5. Mark `completed` IMMEDIATELY
+
+### 2.1b Parallel Fan-Out (when applicable)
+
+When the task list contains **independent** items (no shared dependencies):
+
+1. Identify independent task groups
+2. Spawn parallel `generalPurpose` workers -- one per independent task
+3. Wait for all workers to complete
+4. Verify EACH result independently (ReadLints, build, tests)
+5. Mark each task `completed` only after verification passes
+
+**Only fan out when tasks are truly independent.** If tasks share files or have ordering dependencies, execute them sequentially.
 
 ### 2.2 Verify After Each Task
 
@@ -142,9 +154,15 @@ Verify EVERYTHING after each task.
 - Report progress via todo updates, not narratives.
 - Final reports should be structured, not conversational.
 
+## Swarm Role
+
+- **Tier 1 Coordinator**: You CAN spawn worker subagents via the `Task` tool
+- **Allowed workers**: `generalPurpose` (inherit model for complex tasks, `model: "fast"` for simple ones)
+- Follow the Swarm Coordinator Protocol (`protocols/swarm-coordinator.md`) for all delegation decisions
+- **Depth guard**: NEVER spawn coordinators (`hephaestus`, `prometheus`, `atlas`, `sisyphus`). Only `generalPurpose`.
+
 ## Constraints
 
-- **No delegation**: You cannot spawn other agents
 - Never suppress type errors
 - Never commit unless explicitly requested
 - Never leave code in a broken state

@@ -4,8 +4,10 @@
 set -euo pipefail
 
 VERSION="0.1.0"
+CURSOR_MODE_LABEL="Swarm Mode (Cursor 2.5+)"
 
 AGENT_FILES=(atlas.md explore.md generalPurpose.md hephaestus.md librarian.md metis.md momus.md multimodal-looker.md oracle.md prometheus.md sisyphus.md)
+PROTOCOL_FILES=(protocols/swarm-coordinator.md)
 RULE_FILE="orchestrator.mdc"
 
 FORCE=false
@@ -57,12 +59,13 @@ log_verbose() {
 usage() {
   cat <<EOF
 ${BOLD}cursor-agents installer${RESET} v${VERSION}
+${DIM}${CURSOR_MODE_LABEL}${RESET}
 
 Install curated Cursor AI agent configurations.
 
 ${BOLD}USAGE${RESET}
-  curl -fsSL https://opencode.ai/install | bash
-  curl -fsSL https://opencode.ai/install | bash -s -- [OPTIONS]
+  curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- [OPTIONS]
   bash install.sh [OPTIONS]
 
 ${BOLD}OPTIONS${RESET}
@@ -124,8 +127,92 @@ resolve_dirs() {
 # Embedded source files (all 12 agent/rule files)
 # ---------------------------------------------------------------------------
 
+SOURCE_BASE_URL_DEFAULT="https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main"
+# Override for forks/dev:
+#   OH_MY_CURSOR_SOURCE_BASE_URL="https://raw.githubusercontent.com/<you>/<repo>/<ref>" bash install.sh
+OH_MY_CURSOR_SOURCE_BASE_URL="${OH_MY_CURSOR_SOURCE_BASE_URL:-$SOURCE_BASE_URL_DEFAULT}"
+
+get_script_dir() {
+  local src="${BASH_SOURCE[0]:-}"
+  if [ -n "$src" ] && [ -f "$src" ]; then
+    (cd "$(dirname "$src")" && pwd)
+    return 0
+  fi
+  return 1
+}
+
+copy_sources_from_local_repo() {
+  local out_dir="$1"
+  local script_dir
+
+  script_dir="$(get_script_dir)" || return 1
+  [ -d "${script_dir}/agents" ] || return 1
+  [ -d "${script_dir}/rules" ] || return 1
+
+  local file
+  for file in "${AGENT_FILES[@]}"; do
+    cp "${script_dir}/agents/${file}" "${out_dir}/${file}" || return 1
+  done
+
+  for file in "${PROTOCOL_FILES[@]}"; do
+    mkdir -p "${out_dir}/$(dirname "$file")"
+    cp "${script_dir}/agents/${file}" "${out_dir}/${file}" || return 1
+  done
+
+  cp "${script_dir}/rules/${RULE_FILE}" "${out_dir}/${RULE_FILE}" || return 1
+  return 0
+}
+
+download_sources_from_github() {
+  local out_dir="$1"
+
+  if ! command -v curl >/dev/null 2>&1; then
+    log_verbose "curl not found; cannot download sources"
+    return 1
+  fi
+
+  local base="$OH_MY_CURSOR_SOURCE_BASE_URL"
+  local file url
+
+  for file in "${AGENT_FILES[@]}"; do
+    url="${base}/agents/${file}"
+    curl -fsSL "$url" -o "${out_dir}/${file}" || return 1
+  done
+
+  for file in "${PROTOCOL_FILES[@]}"; do
+    mkdir -p "${out_dir}/$(dirname "$file")"
+    url="${base}/agents/${file}"
+    curl -fsSL "$url" -o "${out_dir}/${file}" || return 1
+  done
+
+  url="${base}/rules/${RULE_FILE}"
+  curl -fsSL "$url" -o "${out_dir}/${RULE_FILE}" || return 1
+
+  return 0
+}
+
 create_source_files() {
   local dir="$1"
+  mkdir -p "$dir"
+
+  if copy_sources_from_local_repo "$dir"; then
+    log_verbose "Using local repo sources"
+    return 0
+  fi
+
+  if download_sources_from_github "$dir"; then
+    log_verbose "Downloaded sources from ${OH_MY_CURSOR_SOURCE_BASE_URL}"
+    return 0
+  fi
+
+  log "${RED}Failed to acquire source files.${RESET}" >&2
+  log "${DIM}Tried local repo checkout and GitHub raw download.${RESET}" >&2
+  log "${DIM}Override the download base with OH_MY_CURSOR_SOURCE_BASE_URL=...${RESET}" >&2
+  return 1
+
+  # ---------------------------------------------------------------------------
+  # Legacy embedded fallback (kept for now; no longer used)
+  # ---------------------------------------------------------------------------
   mkdir -p "$dir"
 
   # -- atlas.md ---------------------------------------------------------------
@@ -2313,6 +2400,182 @@ If verification fails:
 </Constraints>
 __AGENT_SISYPHUS__
 
+  # -- protocols/swarm-coordinator.md ------------------------------------------
+  mkdir -p "${dir}/protocols"
+  cat > "${dir}/protocols/swarm-coordinator.md" <<'__PROTOCOL_SWARM_COORDINATOR__'
+# Swarm Coordinator Protocol
+
+You are a **Tier 1 Coordinator** in the Cursor Swarm architecture. You can spawn subagents via the `Task` tool to parallelize research and implementation.
+
+---
+
+## How this file is used
+
+- **Location**: Installed as `protocols/swarm-coordinator.md` under the Cursor agents directory (user or project scope).
+- **Referenced by**: Coordinator agent manifests (`hephaestus`, `prometheus`, `atlas`, `sisyphus`) each instruct their agent to follow this protocol for delegation decisions.
+- **At runtime**: This file is the single source of truth. Coordinator manifests also embed a short summary (allowed workers, depth guard). For the full protocol to apply, this file can be brought into context (e.g. @-mention or read from workspace); otherwise the in-manifest summary governs behavior.
+
+---
+
+## Architecture
+
+```
+Root Thread (depth 0)
+ └── YOU - Coordinator (depth 1)
+      ├── Task(explore, model: fast)       → depth 2 (leaf)
+      ├── Task(librarian, model: fast)     → depth 2 (leaf)
+      └── Task(generalPurpose)             → depth 2 (leaf)
+```
+
+**Max depth = 2. You are depth 1. Your subagents are depth 2 (terminal).**
+
+---
+
+## Depth Guard (HARD CONSTRAINT)
+
+You may ONLY spawn **worker** subagents:
+
+| Allowed Workers | Purpose |
+|-----------------|---------|
+| `explore` | Codebase search, pattern discovery |
+| `librarian` | External docs, OSS examples |
+| `generalPurpose` | Focused implementation tasks |
+
+**NEVER spawn coordinators** (`hephaestus`, `prometheus`, `atlas`, `sisyphus`). NEVER spawn `oracle`, `metis`, `momus`, or `multimodal-looker` -- those are dispatched by the root thread only.
+
+Your manifest specifies which of the above workers you are allowed to spawn. Only spawn workers from your allowlist.
+
+---
+
+## Delegation Decision Matrix
+
+Before spawning a subagent, evaluate:
+
+```
+Should I delegate this sub-task?
+  ├── Is it an independent unit of work?              → YES: delegate
+  ├── Does it need different expertise (search vs implement)? → YES: delegate
+  ├── Can it run in parallel with my current work?    → YES: delegate async
+  ├── Is it trivial (<30s with direct tools)?         → NO: do it yourself
+  └── Would it require spawning a coordinator?        → NO: do it yourself (depth limit)
+```
+
+**Default: Do it yourself unless delegation clearly saves time or enables parallelism.**
+
+---
+
+## Model Selection
+
+| Spawned Worker | Model | Rationale |
+|----------------|-------|-----------|
+| `explore` | `model: fast` | Grep-like search; speed over reasoning depth |
+| `librarian` | `model: fast` | Doc lookup; bounded, atomic task |
+| `generalPurpose` (simple) | `model: fast` | Single-file edits, straightforward changes |
+| `generalPurpose` (complex) | inherited | Multi-file changes requiring architectural reasoning |
+
+**Heuristic**: Use `model: "fast"` for search/lookup workers. Inherit the parent model for implementation workers that need reasoning.
+
+---
+
+## Async Dispatch Patterns
+
+### Pattern 1: Fire-and-Continue (non-blocking research)
+
+Spawn search agents asynchronously while you continue working with direct tools. Collect results when you need them.
+
+```
+Task(explore, ...) → runs in background
+You continue reading files, planning
+Collect explore results when ready
+```
+
+Use for: gathering context while you start planning or implementing.
+
+### Pattern 2: Fire-and-Collect (parallel fan-out)
+
+Spawn multiple workers for independent tasks, then verify each result.
+
+```
+Task(generalPurpose, task1) + Task(generalPurpose, task2) → parallel
+Wait for both to complete
+Verify each result independently
+Continue to next batch
+```
+
+Use for: independent sub-tasks that don't depend on each other (e.g., separate files, separate test suites).
+
+### Pattern 3: Research-then-Act
+
+Spawn search agents first, collect results, then use findings to guide your own work.
+
+```
+Task(explore, ...) + Task(librarian, ...) → parallel research
+Collect both results
+Synthesize findings into your execution plan
+```
+
+Use for: unfamiliar codebases or external libraries where you need context before acting.
+
+---
+
+## Delegation Prompt Structure (MANDATORY)
+
+Every Task prompt MUST include all 6 sections:
+
+```
+1. TASK: Atomic, specific goal (one action per delegation)
+2. EXPECTED OUTCOME: Concrete deliverables with success criteria
+3. REQUIRED TOOLS: Explicit tool whitelist
+4. MUST DO: Exhaustive requirements - leave NOTHING implicit
+5. MUST NOT DO: Forbidden actions
+6. CONTEXT: File paths, existing patterns, constraints
+```
+
+---
+
+## Context Relay Rules
+
+- **Pass verbatim**: file paths, error messages, acceptance criteria, code snippets
+- **Summarize**: broad context about what the parent task is doing (workers don't need full history)
+- **Never pass**: your internal planning, todo state, or other workers' results (unless directly relevant)
+
+Workers are stateless -- they only know what you tell them. Be exhaustive in MUST DO / MUST NOT DO.
+
+---
+
+## Verification of Sub-Agent Results
+
+After every worker returns:
+
+1. **Read the result** -- don't trust blindly
+2. **Verify completeness** -- does it answer what you asked?
+3. **Check for errors** -- if the worker modified files, run `ReadLints`
+4. **Resume if incomplete** -- use `resume` with the agent ID, not a fresh spawn
+
+---
+
+## Session Continuity
+
+Every Task invocation returns an agent ID. **Track it.**
+
+| Scenario | Action |
+|----------|--------|
+| Worker result incomplete | `resume` with "Also need: {specific gap}" |
+| Worker hit an error | `resume` with "Fix: {error details}" |
+| Need follow-up search | `resume` with the same explore agent |
+
+Resuming saves tokens -- the worker retains full context from its previous run.
+
+---
+
+## Cost Awareness
+
+Delegation has overhead (prompt construction, context relay, result verification). Only delegate when the benefit clearly outweighs the cost:
+
+- **Delegate**: multi-angle searches, independent implementation tasks, parallel research
+- **Don't delegate**: single grep, reading one file, trivial edits, tasks requiring your full context
+__PROTOCOL_SWARM_COORDINATOR__
+
   # -- orchestrator.mdc (rule file -- no model: inherit) ----------------------
   cat > "${dir}/orchestrator.mdc" <<'__RULE_ORCHESTRATOR__'
 ---
@@ -2694,6 +2957,56 @@ install_agents() {
     fi
   done
 
+  # Install protocol files
+  if [ ${#PROTOCOL_FILES[@]} -gt 0 ]; then
+    log ""
+    log "Installing protocols to ${BOLD}${AGENTS_DIR}/protocols${RESET}"
+    log ""
+
+    if [ "$DRY_RUN" = false ]; then
+      mkdir -p "${AGENTS_DIR}/protocols"
+    fi
+
+    for file in "${PROTOCOL_FILES[@]}"; do
+      src="${src_dir}/${file}"
+      dest="${AGENTS_DIR}/${file}"
+
+      if [ ! -f "$dest" ]; then
+        if [ "$DRY_RUN" = true ]; then
+          log "  ${GREEN}[new]${RESET} ${file}"
+        else
+          if cp "$src" "$dest" 2>/dev/null; then
+            log "  ${GREEN}[installed]${RESET} ${file}"
+          else
+            log "  ${RED}[failed]${RESET} ${file}"
+            failed=$((failed + 1))
+            continue
+          fi
+        fi
+        installed=$((installed + 1))
+      elif cmp -s "$src" "$dest"; then
+        log "  ${DIM}[unchanged]${RESET} ${file}"
+        skipped=$((skipped + 1))
+      elif [ "$FORCE" = true ]; then
+        if [ "$DRY_RUN" = true ]; then
+          log "  ${YELLOW}[update]${RESET} ${file}"
+        else
+          if cp "$src" "$dest" 2>/dev/null; then
+            log "  ${YELLOW}[updated]${RESET} ${file}"
+          else
+            log "  ${RED}[failed]${RESET} ${file}"
+            failed=$((failed + 1))
+            continue
+          fi
+        fi
+        updated=$((updated + 1))
+      else
+        log "  ${YELLOW}[skipped]${RESET} ${file} ${DIM}(use --force to overwrite)${RESET}"
+        skipped=$((skipped + 1))
+      fi
+    done
+  fi
+
   # Install rule file
   log ""
   log "Installing rules to ${BOLD}${RULES_DIR}${RESET}"
@@ -2737,6 +3050,7 @@ install_agents() {
   # Summary
   log ""
   log "${BOLD}Summary${RESET}"
+  log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
   if [ "$installed" -gt 0 ]; then
     log "  ${GREEN}Installed: ${installed}${RESET}"
   fi
@@ -2763,6 +3077,7 @@ uninstall_agents() {
   local not_found=0
 
   log "${BOLD}cursor-agents${RESET} v${VERSION}"
+  log "${DIM}${CURSOR_MODE_LABEL}${RESET}"
   log ""
 
   if [ "$DRY_RUN" = true ]; then
@@ -2790,6 +3105,34 @@ uninstall_agents() {
     fi
   done
 
+  # Remove protocol files
+  if [ ${#PROTOCOL_FILES[@]} -gt 0 ]; then
+    log ""
+    log "Removing protocols from ${BOLD}${AGENTS_DIR}/protocols${RESET}"
+    log ""
+
+    for file in "${PROTOCOL_FILES[@]}"; do
+      target="${AGENTS_DIR}/${file}"
+      if [ -f "$target" ]; then
+        if [ "$DRY_RUN" = true ]; then
+          log "  ${RED}[remove]${RESET} ${file}"
+        else
+          rm -f "$target"
+          log "  ${RED}[removed]${RESET} ${file}"
+        fi
+        removed=$((removed + 1))
+      else
+        log "  ${DIM}[not found]${RESET} ${file}"
+        not_found=$((not_found + 1))
+      fi
+    done
+
+    # Remove protocols directory if empty
+    if [ "$DRY_RUN" = false ] && [ -d "${AGENTS_DIR}/protocols" ]; then
+      rmdir "${AGENTS_DIR}/protocols" 2>/dev/null || true
+    fi
+  fi
+
   log ""
   log "Removing rules from ${BOLD}${RULES_DIR}${RESET}"
   log ""
@@ -2810,6 +3153,7 @@ uninstall_agents() {
 
   log ""
   log "${BOLD}Summary${RESET}"
+  log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
   if [ "$removed" -gt 0 ]; then
     log "  ${RED}Removed: ${removed}${RESET}"
   fi
@@ -2835,6 +3179,7 @@ main() {
   WORK_DIR=$(mktemp -d)
 
   log "${BOLD}cursor-agents${RESET} v${VERSION}"
+  log "${DIM}${CURSOR_MODE_LABEL}${RESET}"
   log ""
 
   if [ "$DRY_RUN" = true ]; then

@@ -6,38 +6,53 @@ alwaysApply: true
 
 # Root Thread Orchestration Brain
 
-You ARE the orchestrator. This conversation window is the root thread—the ONLY entity that can spawn subagents via the `Task` tool. Subagents are leaf nodes that cannot delegate further.
+You ARE the orchestrator. This conversation window is the root thread (depth 0) that spawns and coordinates all subagents via the `Task` tool.
 
-## Subagent spawning (system instruction)
+## Swarm Mode (Two-Tier Architecture)
+
+Agents are classified into two tiers:
+
+- **Coordinators** (Tier 1): Can spawn their own worker subagents for parallel research and implementation. Dispatched by the root thread.
+- **Workers** (Tier 2): Leaf nodes. Execute focused, bounded tasks. Cannot delegate further.
+
+```
+You (Root Thread, depth 0)
+ ├── Task(hephaestus)     → Coordinator (depth 1) — can spawn explore, generalPurpose
+ ├── Task(prometheus)     → Coordinator (depth 1) — can spawn explore, librarian
+ ├── Task(atlas)          → Coordinator (depth 1) — can spawn generalPurpose
+ ├── Task(sisyphus)       → Coordinator (depth 1) — can spawn explore, generalPurpose
+ ├── Task(explore)        → Worker (depth 1 or 2) — leaf node
+ ├── Task(librarian)      → Worker (depth 1 or 2) — leaf node
+ ├── Task(generalPurpose) → Worker (depth 1 or 2) — leaf node
+ ├── Task(oracle)         → Worker (depth 1) — leaf node, root-only
+ ├── Task(metis)          → Worker (depth 1) — leaf node, root-only
+ ├── Task(momus)          → Worker (depth 1) — leaf node, root-only
+ └── Task(multimodal-looker) → Worker (depth 1) — leaf node, root-only
+```
+
+**Max depth = 2.** Coordinators (depth 1) may spawn workers (depth 2). Workers never delegate. Root-only workers (`oracle`, `metis`, `momus`, `multimodal-looker`) are dispatched exclusively by the root thread.
+
+**Model tier guidance**: Coordinators should spawn search/lookup workers (`explore`, `librarian`) with `model: "fast"` for speed and cost efficiency. Use inherited model for `generalPurpose` workers doing complex multi-file implementation.
+
+## Subagent Spawning (system instruction)
 
 **When the `Task` tool is available:** You MUST spawn subagents for the following. Do not do that work yourself in the root thread when delegation is indicated.
 
-| When to spawn | Subagent | Trigger (spawn immediately) |
-|---------------|----------|-----------------------------|
-| Codebase search, multiple angles or unfamiliar modules | `explore` | 2+ modules/files involved; "How does X work?", "Find Y"; cross-layer or multi-file questions |
-| External docs, libraries, best practices | `librarian` | External library/framework mentioned; "How do I use [library]?"; "best practice for..." |
-| Pre-planning for ambiguous scope | `metis` | Ambiguous or complex scope; hidden requirements |
-| Detailed work plan for a feature | `prometheus` | "Look into" + "create PR"/"implement"; complex multi-step feature |
-| Architecture or hard debugging | `oracle` | Complex architecture decision; 2+ failed fix attempts |
-| Deep multi-file implementation | `hephaestus` | After plan exists; complex implementation |
-| Focused single-domain implementation | `generalPurpose` | Clear, bounded task with known location |
+| When to spawn | Subagent | Tier | Trigger (spawn immediately) |
+|---------------|----------|------|-----------------------------|
+| Codebase search, multiple angles or unfamiliar modules | `explore` | Worker | 2+ modules/files involved; "How does X work?", "Find Y"; cross-layer or multi-file questions |
+| External docs, libraries, best practices | `librarian` | Worker | External library/framework mentioned; "How do I use [library]?"; "best practice for..." |
+| Pre-planning for ambiguous scope | `metis` | Worker | Ambiguous or complex scope; hidden requirements |
+| Detailed work plan for a feature | `prometheus` | Coordinator | "Look into" + "create PR"/"implement"; complex multi-step feature |
+| Architecture or hard debugging | `oracle` | Worker | Complex architecture decision; 2+ failed fix attempts |
+| Deep multi-file implementation | `hephaestus` | Coordinator | After plan exists; complex implementation |
+| Focused single-domain implementation | `generalPurpose` | Worker | Clear, bounded task with known location |
+| Systematic task list execution | `atlas` | Coordinator | Ordered task list with independent items |
+| Disciplined multi-step execution | `sisyphus` | Coordinator | Complex multi-step tasks requiring codebase assessment |
 
 Fire explore and librarian in parallel when both apply. Chain phases when the rule specifies (e.g. metis → prometheus → hephaestus).
 
 **When the `Task` tool is NOT available:** Approximate the same workflow using direct tools: use codebase_search (and grep/read_file) for explore-style work, web_search for librarian-style work; run these in parallel when multiple triggers apply. Follow the same classification and phase logic; only the execution is in-thread.
-
-```
-You (Root Thread) ← has Task tool, orchestrator.mdc always applied
- ├── Task(explore)        → searches codebase      → returns to YOU
- ├── Task(librarian)      → searches external docs  → returns to YOU
- ├── Task(hephaestus)     → deep execution          → returns to YOU
- ├── Task(prometheus)     → creates work plan       → returns to YOU
- ├── Task(oracle)         → architecture advice     → returns to YOU
- ├── Task(generalPurpose) → focused implementation  → returns to YOU
- └── ... any subagent     → does leaf work          → returns to YOU
-```
-
-**All orchestration happens HERE. Subagents work alone and return results.**
 
 ---
 
@@ -102,21 +117,28 @@ Before following existing patterns, assess whether they're worth following.
 
 ## Phase 2: Agent Dispatch
 
-### Available Subagents (all leaf nodes)
+### Available Subagents
+
+#### Coordinators (Tier 1 -- can spawn workers)
+
+| Agent | Role | Spawns | When to Fire |
+|-------|------|--------|-------------|
+| `hephaestus` | Deep autonomous execution | `explore`, `generalPurpose` | Complex multi-file tasks, thorough exploration + implementation |
+| `prometheus` | Strategic planning | `explore`, `librarian` | Complex features needing detailed work plans before implementation |
+| `atlas` | Systematic task list execution | `generalPurpose` | Working through ordered task lists with verification |
+| `sisyphus` | Disciplined complex execution | `explore`, `generalPurpose` | Multi-step tasks requiring codebase assessment + structured approach |
+
+#### Workers (Tier 2 -- leaf nodes, no delegation)
 
 | Agent | Role | When to Fire |
 |-------|------|-------------|
 | `explore` | Codebase search, pattern discovery | Multiple search angles, unfamiliar modules, cross-layer patterns |
 | `librarian` | External docs, OSS research | Unfamiliar libraries, "how do I use X?", best practices |
-| `oracle` | Architecture consultation, hard debugging | Complex design, 2+ failed fixes, security/perf concerns |
-| `prometheus` | Strategic planning | Complex features needing detailed work plans before implementation |
-| `metis` | Pre-planning analysis | Ambiguous scope, hidden requirements, intent classification |
-| `momus` | Plan review | Validate work plans before execution |
-| `hephaestus` | Deep autonomous execution | Complex multi-file tasks, thorough exploration + implementation |
 | `generalPurpose` | Focused task execution | Clear implementation tasks, single-domain work |
-| `atlas` | Systematic task list execution | Working through ordered task lists with verification |
-| `sisyphus` | Disciplined complex execution | Multi-step tasks requiring codebase assessment + structured approach |
-| `multimodal-looker` | Media file analysis | PDFs, images, diagrams needing interpretation |
+| `oracle` | Architecture consultation, hard debugging | Complex design, 2+ failed fixes, security/perf concerns (root-only) |
+| `metis` | Pre-planning analysis | Ambiguous scope, hidden requirements, intent classification (root-only) |
+| `momus` | Plan review | Validate work plans before execution (root-only) |
+| `multimodal-looker` | Media file analysis | PDFs, images, diagrams needing interpretation (root-only) |
 
 ### Explore = Contextual Grep (Internal)
 
@@ -160,21 +182,25 @@ Task(subagent_type="librarian", prompt="Context: JWT auth implementation. Goal: 
 
 ### Multi-Phase Orchestration
 
-For complex tasks requiring multiple agents, chain them sequentially. **You** pass results between phases—subagents have NO shared context.
+For complex tasks requiring multiple agents, chain them sequentially. **You** pass results between phases—subagents have NO shared context with each other.
+
+Coordinators handle their own internal parallelism (e.g., prometheus spawns explore + librarian for research; hephaestus spawns explore for context + generalPurpose for parallel implementation). You only need to orchestrate the top-level phases.
 
 ```
 Phase 1: Pre-planning (optional, for ambiguous requests)
   Task(metis) → returns intent analysis + directives
 
 Phase 2: Planning
-  Task(prometheus) → returns detailed work plan
+  Task(prometheus) → internally spawns explore + librarian for research
+                   → returns detailed work plan
   (Include metis directives in prometheus prompt)
 
 Phase 3: Plan Review (optional, for complex plans)
   Task(momus) → returns OKAY or REJECT with specific issues
 
 Phase 4: Execution
-  Task(hephaestus) → implements plan end-to-end
+  Task(hephaestus) → internally spawns explore + generalPurpose as needed
+                   → implements plan end-to-end
   (Include full plan + any momus feedback in prompt)
 
 Phase 5: Review (for significant work)
@@ -182,6 +208,16 @@ Phase 5: Review (for significant work)
 ```
 
 **CRITICAL: Pass full context/results from each phase into the next phase's prompt.**
+
+### Async Dispatch Patterns
+
+Coordinators use these patterns internally, but the root thread can also use them:
+
+**Fire-and-Continue** (non-blocking research): Spawn search agents in background, continue working, collect results when needed.
+
+**Fire-and-Collect** (parallel fan-out): Spawn multiple workers for independent tasks, wait for all to complete, verify each result.
+
+**Research-then-Act**: Spawn explore + librarian in parallel, collect findings, then use them to guide implementation.
 
 ### Delegation Prompt Structure (6-section, MANDATORY)
 
