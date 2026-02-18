@@ -1,10 +1,6 @@
 <p align="center">
   <a href="https://github.com/tmcfarlane/oh-my-cursor">
-    <picture>
-      <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: dark)">
-      <source srcset="screenshots/prompt.png" media="(prefers-color-scheme: light)">
-      <img src="screenshots/prompt.png" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
-    </picture>
+    <img src="screenshots/swarm3.gif" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
   </a>
 </p>
 
