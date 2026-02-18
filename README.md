@@ -41,9 +41,8 @@ Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-ope
 
 ## Quick Start (One Command)
 
-Install to **user scope** (applies to all Cursor projects):
-
 ```bash
+# [Default] Install to user scope (applies to all Cursor projects)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 ```
 
@@ -59,7 +58,7 @@ No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents**
 
 ## How to Install
 ```bash
-# Install to user scope (applies to all Cursor projects)
+# [Default] Install to user scope (applies to all Cursor projects)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 
 # Install to this project only (./.cursor/)
