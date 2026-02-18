@@ -12,10 +12,18 @@
 
 ### **oh-my-cursor** by [ZeroClickDev](https://zeroclickdev.ai/)
 
-Like “oh-my-opencode”, but for Cursor(IDE)<br>
+Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) to Cursor subagents.<br>
 **Multi-agent orchestration, natively**, using nothing but a few config files.
 
+> *"If Claude Code does in 7 days what a human does in 3 months, Sisyphus does it in 1 hour."* — on oh-my-opencode
+
 </div>
+
+---
+
+**[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** is the 32k+ star project that turned OpenCode into a multi-agent orchestration platform — so impactful that **Anthropic cited it by name** when restricting third-party OAuth access in January 2026. This repo adapts its philosophy (agent specialization, parallel dispatch, phased orchestration, todo enforcement) to Cursor's native `Task` subagents. No plugin system, no wrapper CLI — just Markdown config files.
+
+---
 
 ## Quick Start (One Command)
 
@@ -29,10 +37,10 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 `oh-my-cursor` is a curated set of Cursor agent manifests plus **one** always-on orchestration rule:
 
-- **agents**: specialized roles (explore, librarian, planner, executor, reviewer…)
+- **agents**: specialized roles (explore, librarian, planner, executor, reviewer...)
 - **orchestrator**: a single rule (`orchestrator.mdc`) that tells the root thread **when** to delegate, **who** to delegate to, and **how** to verify results
 
-No external runtime. No wrapper CLI. **Just Cursor’s built-in `Task` subagents** (this capability landed in January and makes this whole setup surprisingly clean).
+No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents** (this capability landed in January and makes this whole setup surprisingly clean).
 
 
 ## The Origin Story (aka: Token Optimization for Degenerates)
@@ -44,12 +52,12 @@ Then I realized I had **9 days** to burn roughly **$300 worth of tokens** to tru
 So I did what any natural-born crayon eating ape would do:
 
 - I tried overengineering around CursorCLI
-- I decided it wasn’t ready for the kind of nonsense I had planned
+- I decided it wasn't ready for the kind of nonsense I had planned
 - I jumped back into the UI
 - I realized I could basically clone the methodology behind **oh-my-opencode**
 - and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
 
-Result: **oh-my-cursor Agent Swarms** (not really swarms) that do real work and also help you responsibly (irresponsibly) “optimize” your token burn.
+Result: **oh-my-cursor Agent Swarms** (not really swarms) that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
 
 ## How to Install
 ```bash
@@ -78,12 +86,12 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 <span style="color: red;">***Rule Priority (Important)***</span>
 
-If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it’s applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
+If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it's applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
 
 
 ## Prompting Tips (Most Effective Pattern)
 
-The orchestrator rule does a great job on its own, but I’ve found it’s still most effective to:
+The orchestrator rule does a great job on its own, but I've found it's still most effective to:
 
 - **tag agents in the starting prompt**, and
 - explicitly tell the model to **orchestrate among them**
@@ -117,9 +125,9 @@ You get a cast of specialists (all just Markdown manifests):
 
 ## Downsides / Current Limitations (Honest Section)
 
-- **Not a real swarm**: subagents can’t subdelegate. They’re leaf nodes by design.
-- **Same model everywhere**: subagents inherit the same model/mode as the root thread (so if you’re running “Opus 4.5 Max Mode (now 4.6)”, they’re all on that too).
-- **Skills aren’t scoped per agent**: it’d be fantastic if subagents could see a curated subset of skills instead of “all or nothing”.
+- **Not a real swarm**: subagents can't subdelegate. They're leaf nodes by design.
+- **Same model everywhere**: subagents inherit the same model/mode as the root thread (so if you're running "Opus 4.5 Max Mode (now 4.6)", they're all on that too).
+- **Skills aren't scoped per agent**: it'd be fantastic if subagents could see a curated subset of skills instead of "all or nothing".
 
 >If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight!!!
 
@@ -148,9 +156,9 @@ You get a cast of specialists (all just Markdown manifests):
 
 
 
-## How The “Swarm” Works (Mermaid Diagram)
+## How The "Swarm" Works (Mermaid Diagram)
 
-Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The “swarm” is the root thread orchestrating them.
+Subagents are **leaf nodes**: they can search, plan, implement, review — but they **cannot** spawn more agents. The "swarm" is the root thread orchestrating them.
 
 ```mermaid
 flowchart TD
@@ -186,11 +194,11 @@ flowchart TD
 
 #### Do I need to manually choose agents?
 
-Not strictly — the orchestrator can auto-trigger delegation — but it’s often best to **explicitly tag agents** in your first prompt for maximum determinism.
+Not strictly — the orchestrator can auto-trigger delegation — but it's often best to **explicitly tag agents** in your first prompt for maximum determinism.
 
 #### Will this work on any Cursor plan?
 
-If your plan supports agent mode / subagents, yes. These files don’t “add” capabilities; they **shape** the capabilities Cursor already has.
+If your plan supports agent mode / subagents, yes. These files don't "add" capabilities; they **shape** the capabilities Cursor already has.
 
 #### How do I update?
 
@@ -208,12 +216,10 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 ---
 
-## Inspiration
-
-- **[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** — the original inspiration. This repo adapts the “multi-agent philosophy” to Cursor’s native subagent system.
-
----
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=tmcfarlane/oh-my-cursor&type=date&legend=top-left)](https://www.star-history.com/#tmcfarlane/oh-my-cursor&type=date&legend=top-left)
