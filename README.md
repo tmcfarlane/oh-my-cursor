@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/tmcfarlane/oh-my-cursor">
-    <img src="screenshots/swarm.gif" alt="oh-my-cursor: Cursor Agent Swarms" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
+    <img src="screenshots/swarm.gif" alt="oh-my-cursor: Team Avatar Agent Orchestration" width="560" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.2);">
   </a>
 </p>
 
@@ -11,10 +11,10 @@
 </div>
 
 Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) to Cursor subagents.<br>
-**Multi-agent orchestration, natively**, using nothing but a few config files.
+**Multi-agent orchestration, natively**, using nothing but config files.
 
 <details>
-<summary><strong>Cursor 2.5 — Released Feb 17th, 2026 — <span style="color: red;">SWARM MODE ACTIVATED!</span></strong><br>Updated to take advantage of new features and improvements.</summary>
+<summary><strong>Cursor 2.5 — Released Feb 17th, 2026 — <span style="color: red;">TEAM AVATAR ACTIVATED!</span></strong><br>Updated to take advantage of new features and improvements.</summary>
 
 <p align="center">
   <a href="https://cursor.com/changelog#async-subagents" style="display: flex; flex-direction: column; align-items: center;">
@@ -38,27 +38,32 @@ Bringing the [32k-star oh-my-opencode](https://github.com/code-yeongyu/oh-my-ope
 ## Quick Start (One Command)
 
 ```bash
-# [Default] Install to user scope (applies to all Cursor projects)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 ```
 
 ## What Is This?
 
-`oh-my-cursor` is a curated set of Cursor agent manifests plus **one** always-on orchestration rule:
+`oh-my-cursor` is a curated set of **7 agent manifests**, **7 slash commands**, **hooks**, and **one orchestration rule** -- themed around Avatar: The Last Airbender.
 
-- **agents**: specialized roles (explore, librarian, planner, executor, reviewer...)
-- **orchestrator**: a single rule (`orchestrator.mdc`) that tells the root thread **when** to delegate, **who** to delegate to, and **how** to verify results
+- **agents**: Team Avatar -- specialized roles mapped to ATLA characters (Aang, Sokka, Katara, Zuko, Toph, Appa, Momo)
+- **commands**: Slash commands (`/plan`, `/build`, `/search`, `/fix`, `/tasks`, `/scout`, `/cactus-juice`) for explicit orchestration control
+- **hooks**: System-level lint verification and constraint enforcement
+- **orchestrator**: A single rule (`orchestrator.mdc`) that coordinates everything -- "Team Avatar"
 
-No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents** (this capability landed in January and makes this whole setup surprisingly clean).
+No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.**
 
 
 ## How to Install
+
 ```bash
 # [Default] Install to user scope (applies to all Cursor projects)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 
 # Install to this project only (./.cursor/)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --project
+
+# Also install for Claude Code and Codex compatibility
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --claude --codex
 
 # Preview changes
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --dry-run
@@ -72,29 +77,208 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 ### What Gets Installed
 
-| Scope | Agents | Rules |
-|------|--------|-------|
-| `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/orchestrator.mdc` |
-| `--project` | `./.cursor/agents/` | `./.cursor/rules/orchestrator.mdc` |
+| Scope | Agents | Rules | Commands | Hooks |
+|-------|--------|-------|----------|-------|
+| `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/` | `~/.cursor/commands/` | `~/.cursor/hooks/` |
+| `--project` | `./.cursor/agents/` | `./.cursor/rules/` | `./.cursor/commands/` | `./.cursor/hooks/` |
+| `--claude` | Also `.claude/agents/` | Also `.claude/rules/` | Also `.claude/commands/` | Also `.claude/hooks/` |
+| `--codex` | Also `.codex/agents/` | Also `.codex/rules/` | Also `.codex/commands/` | Also `.codex/hooks/` |
 
-<span style="color: lightsteelblue;">***Rule Priority (Important)***</span>
+### Upgrading from v0.1 (Greek Mythology)
 
-If you have multiple Cursor rules, make sure `orchestrator.mdc` is **enabled** and **high priority** (so it's applied early and consistently). If your rules UI supports ordering, move it up; if you rely on naming, prefixing it (e.g. `000-orchestrator.mdc`) works well.
+The installer automatically detects and removes old agent files (hephaestus, prometheus, atlas, etc.) when installing the new Team Avatar agents.
 
 
-## Prompting Tips (Most Effective Pattern)
+## Team Avatar -- The Agents
 
-The orchestrator rule does a great job on its own, but I've found it's still most effective to:
+| Agent | Character | Model | Role |
+|-------|-----------|-------|------|
+| **Aang** | The Avatar | `claude-4.6-sonnet` | Deep multi-file executor + architecture consultant. Masters all elements. |
+| **Sokka** | The Strategist | `claude-4.6-opus` | Planning, ambiguity analysis, plan review. The brain behind every mission. |
+| **Katara** | The Healer | `claude-4.6-sonnet` | Disciplined implementation, debugging, methodical fixes. Mends broken code. |
+| **Zuko** | The Firebender | `gemini-3.1-pro` | Visual design: image generation, icons, UI mockups. Brings designs to life. |
+| **Toph** | The Seer | `fast` | Codebase search, external docs, media analysis. Sees everything. |
+| **Appa** | The Heavy Lifter | `kimi-k2.5` | Systematic task list execution. Carries the team. |
+| **Momo** | The Scout | `kimi-k2.5` | Quick focused tasks. Small, agile, independent. |
 
-- **tag agents in the starting prompt**, and
-- explicitly tell the model to **orchestrate among them**
+### Model Tier Strategy
 
-Example:
+Each agent has a hardcoded model optimized for its role:
+
+| Tier | Model | Used By | Rationale |
+|------|-------|---------|-----------|
+| Deep Reasoning | `claude-4.6-opus` | Sokka | Planning demands the deepest reasoning |
+| Implementation | `claude-4.6-sonnet` | Aang, Katara | Strong code reasoning for complex tasks |
+| Visual | `gemini-3.1-pro` | Zuko | Native multimodal generation for images and design |
+| Cost-Effective | `kimi-k2.5` | Appa, Momo | Handles systematic and focused tasks efficiently |
+| Speed | `fast` | Toph | Pure search, maximum speed |
+
+
+## Slash Commands
+
+Type these in Cursor's chat to invoke specific workflows:
+
+| Command | Agent | Purpose |
+|---------|-------|---------|
+| `/plan` | Sokka | Full planning pipeline: ambiguity analysis, plan creation, self-review |
+| `/build` | Aang | Deep multi-file implementation with verification |
+| `/search` | Toph | Multi-angle codebase + docs exploration |
+| `/fix` | Katara | Methodical debugging and code healing |
+| `/tasks` | Appa | Systematic task list execution |
+| `/scout` | Momo | Quick focused tasks |
+| `/cactus-juice` | Swarm | Decompose into micro-tasks, spawn up to 10 parallel workers |
+
+
+## Two Orchestration Modes
+
+### Avatar State (Default)
+
+The default mode. Coordinated, tiered, using the full Team Avatar hierarchy with model-optimized agents. The orchestrator rule auto-detects which agents to fire based on request signals.
+
+### Cactus Juice Mode
+
+Activated via `/cactus-juice`. Named after the desert cactus juice that made Sokka hallucinate -- "It's the quenchiest!"
+
+This mode trades depth for massive parallelism:
+
+1. The root thread decomposes your request into 5-10 **independent micro-tasks**
+2. Each micro-task is scoped to a single file -- completable in isolation
+3. Up to **10 subagents spawn simultaneously**, each with minimal context
+4. All workers use `model: fast` for maximum speed and minimum cost
+5. Workers are instructed to write **low cognitive complexity** code
+6. Root thread collects results, verifies consistency, fixes integration issues
+
+
+## Architecture
+
+```mermaid
+flowchart TD
+  U["You (root thread)"] --> R["orchestrator.mdc<br/>(Team Avatar)"]
+
+  R --> IG{"Intent gate<br/>what did the user ask?"}
+
+  IG -->|"search / 'how does X work?'"| T["Task(toph)<br/>Seer"]
+  IG -->|"ambiguous / complex scope"| S["Task(sokka)<br/>Strategist"]
+  IG -->|"visual assets"| Z["Task(zuko)<br/>Firebender"]
+
+  IG -->|"complex feature"| PLAN["Task(sokka) → plan"]
+  PLAN --> IMPL["Task(aang / katara)<br/>Coordinators"]
+
+  IMPL -->|"spawns"| T2["toph (fast)"]
+  IMPL -->|"spawns"| M2["momo (kimi-k2.5)"]
+
+  IG -->|"task list"| AP["Task(appa)<br/>Heavy Lifter"]
+  AP -->|"spawns"| M3["momo"]
+
+  IG -->|"quick task"| MO["Task(momo)<br/>Scout"]
+
+  IMPL --> V{"Verification<br/>lints / build / tests"}
+  V -->|pass| DONE["Done"]
+  V -->|fail| FR["Failure recovery<br/>(retry → aang → user)"]
+
+  subgraph swarmNote ["Swarm Mode (Cursor 2.5+)"]
+    N1["Coordinators spawn workers async.<br/>Max depth = 2. Workers are leaf nodes."]
+  end
+```
+
+
+## Async Subagents (Cursor 2.5+)
+
+This project implements a **two-tier swarm architecture** using Cursor's native async subagent support:
+
+- **Coordinators** (Tier 1): Aang, Sokka, Katara, Appa -- can spawn worker subagents
+- **Workers** (Tier 2): Toph, Momo -- leaf nodes that execute focused tasks
+- **Root-only workers**: Zuko -- dispatched only by the root thread
+
+**Three async dispatch patterns:**
+
+| Pattern | How It Works |
+|---------|-------------|
+| **Fire-and-Continue** | Spawn Toph in background (`is_background: true`), continue working, collect results later |
+| **Fire-and-Collect** | Spawn multiple Momo workers for independent tasks, wait for all, verify each |
+| **Research-then-Act** | Spawn Toph workers in parallel for research, use findings to guide implementation |
+
+
+## Hooks
+
+System-level enforcement that doesn't rely on agents remembering to verify:
+
+| Hook | Purpose |
+|------|---------|
+| `post-edit-lint.sh` | Automatically run lints after agent edits |
+| `pre-commit-check.sh` | Enforce hard constraints (`as any`, empty catches, `@ts-ignore`) before commits |
+
+
+## Prompting Tips
+
+The orchestrator rule handles auto-delegation, but for maximum determinism:
 
 ```text
-You are the orchestrator. Use @explore to map the codebase, @prometheus to draft a plan, @momus to review it,
-and @hephaestus/@atlas to implement. Verify with lints/build/tests. Keep going until done.
+You are Team Avatar. Use @toph to explore the codebase, @sokka to create a plan,
+and @aang to implement. Verify with lints/build/tests. Keep going until done.
 ```
+
+Or just use the slash commands:
+
+```text
+/plan add OAuth support with JWT tokens
+/build based on the plan above
+```
+
+
+## FAQ
+
+#### Do I need to manually choose agents?
+
+Not strictly -- the orchestrator auto-triggers delegation based on request signals. But slash commands (`/plan`, `/build`, `/fix`, etc.) give you explicit control.
+
+#### Will this work on any Cursor plan?
+
+If your plan supports agent mode / subagents, yes. These files shape Cursor's existing capabilities.
+
+#### How do I update?
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
+```
+
+#### How do I uninstall?
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
+```
+
+#### Can I use this with Claude Code or Codex?
+
+Yes! Install with cross-tool flags:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --claude --codex
+```
+
+
+## Screenshots
+
+**1. Prompt** -- Subagents and Phase 1 exploration
+
+<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**2. Orchestration phases** -- Phase breakdown diagram
+
+<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**3. Phase 1** -- Codebase Assessment
+
+<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**4. Phase 2** -- Agent Dispatch
+
+<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+**5. Phase final** -- Phase 5 complete, final build status
+
+<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
 
 ## The Origin Story (aka: Token Optimization for Degenerates)
 
@@ -113,143 +297,6 @@ So I did what any natural-born crayon eating ape would do:
 Result: **oh-my-cursor Agent Swarms** that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
 
 
-## Agents Included
-
-You get a cast of specialists (all just Markdown manifests):
-
-| Agent | Role |
-|------|------|
-| `explore` | Codebase search & pattern discovery |
-| `librarian` | External docs + OSS examples |
-| `prometheus` | Planning |
-| `momus` | Plan review (blocking issues only) |
-| `hephaestus` | Deep multi-file implementation |
-| `atlas` | Step-by-step executor with obsessive verification |
-| `sisyphus` | Disciplined multi-step execution + codebase assessment |
-| `oracle` | Architecture / hard debugging |
-| `generalPurpose` | Focused single-domain work |
-| `metis` | Ambiguity / intent analysis |
-| `multimodal-looker` | PDFs/images/diagrams |
-
-
-
-## Screenshots
-
-**1. Prompt** — Subagents and Phase 1 exploration
-
-<img src="screenshots/prompt.png" alt="Subagents and Phase 1 exploration" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**2. Orchestration phases** — Phase breakdown diagram
-
-<img src="screenshots/phase_breakdown.png" alt="Orchestration phases" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**3. Phase 1** — Codebase Assessment
-
-<img src="screenshots/phase1.png" alt="Phase 1: Codebase Assessment" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**4. Phase 2** — Agent Dispatch
-
-<img src="screenshots/phase2.png" alt="Phase 2: Agent Dispatch" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-**5. Phase final** — Phase 5 complete, final build status
-
-<img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-
-
-
-## <span style="color: red;">Cursor Swarm Mode (v2.5+)</span>
-
-With Cursor 2.5, subagents can spawn their own subagents asynchronously. This repo now uses a **two-tier swarm architecture**:
-
-- **Coordinators** (Tier 1): `hephaestus`, `prometheus`, `atlas`, `sisyphus` -- can spawn worker subagents for parallel research and implementation
-- **Workers** (Tier 2): `explore`, `librarian`, `generalPurpose` -- leaf nodes that execute focused, bounded tasks
-- **Root-only workers** (Tier 2): `oracle`, `metis`, `momus`, `multimodal-looker` -- leaf nodes dispatched exclusively by the root thread (never by coordinators)
-
-Max depth is 2: root thread spawns coordinators, coordinators spawn workers. Workers never delegate further.
-
-Coordinators use the **fast model tier** for search workers (`explore`, `librarian`) and inherit the parent model for implementation workers requiring deeper reasoning.
-
-### Swarm Coordinator Protocol
-
-The shared coordination rules live in **`agents/protocols/swarm-coordinator.md`**. It defines depth guards, delegation decision matrix, model selection, async patterns, and context relay rules.
-
-**How it's used:**
-
-- **Installation**: The installer copies `protocols/swarm-coordinator.md` into your agents directory (e.g. `~/.cursor/agents/protocols/` or `./.cursor/agents/protocols/`), alongside the agent manifests.
-- **Reference**: Each coordinator manifest (`hephaestus`, `prometheus`, `atlas`, `sisyphus`) instructs the agent to "Follow the Swarm Coordinator Protocol" and points to `protocols/swarm-coordinator.md` (installed location). The protocol is the single source of truth; coordinator manifests also embed a short summary (allowed workers, depth guard) so basic rules are always in context.
-- **At runtime**: Coordinators get their manifest text by default. For the full protocol to apply, the protocol file can be brought into context (e.g. by @-mentioning `@agents/protocols/swarm-coordinator.md` when delegating, or by the agent reading it from the workspace). The in-manifest summary is always available even if the full file is not loaded.
-
-## Remaining Limitations (Honest Section)
-
-- **Two model tiers only**: subagents can run on the parent model or a faster/cheaper model -- no arbitrary per-agent model routing (unlike oh-my-opencode which routes to different providers per agent).
-- **Skills aren't scoped per agent**: it'd be fantastic if subagents could see a curated subset of skills instead of "all or nothing".
-
->If Cursor ever adds per-agent model selection + skill scoping, this repo gets even more powerful overnight!!!
-
-
-## How The Swarm Works (Mermaid Diagram)
-
-The root thread orchestrates **coordinators** (Tier 1) which can spawn their own **workers** (Tier 2). Max depth = 2.
-
-```mermaid
-flowchart TD
-  U["You (root thread)"] --> R["orchestrator.mdc<br/>(alwaysApply: true)"]
-
-  R --> IG{"Intent gate<br/>what did the user ask?"}
-
-  IG -->|2+ files / 'find' / 'how does X work?'| EX["Task(explore)<br/>codebase search"]
-  IG -->|external lib / best practices| LI["Task(librarian)<br/>docs + examples"]
-  IG -->|ambiguous scope| ME["Task(metis)<br/>pre-planning analysis"]
-
-  IG -->|complex feature| PR["Task(prometheus)<br/>Coordinator"]
-  PR -->|"spawns"| PR_EX["explore (fast)"]
-  PR -->|"spawns"| PR_LI["librarian (fast)"]
-  PR --> MO["Task(momus)<br/>plan sanity check"]
-  MO --> IM["Task(hephaestus / atlas / sisyphus)<br/>Coordinator"]
-
-  IM -->|"spawns"| IM_EX["explore (fast)"]
-  IM -->|"spawns"| IM_GP["generalPurpose"]
-
-  EX --> U
-  LI --> U
-  ME --> U
-
-  IM --> V{"Verification<br/>lints / build / tests"}
-  V -->|pass| DONE["Done"]
-  V -->|fail| FR["Failure recovery<br/>(retry, revert, escalate)"]
-  FR --> OR["Task(oracle)<br/>architecture / hard debugging"]
-  OR --> U
-
-  subgraph swarmNote ["Swarm Mode (Cursor 2.5+)"]
-    N1["Coordinators spawn workers async.<br/>Max depth = 2. Workers are leaf nodes."]
-  end
-```
-
-
-## FAQ
-
-#### Do I need to manually choose agents?
-
-Not strictly — the orchestrator can auto-trigger delegation — but it's often best to **explicitly tag agents** in your first prompt for maximum determinism.
-
-#### Will this work on any Cursor plan?
-
-If your plan supports agent mode / subagents, yes. These files don't "add" capabilities; they **shape** the capabilities Cursor already has.
-
-#### How do I update?
-
-Re-run the installer with `--force`:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
-```
-
-#### How do I uninstall?
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
-```
-
 ---
 
 ## License
@@ -258,7 +305,7 @@ MIT. See [LICENSE](LICENSE).
 
 ## Inspiration
 
-**[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** is the 32k+ star project that turned OpenCode into a multi-agent orchestration platform — so impactful that **Anthropic cited it by name** when restricting third-party OAuth access in January 2026. This repo adapts its philosophy (agent specialization, parallel dispatch, phased orchestration, todo enforcement) to Cursor's native `Task` subagents. No plugin system, no wrapper CLI — just Markdown config files.
+**[oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode)** is the 32k+ star project that turned OpenCode into a multi-agent orchestration platform -- so impactful that **Anthropic cited it by name** when restricting third-party OAuth access in January 2026. This repo adapts its philosophy (agent specialization, parallel dispatch, phased orchestration, todo enforcement) to Cursor's native `Task` subagents. No plugin system, no wrapper CLI -- just Markdown config files.
 
 ## Star History
 
