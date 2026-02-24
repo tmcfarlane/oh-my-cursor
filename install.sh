@@ -6,9 +6,9 @@ set -euo pipefail
 VERSION="0.2.0"
 CURSOR_MODE_LABEL="Team Avatar (Cursor 2.5+)"
 
-AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md)
+AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md iroh.md)
 PROTOCOL_FILES=(protocols/team-avatar.md)
-COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md)
+COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md doc.md)
 HOOK_FILES=(post-edit-lint.sh pre-commit-check.sh)
 RULE_FILE="orchestrator.mdc"
 
@@ -22,6 +22,7 @@ SCOPE="user"
 UNINSTALL=false
 ALSO_CLAUDE=false
 ALSO_CODEX=false
+WITH_SKILLS=false
 
 WORK_DIR=""
 
@@ -80,6 +81,7 @@ ${BOLD}OPTIONS${RESET}
   --project       Install to project scope (./.cursor/)
   --claude        Also install to .claude/agents/ for Claude Code compatibility
   --codex         Also install to .codex/agents/ for Codex compatibility
+  --with-skills   Also install default skill packs (requires npx)
   -f, --force     Overwrite existing files
   -n, --dry-run   Show what would be done without making changes
   -v, --verbose   Enable verbose output
@@ -108,9 +110,10 @@ parse_args() {
       -v|--verbose)  VERBOSE=true ;;
       --user)        SCOPE="user" ;;
       --project)     SCOPE="project" ;;
-      --claude)      ALSO_CLAUDE=true ;;
-      --codex)       ALSO_CODEX=true ;;
-      --uninstall)   UNINSTALL=true ;;
+      --claude)       ALSO_CLAUDE=true ;;
+      --codex)        ALSO_CODEX=true ;;
+      --with-skills)  WITH_SKILLS=true ;;
+      --uninstall)    UNINSTALL=true ;;
       -h|--help)     usage; exit 0 ;;
       --version)     printf '%s\n' "$VERSION"; exit 0 ;;
       *)
@@ -573,6 +576,56 @@ uninstall_agents() {
 }
 
 # ---------------------------------------------------------------------------
+# Skills installation
+# ---------------------------------------------------------------------------
+
+install_skills() {
+  if ! command -v npx >/dev/null 2>&1; then
+    log "${YELLOW}Warning: npx not found. Skipping skills installation.${RESET}"
+    log "${DIM}Install Node.js to enable skills: https://nodejs.org/${RESET}"
+    log ""
+    return 0
+  fi
+
+  log "Installing skills via npx..."
+  log ""
+
+  local skills_scope="--global"
+  if [ "$SCOPE" = "project" ]; then
+    skills_scope=""
+  fi
+
+  # Run skills installation commands
+  if [ "$DRY_RUN" = true ]; then
+    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill react-best-practices${skills_scope:+ $skills_scope}${RESET}"
+    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill composition-patterns${skills_scope:+ $skills_scope}${RESET}"
+    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill web-design-guidelines${skills_scope:+ $skills_scope}${RESET}"
+    log "  ${DIM}[dry-run] npx skills add vercel-labs/skills --skill find-skills${skills_scope:+ $skills_scope}${RESET}"
+  else
+    # Run each command; if any fail, print manual fallback instructions
+    local failed=0
+
+    npx skills add vercel-labs/agent-skills --skill react-best-practices ${skills_scope} 2>/dev/null || failed=$((failed + 1))
+    npx skills add vercel-labs/agent-skills --skill composition-patterns ${skills_scope} 2>/dev/null || failed=$((failed + 1))
+    npx skills add vercel-labs/agent-skills --skill web-design-guidelines ${skills_scope} 2>/dev/null || failed=$((failed + 1))
+    npx skills add vercel-labs/skills --skill find-skills ${skills_scope} 2>/dev/null || failed=$((failed + 1))
+
+    if [ "$failed" -gt 0 ]; then
+      log ""
+      log "${YELLOW}Some skills could not be installed automatically.${RESET}"
+      log "${DIM}You can install them manually:${RESET}"
+      log "  npx skills add vercel-labs/agent-skills --skill react-best-practices ${skills_scope}"
+      log "  npx skills add vercel-labs/agent-skills --skill composition-patterns ${skills_scope}"
+      log "  npx skills add vercel-labs/agent-skills --skill web-design-guidelines ${skills_scope}"
+      log "  npx skills add vercel-labs/skills --skill find-skills ${skills_scope}"
+    else
+      log "  ${GREEN}[installed]${RESET} Default skill packs"
+    fi
+  fi
+  log ""
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -603,6 +656,10 @@ main() {
 
   create_source_files "$WORK_DIR"
   install_agents "$WORK_DIR"
+
+  if [ "$WITH_SKILLS" = true ]; then
+    install_skills
+  fi
 }
 
 main "$@"

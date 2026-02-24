@@ -43,9 +43,9 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 ## What Is This?
 
-`oh-my-cursor` is a curated set of **7 agent manifests**, **7 slash commands**, **hooks**, and **one orchestration rule** -- themed around Avatar: The Last Airbender.
+`oh-my-cursor` is a curated set of **8 agent manifests**, **7 slash commands**, **hooks**, and **one orchestration rule** -- themed around Avatar: The Last Airbender.
 
-- **agents**: Team Avatar -- specialized roles mapped to ATLA characters (Aang, Sokka, Katara, Zuko, Toph, Appa, Momo)
+- **agents**: Team Avatar -- specialized roles mapped to ATLA characters (Aang, Sokka, Katara, Zuko, Toph, Appa, Momo, Iroh)
 - **commands**: Slash commands (`/plan`, `/build`, `/search`, `/fix`, `/tasks`, `/scout`, `/cactus-juice`) for explicit orchestration control
 - **hooks**: System-level lint verification and constraint enforcement
 - **orchestrator**: A single rule (`orchestrator.mdc`) that coordinates everything -- "Team Avatar"
@@ -100,6 +100,7 @@ The installer automatically detects and removes old agent files (hephaestus, pro
 | **Toph** | The Seer | `fast` | Codebase search, external docs, media analysis. Sees everything. |
 | **Appa** | The Heavy Lifter | `kimi-k2.5` | Systematic task list execution. Carries the team. |
 | **Momo** | The Scout | `kimi-k2.5` | Quick focused tasks. Small, agile, independent. |
+| **Iroh** | The Storyteller | `fast` | Documentation specialist. Sole owner of README, CHANGELOG, and all project docs. |
 
 ### Model Tier Strategy
 
@@ -226,6 +227,47 @@ Or just use the slash commands:
 ```
 
 
+## Skills
+
+Skills are directories containing `SKILL.md` files that Cursor auto-discovers and presents to all agents as specialized context. They extend agents with domain knowledge without modifying agent prompts directly.
+
+### Default skill set
+
+| Skill | Source | Agents that use it | What it provides |
+|---|---|---|---|
+| `react-best-practices` | vercel-labs/agent-skills | Aang, Sokka, Katara, Appa, Momo | React & Next.js performance patterns |
+| `composition-patterns` | vercel-labs/agent-skills | Aang, Sokka, Katara, Appa | Component architecture guidelines |
+| `web-design-guidelines` | vercel-labs/agent-skills | Aang, Zuko | UI/UX audit rules and design standards |
+| `find-skills` | vercel-labs/skills | Toph | Discovers and installs new skills |
+
+### Installing skills
+
+**With the install script** (requires Node.js/npx):
+
+```bash
+bash install.sh --with-skills           # user-scoped agents + rules + skills
+bash install.sh --with-skills --project # project-scoped everything
+```
+
+**Manually** using the `npx skills` CLI:
+
+```bash
+npx skills add vercel-labs/agent-skills --skill react-best-practices
+npx skills add vercel-labs/agent-skills --skill composition-patterns
+npx skills add vercel-labs/agent-skills --skill web-design-guidelines
+npx skills add vercel-labs/skills --skill find-skills
+```
+
+### Discovering new skills
+
+Ask Toph — or run `npx skills find [query]` to search the registry.
+
+### Adding custom skills
+
+Create a directory with a `SKILL.md` file and place it under `.cursor/skills/` (project-scoped) or `~/.cursor/skills/` (user-scoped). Cursor will auto-discover it.
+
+The `skills.json` file at the repo root declares which skills oh-my-cursor recommends. Optional skills (e.g. `react-native-skills`) are listed there but not installed by default.
+
 ## FAQ
 
 #### Do I need to manually choose agents?
@@ -279,6 +321,7 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 <img src="screenshots/phase_final.png" alt="Phase 5 complete, final build status" width="400" style="display:block; margin:1.5em 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
 
+---
 
 ## The Origin Story (aka: Token Optimization for Degenerates)
 

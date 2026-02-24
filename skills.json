@@ -1,0 +1,14 @@
+{
+  "skills": {
+    "default": [
+      { "source": "vercel-labs/agent-skills", "name": "react-best-practices" },
+      { "source": "vercel-labs/agent-skills", "name": "composition-patterns" },
+      { "source": "vercel-labs/agent-skills", "name": "web-design-guidelines" },
+      { "source": "vercel-labs/skills", "name": "find-skills" }
+    ],
+    "optional": [
+      { "source": "vercel-labs/agent-skills", "name": "react-native-skills" },
+      { "source": "vercel-labs/agent-skills", "name": "vercel-deploy" }
+    ]
+  }
+}
