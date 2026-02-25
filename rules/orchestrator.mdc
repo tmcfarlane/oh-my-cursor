@@ -37,27 +37,43 @@ Root (depth 0) — DISPATCHER ONLY
 |-------|-------|-----------|
 | **Toph** | `kimi-k2.5` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
 | **Momo** | `kimi-k2.5` | Simple single-file changes, quick focused tasks |
-| **Appa** | `kimi-k2.5` | Systematic multi-step execution, UI work |
-| **Katara** | `claude-4.6-sonnet-medium-thinking` | Bug fixes, methodical refactoring |
-| **Aang** | `claude-4.6-sonnet-medium-thinking` | Complex multi-file implementation, architecture, 2+ failed fixes |
+| **Appa** | `kimi-k2.5` | Plan exists → executes plan step-by-step, no improvisation |
+| **Katara** | `claude-4.6-sonnet-medium-thinking` | No plan + needs fixing → surgical fix, smallest possible change |
+| **Aang** | `claude-4.6-sonnet-medium-thinking` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
 | **Sokka** | `claude-4.6-opus-max-thinking` | Complex planning, ambiguous scope analysis |
 | **Zuko** | `gemini-3.1-pro` | Images, icons, UI mockups, visual design |
 | **Iroh** | `claude-4.6-opus-max-thinking` | README writes, CHANGELOG updates, any documentation task |
 
 **There is NO request type where the root does the work itself.**
 
+## Executor Routing (decision tree)
+
+| Question | Yes | No |
+|----------|-----|----|
+| Is there a plan already? | → **Appa** (follows plan exactly) | ↓ |
+| Does something need fixing? | → **Katara** (surgical fix) | → **Aang** (decides approach + builds) |
+| 2+ Katara failures? | → escalate to **Aang** | |
+
 ## Intent Gate (every request)
 
 1. Check auto-triggers: 2+ files → `toph` background; external lib → `toph` docs; ambiguity → `sokka`; visual → `zuko`; documentation/README → `iroh`
-2. Classify → pick agent(s) from routing table above
+2. For implementation tasks → follow the Executor Routing decision tree. For non-implementation → use the routing table.
 3. If ambiguous with 2x+ effort difference or missing critical info → ask ONE question, then delegate
 4. Fire agents. Parallelize independent tasks (e.g., multiple `toph` searches simultaneously).
+
+## Task Lifecycle (complex tasks)
+
+Plan (Sokka) → Explore (Toph) → Execute (Aang/Katara/Appa) → Done
+
+- **Executors self-verify**: lint, test, confirm before reporting success.
+- **No separate validation phase**: executors own their output quality.
+- **Toph is exploration ONLY**: never used for post-change validation.
 
 ## Orchestration Patterns
 
 **Parallel dispatch** (default): fire independent agents simultaneously, collect results, summarize.
 
-**Phase chain** (complex features): `sokka` → plan → pass plan as context to `aang`/`katara` → implementation → `aang` review. Root's job between phases: pass output of phase N as context to phase N+1. Do not act on it yourself.
+**Phase chain** (complex features): `sokka` → plan → `toph` → explore → pass context to executor (`appa` if plan exists, `katara` for fixes, `aang` otherwise) → executor self-verifies → done. Root passes output of phase N as context to phase N+1.
 
 **Session continuity**: always `resume` existing agent sessions for follow-ups. Never start fresh for the same task.
 
@@ -74,7 +90,7 @@ Root (depth 0) — DISPATCHER ONLY
 
 ## Verification & Failure
 
-- After code changes: delegate `toph`/`momo` for lint checks, build, tests. **Root does NOT verify directly.**
+- **Executors self-verify**: Aang, Katara, and Appa run lints, tests, and build checks BEFORE reporting success. Root does NOT delegate separate verification agents.
 - On failure: resume the SAME agent with error context. After 3 failures → fire `aang` with full history. Still failing → ask user.
 
 ## Task Management

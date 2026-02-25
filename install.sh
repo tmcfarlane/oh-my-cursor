@@ -579,6 +579,36 @@ uninstall_agents() {
 # Skills installation
 # ---------------------------------------------------------------------------
 
+# Get cache root based on scope
+_get_cache_root() {
+  if [ "$SCOPE" = "project" ]; then
+    local project_root
+    project_root="$(pwd)"
+    echo "${project_root}/.cursor/skills-cache"
+  else
+    echo "${HOME}/.cache/cursor-agents/skills"
+  fi
+}
+
+# Convert repo path to cache directory name (replace / with -)
+_cache_path_from_repo() {
+  local repo="$1"
+  local cache_root
+  cache_root="$(_get_cache_root)"
+  local cache_name
+  cache_name="${repo//\//-}"
+  echo "${cache_root}/${cache_name}"
+}
+
+# Check if cache directory looks valid (contains skills/ dir, SKILL.md, or .git)
+_is_cache_valid() {
+  local cache_path="$1"
+  if [ -d "${cache_path}/skills" ] || [ -f "${cache_path}/SKILL.md" ] || [ -d "${cache_path}/.git" ]; then
+    return 0
+  fi
+  return 1
+}
+
 install_skills() {
   if ! command -v npx >/dev/null 2>&1; then
     log "${YELLOW}Warning: npx not found. Skipping skills installation.${RESET}"
@@ -589,6 +619,13 @@ install_skills() {
 
   log "Installing skills via npx..."
   log ""
+
+  # Cache root
+  local cache_root
+  cache_root="$(_get_cache_root)"
+  if [ "$DRY_RUN" = false ]; then
+    mkdir -p "$cache_root"
+  fi
 
   local skills_scope="--global"
   if [ "$SCOPE" = "project" ]; then
@@ -604,29 +641,102 @@ install_skills() {
   fi
 
   local failed=0
-  local current=0
+  local completed=0
   local total=18
+  local job_count=0
+  local max_jobs=4
+
+  # Array to store repo entries for parallel processing
+  # Each entry: "repo|skill1|skill2|..."
+  local repos=()
+
+  # (1) Core/shared skills
+  repos+=("vercel-labs/agent-skills|vercel-react-best-practices|vercel-composition-patterns|web-design-guidelines")
+  repos+=("vercel-labs/skills|find-skills")
+
+  # (2) Iroh: documentation
+  repos+=("tldraw/tldraw|write-docs")
+  repos+=("metabase/metabase|docs-write")
+  repos+=("rysweet/amplihack|documentation-writing")
+  repos+=("charon-fan/agent-playbook|documentation-engineer")
+
+  # (3) Katara: refactoring & debugging
+  repos+=("oimiragieo/agent-studio|debugging")
+  repos+=("wondelai/skills|refactoring-patterns")
+  repos+=("simota/agent-skills|zen")
+
+  # (4) Sokka: planning & architecture
+  repos+=("thebushidocollective/han|architecture-design|technical-planning|architect")
+
+  # (5) Toph: codebase exploration
+  repos+=("intellectronica/agent-skills|mgrep-code-search")
+  repos+=("supercent-io/skills-template|codebase-search")
+
+  # (6) Zuko: visual/UI design
+  repos+=("anthropics/knowledge-work-plugins|create-an-asset")
+  repos+=("onekeyhq/app-monorepo|implementing-figma-designs")
+
+  # (7) Appa: frontend patterns
+  repos+=("daffy0208/ai-dev-standards|frontend builder")
+
+  # (8) Aang: architecture & patterns
+  repos+=("aiko-atami/fsd|feature-sliced-design")
+  repos+=("aj-geddes/useful-ai-prompts|technical-roadmap-planning|design-patterns-implementation")
+
+  # (9) Momo: refactoring & tailwind
+  repos+=("eyadsibai/ltk|refactoring")
 
   # Helper: install multiple skills from one repo using array-based invocation
+  # This function runs in a subshell for parallel execution
   _install_from_repo() {
     local repo="$1"
     shift
     local skills=("$@")
-    current=$((current + ${#skills[@]}))
+    local cache_path
+    cache_path="$(_cache_path_from_repo "$repo")"
 
+    # Dry-run mode: just print what would happen
     if [ "$DRY_RUN" = true ]; then
-      log "  [${current}/${total}] ${DIM}[dry-run] npx skills add ${repo} ${agent_flags} -y${skills_scope:+ $skills_scope}${RESET}"
+      printf '  %s
+' "[dry-run] ${repo}:"
+      printf '    Cache path: %s\n' "$cache_path"
+      if _is_cache_valid "$cache_path"; then
+        printf '    Cache: HIT (valid)\n'
+        printf '    Command: npx skills add "%s" %s -y%s' "$cache_path" "$agent_flags" "${skills_scope:+ $skills_scope}"
+      else
+        printf '    Cache: MISS\n'
+        printf '    Clone: git clone --depth 1 https://github.com/%s.git "%s"\n' "$repo" "$cache_path"
+        printf '    Command: npx skills add "%s" %s -y%s' "$cache_path" "$agent_flags" "${skills_scope:+ $skills_scope}"
+      fi
       local skill
       for skill in "${skills[@]}"; do
-        log "      ${DIM}--skill \"${skill}\"${RESET}"
+        printf ' --skill "%s"' "$skill"
       done
+      printf '\n\n'
       return 0
     fi
 
-    log "  [${current}/${total}] Installing from ${repo}..."
+    # Ensure repo is in cache
+    if ! _is_cache_valid "$cache_path"; then
+      # Cache miss: clone the repo
+      log "  [${completed}/${total}] Cloning ${repo}..."
+      if command -v git >/dev/null 2>&1; then
+        if git clone --depth 1 "https://github.com/${repo}.git" "$cache_path" 2>/dev/null; then
+          :
+        else
+          log "    ${YELLOW}[skip]${RESET} ${repo} (clone failed)"
+          return 1
+        fi
+      else
+        log "    ${YELLOW}[skip]${RESET} ${repo} (git not installed, cannot cache)"
+        return 1
+      fi
+    fi
+
+    log "  [${completed}/${total}] Installing from ${repo}..."
 
     # Build command array for safe execution (handles skill names with spaces)
-    local cmd=(npx skills add "${repo}" ${agent_flags} -y)
+    local cmd=(npx skills add "$cache_path" $agent_flags -y)
     if [ -n "${skills_scope}" ]; then
       cmd+=("${skills_scope}")
     fi
@@ -638,47 +748,57 @@ install_skills() {
     if "${cmd[@]}" 2>/dev/null; then
       return 0
     else
-      failed=$((failed + 1))
-      log "    ${YELLOW}[skip]${RESET} ${repo}"
+      log "    ${YELLOW}[skip]${RESET} ${repo} (npx skills add failed)"
       return 1
     fi
   }
 
-  # (1) Core/shared skills
-  _install_from_repo "vercel-labs/agent-skills" "vercel-react-best-practices" "vercel-composition-patterns" "web-design-guidelines"
-  _install_from_repo "vercel-labs/skills" "find-skills"
+  # Process repos with parallel execution (max 4 concurrent)
+  if [ "$DRY_RUN" = true ]; then
+    # In dry-run, just print sequentially for clarity
+    for entry in "${repos[@]}"; do
+      IFS='|' read -ra parts <<< "$entry"
+      local repo="${parts[0]}"
+      local skills=("${parts[@]:1}")
+      _install_from_repo "$repo" "${skills[@]}"
+      completed=$((completed + 1))
+    done
+  else
+    # Real execution with parallel jobs
+    for entry in "${repos[@]}"; do
+      # Wait if we have max jobs running
+      while [ "$job_count" -ge "$max_jobs" ]; do
+        wait -n 2>/dev/null || true
+        job_count=$((job_count - 1))
+      done
 
-  # (2) Iroh: documentation
-  _install_from_repo "tldraw/tldraw" "write-docs"
-  _install_from_repo "metabase/metabase" "docs-write"
-  _install_from_repo "rysweet/amplihack" "documentation-writing"
-  _install_from_repo "charon-fan/agent-playbook" "documentation-engineer"
+      IFS='|' read -ra parts <<< "$entry"
+      local repo="${parts[0]}"
+      local skills=("${parts[@]:1}")
 
-  # (3) Katara: refactoring & debugging
-  _install_from_repo "oimiragieo/agent-studio" "debugging"
-  _install_from_repo "wondelai/skills" "refactoring-patterns"
-  _install_from_repo "simota/agent-skills" "zen"
+      # Launch in background subshell
+      (
+        if _install_from_repo "$repo" "${skills[@]}"; then
+          :
+        else
+          # Use file for atomic increment in parallel subshells
+          echo 1 >> "${cache_root}/.failed"
+        fi
+      ) &
 
-  # (4) Sokka: planning & architecture
-  _install_from_repo "thebushidocollective/han" "architecture-design" "technical-planning" "architect"
+      job_count=$((job_count + 1))
+      completed=$((completed + 1))
+    done
 
-  # (5) Toph: codebase exploration
-  _install_from_repo "intellectronica/agent-skills" "mgrep-code-search"
-  _install_from_repo "supercent-io/skills-template" "codebase-search"
+    # Wait for all jobs to complete
+    wait
 
-  # (6) Zuko: visual/UI design
-  _install_from_repo "anthropics/knowledge-work-plugins" "create-an-asset"
-  _install_from_repo "onekeyhq/app-monorepo" "implementing-figma-designs"
-
-  # (7) Appa: frontend patterns
-  _install_from_repo "daffy0208/ai-dev-standards" "frontend builder"
-
-  # (8) Aang: architecture & patterns
-  _install_from_repo "aiko-atami/fsd" "feature-sliced-design"
-  _install_from_repo "aj-geddes/useful-ai-prompts" "technical-roadmap-planning" "design-patterns-implementation"
-
-  # (9) Momo: refactoring & tailwind
-  _install_from_repo "eyadsibai/ltk" "refactoring"
+    # Count failures from temp file
+    if [ -f "${cache_root}/.failed" ]; then
+      failed=$(wc -l < "${cache_root}/.failed" 2>/dev/null || echo 0)
+      rm -f "${cache_root}/.failed"
+    fi
+  fi
 
   log ""
   if [ "$failed" -gt 0 ]; then
