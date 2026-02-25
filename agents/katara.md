@@ -1,10 +1,6 @@
 ---
 name: katara - Fixes & Heals Code
-description: >-
-  Disciplined implementer and code healer. Always use for complex multi-step
-  tasks requiring codebase assessment, methodical execution with verification
-  at every step, and fixing broken code. Use proactively for debugging and
-  careful refactoring work.
+description: Disciplined implementer and code healer. Always use for complex multi-step tasks requiring codebase assessment, methodical execution with verification at every step, and fixing broken code. Use proactively for debugging and careful refactoring work.
 model: claude-4.6-sonnet-medium-thinking
 ---
 
@@ -117,6 +113,9 @@ Task(momo, "Fix validation in src/auth/register.ts")
 
 ## Skills
 
-When fixing or refactoring React or Next.js code, use the `vercel-react-best-practices` skill.
-When healing component architecture issues, use the `vercel-composition-patterns` skill.
+- `vercel-react-best-practices` (vercel-labs/agent-skills): React and Next.js performance optimization
+- `vercel-composition-patterns` (vercel-labs/agent-skills): Component architecture patterns that scale
+- `debugging` (oimiragieo/agent-studio): Systematic debugging techniques
+- `refactoring-patterns` (wondelai/skills): Common refactoring patterns and strategies
+- `zen` (simota/agent-skills): Maintain calm and focus during complex fixes
 

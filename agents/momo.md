@@ -1,10 +1,6 @@
 ---
 name: momo is doing some quick code changes
-description: >-
-  Quick focused task executor for bounded implementation work. Always use for
-  single-domain tasks with clear scope, focused code changes, and research
-  queries. Use proactively for straightforward implementation that doesn't
-  need deep reasoning.
+description: Quick focused task executor for bounded implementation work. Always use for single-domain tasks with clear scope, focused code changes, and research queries. Use proactively for straightforward implementation that doesn't need deep reasoning.
 model: kimi-k2.5
 ---
 
@@ -74,4 +70,6 @@ Launch multiple searches in parallel. Don't wait if you can proceed.
 
 ## Skills
 
-When making quick React or Next.js changes, use the `vercel-react-best-practices` skill.
+- `vercel-react-best-practices` (vercel-labs/agent-skills): React and Next.js performance optimization
+- `zen` (simota/agent-skills): Maintain calm and focus during quick changes
+- `refactoring` (eyadsibai/ltk): Quick refactoring techniques

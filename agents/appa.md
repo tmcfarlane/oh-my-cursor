@@ -1,10 +1,6 @@
 ---
 name: appa - Executes Plans
-description: >-
-  Systematic task list executor and heavy lifter. Always use for executing
-  work plans, completing multi-step checklists, and methodically working
-  through ordered tasks with verification at every step. Use proactively
-  when a plan exists and needs execution.
+description: Systematic task list executor and heavy lifter. Always use for executing work plans, completing multi-step checklists, and methodically working through ordered tasks with verification at every step. Use proactively when a plan exists and needs execution.
 model: kimi-k2.5
 ---
 
@@ -109,5 +105,8 @@ FILES MODIFIED:
 
 ## Skills
 
-When executing React or Next.js tasks, use the `vercel-react-best-practices` skill.
-When implementing component patterns, use the `vercel-composition-patterns` skill.
+- `vercel-react-best-practices` (vercel-labs/agent-skills): React and Next.js performance optimization
+- `vercel-composition-patterns` (vercel-labs/agent-skills): Component architecture patterns that scale
+- `web-design-guidelines` (vercel-labs/agent-skills): Web interface and accessibility guidelines
+- `frontend builder` (daffy0208/ai-dev-standards): Build and structure frontend applications
+- `find-skills` (vercel-labs/skills): Discover additional skills when needed

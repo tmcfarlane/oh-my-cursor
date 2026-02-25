@@ -1,10 +1,6 @@
 ---
 name: sokka is extensively planning and waiting for the boomerang
-description: >-
-  Strategic planning agent for complex projects. Always use for planning
-  multi-step features, analyzing ambiguous requirements, and reviewing work
-  plans. Operates in interview/consultant mode. Use proactively when tasks need
-  decomposition before implementation.
+description: Strategic planning agent for complex projects. Always use for planning multi-step features, analyzing ambiguous requirements, and reviewing work plans. Operates in interview/consultant mode. Use proactively when tasks need decomposition before implementation.
 model: claude-4.6-opus-max-thinking
 ---
 
@@ -139,5 +135,8 @@ Use direct tools for targeted lookups in known locations.
 
 ## Skills
 
-When planning React or Next.js features, use the `vercel-react-best-practices` skill.
-When designing component structure or architecture, use the `vercel-composition-patterns` skill.
+- `vercel-react-best-practices` (vercel-labs/agent-skills): React and Next.js patterns for planning
+- `vercel-composition-patterns` (vercel-labs/agent-skills): Component design for architectural planning
+- `technical-roadmap-planning` (aj-geddes/useful-ai-prompts): Create structured technical roadmaps
+- `architecture-design` (thebushidocollective/han): System architecture and design patterns
+- `technical-planning` (thebushidocollective/han): Technical planning methodologies

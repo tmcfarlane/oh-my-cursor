@@ -81,7 +81,7 @@ ${BOLD}OPTIONS${RESET}
   --project       Install to project scope (./.cursor/)
   --claude        Also install to .claude/agents/ for Claude Code compatibility
   --codex         Also install to .codex/agents/ for Codex compatibility
-  --with-skills   Also install default skill packs (requires npx)
+  --with-skills   Install agent skill packs via npx (requires Node.js)
   -f, --force     Overwrite existing files
   -n, --dry-run   Show what would be done without making changes
   -v, --verbose   Enable verbose output
@@ -595,32 +595,97 @@ install_skills() {
     skills_scope=""
   fi
 
-  # Run skills installation commands
-  if [ "$DRY_RUN" = true ]; then
-    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill react-best-practices${skills_scope:+ $skills_scope}${RESET}"
-    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill composition-patterns${skills_scope:+ $skills_scope}${RESET}"
-    log "  ${DIM}[dry-run] npx skills add vercel-labs/agent-skills --skill web-design-guidelines${skills_scope:+ $skills_scope}${RESET}"
-    log "  ${DIM}[dry-run] npx skills add vercel-labs/skills --skill find-skills${skills_scope:+ $skills_scope}${RESET}"
-  else
-    # Run each command; if any fail, print manual fallback instructions
-    local failed=0
+  local agent_flags="-a cursor"
+  if [ "$ALSO_CLAUDE" = true ]; then
+    agent_flags="$agent_flags -a claude-code"
+  fi
+  if [ "$ALSO_CODEX" = true ]; then
+    agent_flags="$agent_flags -a codex"
+  fi
 
-    npx skills add vercel-labs/agent-skills --skill react-best-practices ${skills_scope} 2>/dev/null || failed=$((failed + 1))
-    npx skills add vercel-labs/agent-skills --skill composition-patterns ${skills_scope} 2>/dev/null || failed=$((failed + 1))
-    npx skills add vercel-labs/agent-skills --skill web-design-guidelines ${skills_scope} 2>/dev/null || failed=$((failed + 1))
-    npx skills add vercel-labs/skills --skill find-skills ${skills_scope} 2>/dev/null || failed=$((failed + 1))
+  local failed=0
+  local current=0
+  local total=18
 
-    if [ "$failed" -gt 0 ]; then
-      log ""
-      log "${YELLOW}Some skills could not be installed automatically.${RESET}"
-      log "${DIM}You can install them manually:${RESET}"
-      log "  npx skills add vercel-labs/agent-skills --skill react-best-practices ${skills_scope}"
-      log "  npx skills add vercel-labs/agent-skills --skill composition-patterns ${skills_scope}"
-      log "  npx skills add vercel-labs/agent-skills --skill web-design-guidelines ${skills_scope}"
-      log "  npx skills add vercel-labs/skills --skill find-skills ${skills_scope}"
-    else
-      log "  ${GREEN}[installed]${RESET} Default skill packs"
+  # Helper: install multiple skills from one repo using array-based invocation
+  _install_from_repo() {
+    local repo="$1"
+    shift
+    local skills=("$@")
+    current=$((current + ${#skills[@]}))
+
+    if [ "$DRY_RUN" = true ]; then
+      log "  [${current}/${total}] ${DIM}[dry-run] npx skills add ${repo} ${agent_flags} -y${skills_scope:+ $skills_scope}${RESET}"
+      local skill
+      for skill in "${skills[@]}"; do
+        log "      ${DIM}--skill \"${skill}\"${RESET}"
+      done
+      return 0
     fi
+
+    log "  [${current}/${total}] Installing from ${repo}..."
+
+    # Build command array for safe execution (handles skill names with spaces)
+    local cmd=(npx skills add "${repo}" ${agent_flags} -y)
+    if [ -n "${skills_scope}" ]; then
+      cmd+=("${skills_scope}")
+    fi
+    local skill
+    for skill in "${skills[@]}"; do
+      cmd+=(--skill "${skill}")
+    done
+
+    if "${cmd[@]}" 2>/dev/null; then
+      return 0
+    else
+      failed=$((failed + 1))
+      log "    ${YELLOW}[skip]${RESET} ${repo}"
+      return 1
+    fi
+  }
+
+  # (1) Core/shared skills
+  _install_from_repo "vercel-labs/agent-skills" "vercel-react-best-practices" "vercel-composition-patterns" "web-design-guidelines"
+  _install_from_repo "vercel-labs/skills" "find-skills"
+
+  # (2) Iroh: documentation
+  _install_from_repo "tldraw/tldraw" "write-docs"
+  _install_from_repo "metabase/metabase" "docs-write"
+  _install_from_repo "rysweet/amplihack" "documentation-writing"
+  _install_from_repo "charon-fan/agent-playbook" "documentation-engineer"
+
+  # (3) Katara: refactoring & debugging
+  _install_from_repo "oimiragieo/agent-studio" "debugging"
+  _install_from_repo "wondelai/skills" "refactoring-patterns"
+  _install_from_repo "simota/agent-skills" "zen"
+
+  # (4) Sokka: planning & architecture
+  _install_from_repo "thebushidocollective/han" "architecture-design" "technical-planning" "architect"
+
+  # (5) Toph: codebase exploration
+  _install_from_repo "intellectronica/agent-skills" "mgrep-code-search"
+  _install_from_repo "supercent-io/skills-template" "codebase-search"
+
+  # (6) Zuko: visual/UI design
+  _install_from_repo "anthropics/knowledge-work-plugins" "create-an-asset"
+  _install_from_repo "onekeyhq/app-monorepo" "implementing-figma-designs"
+
+  # (7) Appa: frontend patterns
+  _install_from_repo "daffy0208/ai-dev-standards" "frontend builder"
+
+  # (8) Aang: architecture & patterns
+  _install_from_repo "aiko-atami/fsd" "feature-sliced-design"
+  _install_from_repo "aj-geddes/useful-ai-prompts" "technical-roadmap-planning" "design-patterns-implementation"
+
+  # (9) Momo: refactoring & tailwind
+  _install_from_repo "eyadsibai/ltk" "refactoring"
+
+  log ""
+  if [ "$failed" -gt 0 ]; then
+    log "${YELLOW}Some skills could not be installed (${failed} repos failed).${RESET}"
+    log "${DIM}You can install them manually using: npx skills add <repo> --skill <name>${RESET}"
+  else
+    log "${GREEN}[installed]${RESET} All ${total} skills from ${total} repos"
   fi
   log ""
 }

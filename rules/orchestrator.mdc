@@ -35,14 +35,14 @@ Root (depth 0) — DISPATCHER ONLY
 
 | Agent | Model | Fire When |
 |-------|-------|-----------|
-| **Toph** | `fast` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
+| **Toph** | `kimi-k2.5` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
 | **Momo** | `kimi-k2.5` | Simple single-file changes, quick focused tasks |
 | **Appa** | `kimi-k2.5` | Systematic multi-step execution, UI work |
-| **Katara** | `claude-4.6-sonnet` | Bug fixes, methodical refactoring |
-| **Aang** | `claude-4.6-sonnet` | Complex multi-file implementation, architecture, 2+ failed fixes |
-| **Sokka** | `claude-4.6-opus` | Complex planning, ambiguous scope analysis |
+| **Katara** | `claude-4.6-sonnet-medium-thinking` | Bug fixes, methodical refactoring |
+| **Aang** | `claude-4.6-sonnet-medium-thinking` | Complex multi-file implementation, architecture, 2+ failed fixes |
+| **Sokka** | `claude-4.6-opus-max-thinking` | Complex planning, ambiguous scope analysis |
 | **Zuko** | `gemini-3.1-pro` | Images, icons, UI mockups, visual design |
-| **Iroh** | `fast` | README writes, CHANGELOG updates, any documentation task |
+| **Iroh** | `claude-4.6-opus-max-thinking` | README writes, CHANGELOG updates, any documentation task |
 
 **There is NO request type where the root does the work itself.**
 

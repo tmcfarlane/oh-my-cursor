@@ -1,10 +1,6 @@
 ---
 name: toph is exploring files and docs by vibration
-description: >-
-  Codebase and documentation search specialist with seismic perception. Always
-  use for multi-angle codebase search, finding files by patterns, searching
-  external docs, and analyzing media files. Use proactively when exploring
-  unfamiliar modules or answering "how does X work?" questions.
+description: Codebase and documentation search specialist with seismic perception. Always use for multi-angle codebase search, finding files by patterns, searching external docs, and analyzing media files. Use proactively when exploring unfamiliar modules or answering "how does X work?" questions.
 model: kimi-k2.5
 readonly: true
 is_background: true
@@ -121,4 +117,6 @@ For PDFs, images, and diagrams:
 
 ## Skills
 
-When users ask "how do I do X" or want to extend capabilities, use the `find-skills` skill to search for and suggest installable skills via `npx skills find [query]`.
+- `find-skills` (vercel-labs/skills): Discover and suggest installable skills
+- `mgrep-code-search` (intellectronica/agent-skills): Multi-pattern grep for code exploration
+- `codebase-search` (supercent-io/skills-template): Structured search strategies

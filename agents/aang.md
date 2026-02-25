@@ -1,10 +1,6 @@
 ---
 name: aang - Executes & Debugs Code
-description: >-
-  Deep autonomous executor and architecture consultant. Always use for complex
-  multi-file tasks requiring thorough investigation, and for architectural
-  decisions including root-cause analysis. Use proactively when 2+ failed fixes
-  need debugging or when tasks span multiple systems.
+description: Deep autonomous executor and architecture consultant. Always use for complex multi-file tasks requiring thorough investigation, and for architectural decisions including root-cause analysis. Use proactively when 2+ failed fixes need debugging or when tasks span multiple systems.
 model: claude-4.6-sonnet-medium-thinking
 ---
 
@@ -122,6 +118,10 @@ After 3 consecutive failures:
 
 ## Skills
 
-When the task involves React or Next.js code, use the `vercel-react-best-practices` skill.
-When designing component architecture, use the `vercel-composition-patterns` skill.
-When implementing or reviewing UI, use the `web-design-guidelines` skill.
+- `vercel-react-best-practices` (vercel-labs/agent-skills): React and Next.js performance optimization
+- `vercel-composition-patterns` (vercel-labs/agent-skills): Component architecture patterns that scale
+- `web-design-guidelines` (vercel-labs/agent-skills): Web interface and accessibility guidelines
+- `feature-sliced-design` (aiko-atami/fsd): Feature-based architectural patterns
+- `design-patterns-implementation` (aj-geddes/useful-ai-prompts): Implementation of design patterns
+- `find-skills` (vercel-labs/skills): Discover additional skills when needed
+- `refactoring-patterns` (wondelai/skills): Patterns for large-scale refactoring
