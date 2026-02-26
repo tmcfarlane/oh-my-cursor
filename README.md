@@ -65,6 +65,9 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 # Also install for Claude Code and Codex compatibility
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --claude --codex
 
+# Install with skills (takes a while — requires Node.js/npx)
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --with-skills
+
 # Preview changes
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --dry-run
 
@@ -74,6 +77,8 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 # Uninstall
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
 ```
+
+> **Hacking on the repo locally?** Clone it, then run `bash install.sh` to install from source.
 
 ### What Gets Installed
 
@@ -245,8 +250,11 @@ Skills are directories containing `SKILL.md` files that Cursor auto-discovers an
 **With the install script** (requires Node.js/npx):
 
 ```bash
-bash install.sh --with-skills           # user-scoped agents + rules + skills
-bash install.sh --with-skills --project # project-scoped everything
+# User-scoped agents + rules + skills
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --with-skills
+
+# Project-scoped everything
+curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --with-skills --project
 ```
 
 **Manually** using the `npx skills` CLI:
