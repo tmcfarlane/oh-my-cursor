@@ -1,14 +1,101 @@
 {
-  "skills": {
-    "default": [
-      { "source": "vercel-labs/agent-skills", "name": "react-best-practices" },
-      { "source": "vercel-labs/agent-skills", "name": "composition-patterns" },
-      { "source": "vercel-labs/agent-skills", "name": "web-design-guidelines" },
-      { "source": "vercel-labs/skills", "name": "find-skills" }
-    ],
-    "optional": [
-      { "source": "vercel-labs/agent-skills", "name": "react-native-skills" },
-      { "source": "vercel-labs/agent-skills", "name": "vercel-deploy" }
-    ]
-  }
+  "bundled": true,
+  "updated": "2026-02-26",
+  "skills": [
+    {
+      "name": "architect",
+      "source": "thebushidocollective/han",
+      "agents": ["Sokka"]
+    },
+    {
+      "name": "codebase-search",
+      "source": "supercent-io/skills-template",
+      "agents": ["Toph"]
+    },
+    {
+      "name": "create-an-asset",
+      "source": "anthropics/knowledge-work-plugins",
+      "agents": ["Zuko"]
+    },
+    {
+      "name": "debugging",
+      "source": "oimiragieo/agent-studio",
+      "agents": ["Katara"]
+    },
+    {
+      "name": "design-patterns-implementation",
+      "source": "aj-geddes/useful-ai-prompts",
+      "agents": ["Aang"]
+    },
+    {
+      "name": "docs-write",
+      "source": "metabase/metabase",
+      "agents": ["Iroh"]
+    },
+    {
+      "name": "documentation-engineer",
+      "source": "charon-fan/agent-playbook",
+      "agents": ["Iroh"]
+    },
+    {
+      "name": "documentation-writing",
+      "source": "rysweet/amplihack",
+      "agents": ["Iroh"]
+    },
+    {
+      "name": "exploring-codebases",
+      "source": "community",
+      "agents": ["Toph"]
+    },
+    {
+      "name": "frontend-builder",
+      "source": "daffy0208/ai-dev-standards",
+      "agents": ["Appa"]
+    },
+    {
+      "name": "implementing-figma-designs",
+      "source": "onekeyhq/app-monorepo",
+      "agents": ["Zuko"]
+    },
+    {
+      "name": "mgrep-code-search",
+      "source": "intellectronica/agent-skills",
+      "agents": ["Toph"]
+    },
+    {
+      "name": "planning",
+      "source": "thebushidocollective/han",
+      "agents": ["Sokka"]
+    },
+    {
+      "name": "refactoring",
+      "source": "eyadsibai/ltk",
+      "agents": ["Katara", "Momo"]
+    },
+    {
+      "name": "refactoring-patterns",
+      "source": "wondelai/skills",
+      "agents": ["Aang", "Katara", "Momo"]
+    },
+    {
+      "name": "technical-roadmap-planning",
+      "source": "aj-geddes/useful-ai-prompts",
+      "agents": ["Sokka"]
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "source": "vercel-labs/agent-skills",
+      "agents": ["Appa"]
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "source": "vercel-labs/agent-skills",
+      "agents": ["Aang", "Appa", "Momo"]
+    },
+    {
+      "name": "web-design-guidelines",
+      "source": "vercel-labs/agent-skills",
+      "agents": ["Zuko"]
+    }
+  ]
 }

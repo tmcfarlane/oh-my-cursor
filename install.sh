@@ -11,6 +11,27 @@ PROTOCOL_FILES=(protocols/team-avatar.md)
 COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md doc.md)
 HOOK_FILES=(post-edit-lint.sh pre-commit-check.sh)
 RULE_FILE="orchestrator.mdc"
+SKILL_DIRS=(
+  architect
+  codebase-search
+  create-an-asset
+  debugging
+  design-patterns-implementation
+  docs-write
+  documentation-engineer
+  documentation-writing
+  exploring-codebases
+  frontend-builder
+  implementing-figma-designs
+  mgrep-code-search
+  planning
+  refactoring
+  refactoring-patterns
+  technical-roadmap-planning
+  vercel-composition-patterns
+  vercel-react-best-practices
+  web-design-guidelines
+)
 
 LEGACY_AGENT_FILES=(atlas.md explore.md generalPurpose.md hephaestus.md librarian.md metis.md momus.md multimodal-looker.md oracle.md prometheus.md sisyphus.md)
 LEGACY_PROTOCOL_FILES=(protocols/swarm-coordinator.md)
@@ -20,9 +41,11 @@ DRY_RUN=false
 VERBOSE=false
 SCOPE="user"
 UNINSTALL=false
+DISABLE=false
+ENABLE=false
 ALSO_CLAUDE=false
 ALSO_CODEX=false
-WITH_SKILLS=false
+WITH_SKILLS=true
 
 WORK_DIR=""
 
@@ -81,11 +104,13 @@ ${BOLD}OPTIONS${RESET}
   --project       Install to project scope (./.cursor/)
   --claude        Also install to .claude/agents/ for Claude Code compatibility
   --codex         Also install to .codex/agents/ for Codex compatibility
-  --with-skills   Install agent skill packs via npx (requires Node.js)
+  --no-skills     Skip installing bundled agent skills (skills are installed by default)
   -f, --force     Overwrite existing files
   -n, --dry-run   Show what would be done without making changes
   -v, --verbose   Enable verbose output
   --uninstall     Remove installed agent and rule files
+  --disable       Disable orchestration (rename rule so Cursor stops applying it)
+  --enable        Re-enable orchestration (rename rule back)
   -h, --help      Show this help message
   --version       Print version
 
@@ -95,6 +120,8 @@ ${BOLD}EXAMPLES${RESET}
   bash install.sh --force
   bash install.sh --dry-run
   bash install.sh --uninstall
+  bash install.sh --disable
+  bash install.sh --enable
 EOF
 }
 
@@ -112,8 +139,11 @@ parse_args() {
       --project)     SCOPE="project" ;;
       --claude)       ALSO_CLAUDE=true ;;
       --codex)        ALSO_CODEX=true ;;
-      --with-skills)  WITH_SKILLS=true ;;
+      --with-skills)  WITH_SKILLS=true ;;  # no-op for backwards compatibility
+      --no-skills)    WITH_SKILLS=false ;;
       --uninstall)    UNINSTALL=true ;;
+      --disable)     DISABLE=true ;;
+      --enable)      ENABLE=true ;;
       -h|--help)     usage; exit 0 ;;
       --version)     printf '%s\n' "$VERSION"; exit 0 ;;
       *)
@@ -137,6 +167,52 @@ resolve_dirs() {
   RULES_DIR="${CURSOR_DIR}/rules"
   COMMANDS_DIR="${CURSOR_DIR}/commands"
   HOOKS_DIR="${CURSOR_DIR}/hooks"
+  SKILLS_DIR="${CURSOR_DIR}/skills"
+}
+
+RULE_FILE_DISABLED="${RULE_FILE}.disabled"
+
+# Toggle orchestration rule so Cursor loads it (--enable) or ignores it (--disable).
+toggle_orchestrator_rule() {
+  local rule_path="${RULES_DIR}/${RULE_FILE}"
+  local disabled_path="${RULES_DIR}/${RULE_FILE_DISABLED}"
+
+  log "${BOLD}oh-my-cursor${RESET} v${VERSION}"
+  log "${DIM}${CURSOR_MODE_LABEL}${RESET}"
+  log ""
+
+  if [ "$DISABLE" = true ]; then
+    if [ -f "$rule_path" ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${YELLOW}[would disable]${RESET} ${RULE_FILE} in ${RULES_DIR}"
+      else
+        mv "$rule_path" "$disabled_path"
+        log "  ${GREEN}[disabled]${RESET} ${RULE_FILE} — orchestration off. Agents and commands still available."
+      fi
+    else
+      if [ -f "$disabled_path" ]; then
+        log "  ${DIM}Already disabled${RESET} (${RULE_FILE_DISABLED} present)"
+      else
+        log "  ${YELLOW}No rule file found${RESET} at ${rule_path}"
+      fi
+    fi
+  else
+    if [ -f "$disabled_path" ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${YELLOW}[would enable]${RESET} ${RULE_FILE} in ${RULES_DIR}"
+      else
+        mv "$disabled_path" "$rule_path"
+        log "  ${GREEN}[enabled]${RESET} ${RULE_FILE} — Team Avatar orchestration on."
+      fi
+    else
+      if [ -f "$rule_path" ]; then
+        log "  ${DIM}Already enabled${RESET} (${RULE_FILE} present)"
+      else
+        log "  ${YELLOW}No disabled rule found${RESET} at ${disabled_path}"
+      fi
+    fi
+  fi
+  log ""
 }
 
 # ---------------------------------------------------------------------------
@@ -191,6 +267,10 @@ copy_sources_from_local_repo() {
     done
   fi
 
+  if [ -d "${script_dir}/skills" ]; then
+    cp -r "${script_dir}/skills" "${out_dir}/skills" || return 1
+  fi
+
   return 0
 }
 
@@ -230,6 +310,20 @@ download_sources_from_github() {
     url="${base}/hooks/${file}"
     curl -fsSL "$url" -o "${out_dir}/hooks/${file}" || return 1
   done
+
+  local manifest_url="${base}/skills/MANIFEST"
+  local manifest_tmp
+  manifest_tmp="$(mktemp)"
+  if curl -fsSL "$manifest_url" -o "$manifest_tmp" 2>/dev/null; then
+    mkdir -p "${out_dir}/skills"
+    while IFS= read -r skill_file || [ -n "$skill_file" ]; do
+      [ -z "$skill_file" ] && continue
+      mkdir -p "${out_dir}/skills/$(dirname "$skill_file")"
+      curl -fsSL "${base}/skills/${skill_file}" -o "${out_dir}/skills/${skill_file}" || true
+    done < "$manifest_tmp"
+    cp "$manifest_tmp" "${out_dir}/skills/MANIFEST"
+  fi
+  rm -f "$manifest_tmp"
 
   return 0
 }
@@ -462,7 +556,11 @@ install_agents() {
 
   log "${BOLD}Summary${RESET}"
   log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
-  log "  ${GREEN}Agents: ${#AGENT_FILES[@]} | Commands: ${#COMMAND_FILES[@]} | Hooks: ${#HOOK_FILES[@]}${RESET}"
+  if [ "$WITH_SKILLS" = true ]; then
+    log "  ${GREEN}Agents: ${#AGENT_FILES[@]} | Commands: ${#COMMAND_FILES[@]} | Hooks: ${#HOOK_FILES[@]} | Skills: ${#SKILL_DIRS[@]}${RESET}"
+  else
+    log "  ${GREEN}Agents: ${#AGENT_FILES[@]} | Commands: ${#COMMAND_FILES[@]} | Hooks: ${#HOOK_FILES[@]} | Skills: skipped${RESET}"
+  fi
   log ""
 }
 
@@ -565,6 +663,35 @@ uninstall_agents() {
     removed=$((removed + 1))
   fi
 
+  target="${RULES_DIR}/${RULE_FILE_DISABLED}"
+  if [ -f "$target" ]; then
+    if [ "$DRY_RUN" = true ]; then
+      log "  ${RED}[remove]${RESET} ${RULE_FILE_DISABLED}"
+    else
+      rm -f "$target"
+      log "  ${RED}[removed]${RESET} ${RULE_FILE_DISABLED}"
+    fi
+    removed=$((removed + 1))
+  fi
+
+  log ""
+  log "Removing skills from ${BOLD}${SKILLS_DIR}${RESET}"
+  log ""
+
+  local skill skill_dir
+  for skill in "${SKILL_DIRS[@]}"; do
+    skill_dir="${SKILLS_DIR}/${skill}"
+    if [ -d "$skill_dir" ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${RED}[remove]${RESET} ${skill}/"
+      else
+        rm -rf "$skill_dir"
+        log "  ${RED}[removed]${RESET} ${skill}/"
+      fi
+      removed=$((removed + 1))
+    fi
+  done
+
   log ""
   log "${BOLD}Summary${RESET}"
   log "  ${DIM}Mode: ${CURSOR_MODE_LABEL}${RESET}"
@@ -579,235 +706,74 @@ uninstall_agents() {
 # Skills installation
 # ---------------------------------------------------------------------------
 
-# Get cache root based on scope
-_get_cache_root() {
-  if [ "$SCOPE" = "project" ]; then
-    local project_root
-    project_root="$(pwd)"
-    echo "${project_root}/.cursor/skills-cache"
-  else
-    echo "${HOME}/.cache/cursor-agents/skills"
-  fi
-}
-
-# Convert repo path to cache directory name (replace / with -)
-_cache_path_from_repo() {
-  local repo="$1"
-  local cache_root
-  cache_root="$(_get_cache_root)"
-  local cache_name
-  cache_name="${repo//\//-}"
-  echo "${cache_root}/${cache_name}"
-}
-
-# Check if cache directory looks valid (contains skills/ dir, SKILL.md, or .git)
-_is_cache_valid() {
-  local cache_path="$1"
-  if [ -d "${cache_path}/skills" ] || [ -f "${cache_path}/SKILL.md" ] || [ -d "${cache_path}/.git" ]; then
-    return 0
-  fi
-  return 1
-}
-
 install_skills() {
-  if ! command -v npx >/dev/null 2>&1; then
-    log "${YELLOW}Warning: npx not found. Skipping skills installation.${RESET}"
-    log "${DIM}Install Node.js to enable skills: https://nodejs.org/${RESET}"
+  local src_skills_dir="${WORK_DIR}/skills"
+
+  if [ ! -d "$src_skills_dir" ]; then
+    log "${YELLOW}Warning: bundled skills not found in work directory. Skipping.${RESET}"
     log ""
     return 0
   fi
 
-  log "Installing skills via npx..."
+  log "Installing skills to ${BOLD}${SKILLS_DIR}${RESET}"
   log ""
 
-  # Cache root
-  local cache_root
-  cache_root="$(_get_cache_root)"
   if [ "$DRY_RUN" = false ]; then
-    mkdir -p "$cache_root"
+    mkdir -p "$SKILLS_DIR"
   fi
 
-  local skills_scope="--global"
-  if [ "$SCOPE" = "project" ]; then
-    skills_scope=""
-  fi
+  local installed=0 skipped=0 updated=0
+  local skill skill_src skill_dest
 
-  local agent_flags="-a cursor"
-  if [ "$ALSO_CLAUDE" = true ]; then
-    agent_flags="$agent_flags -a claude-code"
-  fi
-  if [ "$ALSO_CODEX" = true ]; then
-    agent_flags="$agent_flags -a codex"
-  fi
+  for skill in "${SKILL_DIRS[@]}"; do
+    skill_src="${src_skills_dir}/${skill}"
+    skill_dest="${SKILLS_DIR}/${skill}"
 
-  local failed=0
-  local completed=0
-  local total=18
-  local job_count=0
-  local max_jobs=4
+    if [ ! -d "$skill_src" ]; then
+      log_verbose "  ${DIM}[skip]${RESET} ${skill} (source not found)"
+      continue
+    fi
 
-  # Array to store repo entries for parallel processing
-  # Each entry: "repo|skill1|skill2|..."
-  local repos=()
-
-  # (1) Core/shared skills
-  repos+=("vercel-labs/agent-skills|vercel-react-best-practices|vercel-composition-patterns|web-design-guidelines")
-  repos+=("vercel-labs/skills|find-skills")
-
-  # (2) Iroh: documentation
-  repos+=("tldraw/tldraw|write-docs")
-  repos+=("metabase/metabase|docs-write")
-  repos+=("rysweet/amplihack|documentation-writing")
-  repos+=("charon-fan/agent-playbook|documentation-engineer")
-
-  # (3) Katara: refactoring & debugging
-  repos+=("oimiragieo/agent-studio|debugging")
-  repos+=("wondelai/skills|refactoring-patterns")
-  repos+=("simota/agent-skills|zen")
-
-  # (4) Sokka: planning & architecture
-  repos+=("thebushidocollective/han|architecture-design|technical-planning|architect")
-
-  # (5) Toph: codebase exploration
-  repos+=("intellectronica/agent-skills|mgrep-code-search")
-  repos+=("supercent-io/skills-template|codebase-search")
-
-  # (6) Zuko: visual/UI design
-  repos+=("anthropics/knowledge-work-plugins|create-an-asset")
-  repos+=("onekeyhq/app-monorepo|implementing-figma-designs")
-
-  # (7) Appa: frontend patterns
-  repos+=("daffy0208/ai-dev-standards|frontend builder")
-
-  # (8) Aang: architecture & patterns
-  repos+=("aiko-atami/fsd|feature-sliced-design")
-  repos+=("aj-geddes/useful-ai-prompts|technical-roadmap-planning|design-patterns-implementation")
-
-  # (9) Momo: refactoring & tailwind
-  repos+=("eyadsibai/ltk|refactoring")
-
-  # Helper: install multiple skills from one repo using array-based invocation
-  # This function runs in a subshell for parallel execution
-  _install_from_repo() {
-    local repo="$1"
-    shift
-    local skills=("$@")
-    local cache_path
-    cache_path="$(_cache_path_from_repo "$repo")"
-
-    # Dry-run mode: just print what would happen
-    if [ "$DRY_RUN" = true ]; then
-      printf '  %s
-' "[dry-run] ${repo}:"
-      printf '    Cache path: %s\n' "$cache_path"
-      if _is_cache_valid "$cache_path"; then
-        printf '    Cache: HIT (valid)\n'
-        printf '    Command: npx skills add "%s" %s -y%s' "$cache_path" "$agent_flags" "${skills_scope:+ $skills_scope}"
+    if [ ! -d "$skill_dest" ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${GREEN}[new]${RESET} ${skill}/"
       else
-        printf '    Cache: MISS\n'
-        printf '    Clone: git clone --depth 1 https://github.com/%s.git "%s"\n' "$repo" "$cache_path"
-        printf '    Command: npx skills add "%s" %s -y%s' "$cache_path" "$agent_flags" "${skills_scope:+ $skills_scope}"
+        cp -r "$skill_src" "$skill_dest"
+        log "  ${GREEN}[installed]${RESET} ${skill}/"
       fi
-      local skill
-      for skill in "${skills[@]}"; do
-        printf ' --skill "%s"' "$skill"
-      done
-      printf '\n\n'
-      return 0
-    fi
-
-    # Ensure repo is in cache
-    if ! _is_cache_valid "$cache_path"; then
-      # Cache miss: clone the repo
-      log "  [${completed}/${total}] Cloning ${repo}..."
-      if command -v git >/dev/null 2>&1; then
-        if git clone --depth 1 "https://github.com/${repo}.git" "$cache_path" 2>/dev/null; then
-          :
-        else
-          log "    ${YELLOW}[skip]${RESET} ${repo} (clone failed)"
-          return 1
-        fi
+      installed=$((installed + 1))
+    elif diff -rq --exclude='.DS_Store' "$skill_src" "$skill_dest" >/dev/null 2>&1; then
+      log "  ${DIM}[unchanged]${RESET} ${skill}/"
+      skipped=$((skipped + 1))
+    elif [ "$FORCE" = true ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${YELLOW}[update]${RESET} ${skill}/"
       else
-        log "    ${YELLOW}[skip]${RESET} ${repo} (git not installed, cannot cache)"
-        return 1
+        rm -rf "$skill_dest"
+        cp -r "$skill_src" "$skill_dest"
+        log "  ${YELLOW}[updated]${RESET} ${skill}/"
       fi
-    fi
-
-    log "  [${completed}/${total}] Installing from ${repo}..."
-
-    # Build command array for safe execution (handles skill names with spaces)
-    local cmd=(npx skills add "$cache_path" $agent_flags -y)
-    if [ -n "${skills_scope}" ]; then
-      cmd+=("${skills_scope}")
-    fi
-    local skill
-    for skill in "${skills[@]}"; do
-      cmd+=(--skill "${skill}")
-    done
-
-    if "${cmd[@]}" 2>/dev/null; then
-      return 0
+      updated=$((updated + 1))
     else
-      log "    ${YELLOW}[skip]${RESET} ${repo} (npx skills add failed)"
-      return 1
+      log "  ${YELLOW}[skipped]${RESET} ${skill}/ ${DIM}(use --force to overwrite)${RESET}"
+      skipped=$((skipped + 1))
     fi
-  }
-
-  # Process repos with parallel execution (max 4 concurrent)
-  if [ "$DRY_RUN" = true ]; then
-    # In dry-run, just print sequentially for clarity
-    for entry in "${repos[@]}"; do
-      IFS='|' read -ra parts <<< "$entry"
-      local repo="${parts[0]}"
-      local skills=("${parts[@]:1}")
-      _install_from_repo "$repo" "${skills[@]}"
-      completed=$((completed + 1))
-    done
-  else
-    # Real execution with parallel jobs
-    for entry in "${repos[@]}"; do
-      # Wait if we have max jobs running
-      while [ "$job_count" -ge "$max_jobs" ]; do
-        wait -n 2>/dev/null || true
-        job_count=$((job_count - 1))
-      done
-
-      IFS='|' read -ra parts <<< "$entry"
-      local repo="${parts[0]}"
-      local skills=("${parts[@]:1}")
-
-      # Launch in background subshell
-      (
-        if _install_from_repo "$repo" "${skills[@]}"; then
-          :
-        else
-          # Use file for atomic increment in parallel subshells
-          echo 1 >> "${cache_root}/.failed"
-        fi
-      ) &
-
-      job_count=$((job_count + 1))
-      completed=$((completed + 1))
-    done
-
-    # Wait for all jobs to complete
-    wait
-
-    # Count failures from temp file
-    if [ -f "${cache_root}/.failed" ]; then
-      failed=$(wc -l < "${cache_root}/.failed" 2>/dev/null || echo 0)
-      rm -f "${cache_root}/.failed"
-    fi
-  fi
+  done
 
   log ""
-  if [ "$failed" -gt 0 ]; then
-    log "${YELLOW}Some skills could not be installed (${failed} repos failed).${RESET}"
-    log "${DIM}You can install them manually using: npx skills add <repo> --skill <name>${RESET}"
-  else
-    log "${GREEN}[installed]${RESET} All ${total} skills from ${total} repos"
+
+  if [ -d "${HOME}/.agents/skills" ]; then
+    local legacy_count=0
+    for skill in "${SKILL_DIRS[@]}"; do
+      [ -d "${HOME}/.agents/skills/${skill}" ] && legacy_count=$((legacy_count + 1))
+    done
+    if [ "$legacy_count" -gt 0 ]; then
+      log "${DIM}Note: ${legacy_count} matching skill(s) found in ~/.agents/skills/ (legacy location).${RESET}"
+      log "${DIM}They show as 'Rules' in Cursor UI. The new installs in ~/.cursor/skills/ show as 'Skills'.${RESET}"
+      log "${DIM}You can safely delete ~/.agents/skills/ once verified.${RESET}"
+      log ""
+    fi
   fi
-  log ""
 }
 
 # ---------------------------------------------------------------------------
@@ -818,6 +784,16 @@ main() {
   setup_colors
   parse_args "$@"
   resolve_dirs
+
+  if [ "$DISABLE" = true ] && [ "$ENABLE" = true ]; then
+    log "${RED}Cannot use --disable and --enable together.${RESET}" >&2
+    exit 1
+  fi
+
+  if [ "$DISABLE" = true ] || [ "$ENABLE" = true ]; then
+    toggle_orchestrator_rule
+    return 0
+  fi
 
   if [ "$UNINSTALL" = true ]; then
     uninstall_agents

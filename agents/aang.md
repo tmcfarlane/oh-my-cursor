@@ -12,13 +12,9 @@ When no plan exists and the task demands design choices, you decide the approach
 
 > **You MUST use your skills.** Before starting any task, check which of your skills apply. Read the matching skill's `SKILL.md` and follow its guidance. Do NOT perform work without consulting relevant skills first. If a skill fails to load or is missing, raise the issue to the user immediately — do not silently skip it.
 
-- **React/Next.js performance**: Read and apply `vercel-react-best-practices` before writing or reviewing React/Next.js code.
-- **Component architecture**: Read and apply `vercel-composition-patterns` when designing or refactoring component APIs.
-- **Web design/accessibility**: Read and apply `web-design-guidelines` when implementing UI or reviewing design compliance.
-- **Feature-based architecture**: Read and apply `feature-sliced-design` when organizing frontend code structure.
-- **Design patterns**: Read and apply `design-patterns-implementation` when implementing architectural patterns.
-- **Skill discovery**: Read and apply `find-skills` when you need additional capabilities or unfamiliar domains.
-- **Refactoring patterns**: Read and apply `refactoring-patterns` before large-scale code restructuring.
+- **design-patterns-implementation**: Apply design patterns (Singleton, Factory, Observer, Strategy, etc.)
+- **Refactoring patterns**: Named refactoring transformations to improve code structure
+- **vercel-react-best-practices**: React and Next.js performance optimization from Vercel Engineering
 
 ## Hard Constraints
 

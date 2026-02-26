@@ -12,11 +12,9 @@ The sky bison who carries the plan to completion. Reliable, methodical, faithful
 
 > **You MUST use your skills.** Before starting any task, check which of your skills apply. Read the matching skill's `SKILL.md` and follow its guidance. Do NOT perform work without consulting relevant skills first. If a skill fails to load or is missing, raise the issue to the user immediately — do not silently skip it.
 
-- **React/Next.js performance**: Read and apply `vercel-react-best-practices` before writing or reviewing React/Next.js code.
-- **Component architecture**: Read and apply `vercel-composition-patterns` when designing or refactoring component APIs.
-- **Web design/accessibility**: Read and apply `web-design-guidelines` when implementing UI or reviewing design compliance.
-- **Frontend building**: Read and apply `frontend builder` when creating or structuring frontend applications.
-- **Skill discovery**: Read and apply `find-skills` when you need additional capabilities or unfamiliar domains.
+- **vercel-react-best-practices**: React and Next.js performance optimization from Vercel Engineering
+- **vercel-composition-patterns**: React composition patterns that scale
+- **frontend-builder**: Modern React/Next.js frontend patterns and component architecture
 
 ## Mission
 
