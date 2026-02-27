@@ -21,8 +21,11 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 *Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>*
 
 **NOW USING UNDOCUMENTED FEATURES OF CURSOR!**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/tmcfarlane/oh-my-cursor)](https://github.com/tmcfarlane/oh-my-cursor/stargazers)
 <br>
- 
+
 </div>
 
 
@@ -47,6 +50,21 @@ No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.*
 > Team Avatar relies on Cursor accepting custom strings in agent `model:` frontmatter for per-agent routing. It’s unofficial and may change; see [Undocumented: Custom Model Aliases](#undocumented-custom-model-aliases).
 
 
+## Contents
+
+- [Quick Start](#quick-start-one-command)
+- [What Is This?](#what-is-this)
+- [Agents](#team-avatar----the-agents)
+- [How to Install](#how-to-install)
+- [Slash Commands](#slash-commands)
+- [Orchestration Modes](#two-orchestration-modes)
+- [Architecture](#architecture)
+- [Skills](#skills)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License](#license)
+
+
 ## Always Use the Orchestrator
 
 The orchestrator rule (`orchestrator.mdc`) isn't decoration — it rewires how the root thread thinks. Here's a real example of the root thread's internal reasoning when asked to update installation instructions:
@@ -66,125 +84,116 @@ Every sentence maps to an orchestrator rule:
 
 ## Team Avatar -- The Agents
 
-Eight specialized agents, each mapped to an Avatar character with a dedicated model and role:
+Eight specialized agents, each mapped to an Avatar character with a dedicated model and role. Expand any agent for skills and working screenshots.
 
-<table>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/aang.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/aang.webp" alt="Aang" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center 20%; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Aang</strong><br>
-  <em>The Avatar</em> · <code>claude-4.6-sonnet</code> · Deep multi-file executor + architecture consultant. Masters all elements.<br>
-  <strong>Agent Swarm</strong> — Multi-agent orchestration in action<br>
-  Skills: <a href="skills/design-patterns-implementation/SKILL.md"><code>design-patterns-implementation</code></a>, <a href="skills/refactoring-patterns/SKILL.md"><code>refactoring-patterns</code></a>, <a href="skills/vercel-react-best-practices/SKILL.md"><code>vercel-react-best-practices</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/aang.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/aang.png" alt="Aang (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/sokka.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/sokka.webp" alt="Sokka" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:55% top; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Sokka</strong><br>
-  <em>The Strategist</em> · <code>claude-4.6-opus</code> · Planning, ambiguity analysis, plan review. The brain behind every mission.<br>
-  <strong>Ask First, Dispatch Second</strong> — The orchestrator clarifies before sending agents<br>
-  Skills: <a href="skills/architect/SKILL.md"><code>architect</code></a>, <a href="skills/planning/SKILL.md"><code>planning</code></a>, <a href="skills/technical-roadmap-planning/SKILL.md"><code>technical-roadmap-planning</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/sokka.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/sokka.png" alt="Sokka (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/katara.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/katara.webp" alt="Katara" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center top; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Katara</strong><br>
-  <em>The Healer</em> · <code>claude-4.6-sonnet</code> · Disciplined implementation, debugging, methodical fixes. Mends broken code.<br>
-  <strong>Precision Healer</strong> — Surgical debugging, smallest possible fix<br>
-  Skills: <a href="skills/debugging/SKILL.md"><code>debugging</code></a>, <a href="skills/refactoring/SKILL.md"><code>refactoring</code></a>, <a href="skills/refactoring-patterns/SKILL.md"><code>refactoring-patterns</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/katara.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/katara.png" alt="Katara (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/zuko.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/zuko.webp" alt="Zuko" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center top; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Zuko</strong><br>
-  <em>The Firebender</em> · <code>gemini-3.1-pro</code> · Visual design: image generation, icons, UI mockups. Brings designs to life.<br>
-  <strong>Fire and Finesse</strong> — Image generation, icons, and UI mockups<br>
-  Skills: <a href="skills/create-an-asset/SKILL.md"><code>create-an-asset</code></a>, <a href="skills/implementing-figma-designs/SKILL.md"><code>implementing-figma-designs</code></a>, <a href="skills/web-design-guidelines/SKILL.md"><code>web-design-guidelines</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/zuko.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/zuko.png" alt="Zuko (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/toph.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/toph.webp" alt="Toph" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center 20%; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Toph</strong><br>
-  <em>The Seer</em> · <code>fast</code> · Codebase search, external docs, media analysis. Sees everything.<br>
-  <strong>Seismic Sense</strong> — Multi-angle codebase search and doc exploration<br>
-  Skills: <a href="skills/codebase-search/SKILL.md"><code>codebase-search</code></a>, <a href="skills/exploring-codebases/SKILL.md"><code>exploring-codebases</code></a>, <a href="skills/mgrep-code-search/SKILL.md"><code>mgrep-code-search</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/toph.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/toph.png" alt="Toph (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/appa.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/appa.webp" alt="Appa" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:45% 20%; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Appa</strong><br>
-  <em>The Heavy Lifter</em> · <code>kimi-k2.5</code> · Systematic task list execution. Carries the team.<br>
-  <strong>Heavy Lifter</strong> — Systematic task list execution, one step at a time<br>
-  Skills: <a href="skills/frontend-builder/SKILL.md"><code>frontend-builder</code></a>, <a href="skills/vercel-composition-patterns/SKILL.md"><code>vercel-composition-patterns</code></a>, <a href="skills/vercel-react-best-practices/SKILL.md"><code>vercel-react-best-practices</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/appa.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/appa.png" alt="Appa (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/momo.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/momo.webp" alt="Momo" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center 20%; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Momo</strong><br>
-  <em>The Scout</em> · <code>kimi-k2.5</code> · Quick focused tasks. Small, agile, independent.<br>
-  <strong>Cactus Juice Mode</strong> — Parallel micro-tasks, maximum speed<br>
-  Skills: <a href="skills/refactoring/SKILL.md"><code>refactoring</code></a>, <a href="skills/refactoring-patterns/SKILL.md"><code>refactoring-patterns</code></a>, <a href="skills/vercel-react-best-practices/SKILL.md"><code>vercel-react-best-practices</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/momo.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/momo.png" alt="Momo (working screenshot)" width="460"></a>
-</td>
-</tr>
-<tr>
-<td align="center" width="100" valign="top">
-  <a href="screenshots/faces/iroh.webp" target="_blank" rel="noopener noreferrer"><img src="screenshots/faces/iroh.webp" alt="Iroh" width="80" height="80" style="border-radius:50%; object-fit:cover; object-position:center 20%; border:2px solid #e1e4e8;" /></a>
-</td>
-<td valign="top">
-  <strong>Iroh</strong><br>
-  <em>The Storyteller</em> · <code>fast</code> · Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.<br>
-  <strong>Custom Model Aliases</strong> — Undocumented Cursor feature that powers model routing (<a href="#undocumented-custom-model-aliases">details</a>)<br>
-  Skills: <a href="skills/docs-write/SKILL.md"><code>docs-write</code></a>, <a href="skills/documentation-engineer/SKILL.md"><code>documentation-engineer</code></a>, <a href="skills/documentation-writing/SKILL.md"><code>documentation-writing</code></a>
-</td>
-<td align="right" width="460" valign="top">
-  <a href="screenshots/teamavatar/iroh.png" target="_blank" rel="noopener noreferrer"><img src="screenshots/teamavatar/iroh.png" alt="Iroh (working screenshot)" width="460"></a>
-</td>
-</tr>
-</table>
+<details open>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>claude-4.6-sonnet</code></summary>
+
+Deep multi-file executor + architecture consultant. Masters all elements.
+
+> **Agent Swarm** — Multi-agent orchestration in action
+
+Skills: [`design-patterns-implementation`](skills/design-patterns-implementation/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
+
+<img src="screenshots/teamavatar/aang.png" alt="Aang working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus</code></summary>
+
+Planning, ambiguity analysis, plan review. The brain behind every mission.
+
+> **Ask First, Dispatch Second** — The orchestrator clarifies before sending agents
+
+Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning/SKILL.md) · [`technical-roadmap-planning`](skills/technical-roadmap-planning/SKILL.md)
+
+<img src="screenshots/teamavatar/sokka.png" alt="Sokka working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>claude-4.6-sonnet</code></summary>
+
+Disciplined implementation, debugging, methodical fixes. Mends broken code.
+
+> **Precision Healer** — Surgical debugging, smallest possible fix
+
+Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md)
+
+<img src="screenshots/teamavatar/katara.png" alt="Katara working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
+
+Visual design: image generation, icons, UI mockups. Brings designs to life.
+
+> **Fire and Finesse** — Image generation, icons, and UI mockups
+
+Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-figma-designs`](skills/implementing-figma-designs/SKILL.md) · [`web-design-guidelines`](skills/web-design-guidelines/SKILL.md)
+
+<img src="screenshots/teamavatar/zuko.png" alt="Zuko working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>fast</code></summary>
+
+Codebase search, external docs, media analysis. Sees everything.
+
+> **Seismic Sense** — Multi-angle codebase search and doc exploration
+
+Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-codebases`](skills/exploring-codebases/SKILL.md) · [`mgrep-code-search`](skills/mgrep-code-search/SKILL.md)
+
+<img src="screenshots/teamavatar/toph.png" alt="Toph working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>kimi-k2.5</code></summary>
+
+Systematic task list execution. Carries the team.
+
+> **Heavy Lifter** — Systematic task list execution, one step at a time
+
+Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-composition-patterns`](skills/vercel-composition-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
+
+<img src="screenshots/teamavatar/appa.png" alt="Appa working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>kimi-k2.5</code></summary>
+
+Quick focused tasks. Small, agile, independent.
+
+> **Cactus Juice Mode** — Parallel micro-tasks, maximum speed
+
+Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
+
+<img src="screenshots/teamavatar/momo.png" alt="Momo working screenshot" width="560">
+
+</details>
+
+<details>
+<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>fast</code></summary>
+
+Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
+
+> **Custom Model Aliases** — Undocumented Cursor feature that powers model routing ([details](#undocumented-custom-model-aliases))
+
+Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.md) · [`docs-write`](skills/docs-write/SKILL.md) · [`documentation-engineer`](skills/documentation-engineer/SKILL.md) · [`documentation-writing`](skills/documentation-writing/SKILL.md)
+
+<img src="screenshots/teamavatar/iroh.png" alt="Iroh working screenshot" width="560">
+
+</details>
 
 
 ## How to Install
+
+**Requirements:** [Cursor](https://www.cursor.com/) with a plan that supports agent mode (subagents). No external runtime or dependencies.
 
 ```bash
 # [Default] Install to user scope (applies to all Cursor projects)
@@ -405,6 +414,7 @@ Skills are installed by default. No Node.js required. Use `--no-skills` to skip 
 | architect | thebushidocollective/han | Sokka | System architecture and high-level technical design |
 | codebase-search | supercent-io/skills-template | Toph | Systematic search strategies for navigating large codebases |
 | create-an-asset | anthropics/knowledge-work-plugins | Zuko | Generate tailored sales assets (landing pages, decks, one-pagers) |
+| crafting-effective-readmes | community | Iroh | Templates and guidance for writing effective READMEs matched to project type |
 | debugging | oimiragieo/agent-studio | Katara | Systematic 4-phase debugging with root cause investigation |
 | design-patterns-implementation | aj-geddes/useful-ai-prompts | Aang | Apply design patterns (Singleton, Factory, Observer, Strategy, etc.) |
 | docs-write | metabase/metabase | Iroh | Documentation following Metabase's conversational, user-focused style |
@@ -522,6 +532,16 @@ Result: **oh-my-cursor Agent Swarms** that do real work and also help you respon
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=tmcfarlane/oh-my-cursor&type=date&legend=top-left)](https://www.star-history.com/#tmcfarlane/oh-my-cursor&type=date&legend=top-left)
+
+## Contributing
+
+Contributions that improve clarity, behavior, or docs are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Local development:** Clone the repo and run `bash install.sh` to install from source. Changes to agents, rules, commands, or hooks take effect after reinstalling.
+
+## Security
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ## License
 
