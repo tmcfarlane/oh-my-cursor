@@ -21,8 +21,11 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 *Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>*
 
 **NOW USING UNDOCUMENTED FEATURES OF CURSOR!**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/tmcfarlane/oh-my-cursor)](https://github.com/tmcfarlane/oh-my-cursor/stargazers)
 <br>
- 
+
 </div>
 
 
@@ -45,6 +48,21 @@ No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.*
 
 **NOW USING UNDOCUMENTED FEATURES OF CURSOR.**  
 > Team Avatar relies on Cursor accepting custom strings in agent `model:` frontmatter for per-agent routing. It’s unofficial and may change; see [Undocumented: Custom Model Aliases](#undocumented-custom-model-aliases).
+
+
+## Contents
+
+- [Quick Start](#quick-start-one-command)
+- [What Is This?](#what-is-this)
+- [Agents](#team-avatar----the-agents)
+- [How to Install](#how-to-install)
+- [Slash Commands](#slash-commands)
+- [Orchestration Modes](#two-orchestration-modes)
+- [Architecture](#architecture)
+- [Skills](#skills)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License](#license)
 
 
 ## Always Use the Orchestrator
@@ -174,6 +192,8 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 
 ## How to Install
+
+**Requirements:** [Cursor](https://www.cursor.com/) with a plan that supports agent mode (subagents). No external runtime or dependencies.
 
 ```bash
 # [Default] Install to user scope (applies to all Cursor projects)
@@ -512,6 +532,16 @@ Result: **oh-my-cursor Agent Swarms** that do real work and also help you respon
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=tmcfarlane/oh-my-cursor&type=date&legend=top-left)](https://www.star-history.com/#tmcfarlane/oh-my-cursor&type=date&legend=top-left)
+
+## Contributing
+
+Contributions that improve clarity, behavior, or docs are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Local development:** Clone the repo and run `bash install.sh` to install from source. Changes to agents, rules, commands, or hooks take effect after reinstalling.
+
+## Security
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ## License
 
