@@ -166,7 +166,7 @@ Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
 > **Custom Model Aliases** — Undocumented Cursor feature that powers model routing ([details](#undocumented-custom-model-aliases))
 
-Skills: [`docs-write`](skills/docs-write/SKILL.md) · [`documentation-engineer`](skills/documentation-engineer/SKILL.md) · [`documentation-writing`](skills/documentation-writing/SKILL.md)
+Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.md) · [`docs-write`](skills/docs-write/SKILL.md) · [`documentation-engineer`](skills/documentation-engineer/SKILL.md) · [`documentation-writing`](skills/documentation-writing/SKILL.md)
 
 <img src="screenshots/teamavatar/iroh.png" alt="Iroh working screenshot" width="560">
 
