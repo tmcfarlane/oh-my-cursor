@@ -20,6 +20,9 @@
 Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 *Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>*
 
+**NOW USING UNDOCUMENTED FEATURES OF CURSOR!**
+<br>
+ 
 </div>
 
 
@@ -39,6 +42,9 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 - **orchestrator**: A single rule (`orchestrator.mdc`) that coordinates everything -- "Team Avatar"
 
 No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.**
+
+**NOW USING UNDOCUMENTED FEATURES OF CURSOR.**  
+> Team Avatar relies on Cursor accepting custom strings in agent `model:` frontmatter for per-agent routing. It’s unofficial and may change; see [Undocumented: Custom Model Aliases](#undocumented-custom-model-aliases).
 
 
 ## Always Use the Orchestrator
@@ -228,26 +234,18 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 The installer automatically detects and removes old agent files (hephaestus, prometheus, atlas, etc.) when installing the new Team Avatar agents.
 
 
-### Model Tier Strategy
-
-Each agent has a hardcoded model optimized for its role:
-
-| Tier | Model | Used By | Rationale |
-|------|-------|---------|-----------|
-| Deep Reasoning | `claude-4.6-opus` | Sokka | Planning demands the deepest reasoning |
-| Implementation | `claude-4.6-sonnet` | Aang, Katara | Strong code reasoning for complex tasks |
-| Visual | `gemini-3.1-pro` | Zuko | Native multimodal generation for images and design |
-| Cost-Effective | `kimi-k2.5` | Appa, Momo | Handles systematic and focused tasks efficiently |
-| Speed | `kimi-k2.5` | Toph | Pure search, maximum speed |
-
 ### Undocumented: Custom Model Aliases
 
 <p align="center">
-  <img src="screenshots/colin-spills-it.png" alt="Cursor accepting custom model aliases in agent frontmatter">
+  <img src="screenshots/guy-spills-it.png" alt="Cursor accepting custom model aliases in agent frontmatter">
 </p>
 
 
-The `model:` field in Cursor's agent frontmatter accepts arbitrary model alias strings — not just Cursor's built-in model picker options. This is how oh-my-cursor routes agents to specific providers:
+Cursor has a quiet superpower: the `model:` field in agent frontmatter will accept **arbitrary model alias strings** — not just the built-in options in Cursor’s model picker.
+
+That unlocks **per-agent model routing**. In oh-my-cursor, it’s how each Team Avatar role gets the right “brain” for the job (speed, depth, or multimodal) without waiting for Cursor to officially list every provider/model combination.
+
+Example:
 
 ```yaml
 ---
@@ -263,7 +261,7 @@ model: gemini-3.1-pro
 ---
 ```
 
-> **This behavior is currently undocumented by Cursor and may change without notice.** It works as of February 2026. If Cursor removes or changes alias support, you can swap in any model string their picker supports and the rest of oh-my-cursor still works.
+> **This is currently undocumented by Cursor and may change without notice.** It works as of February 2026. If Cursor removes or changes alias support, swap `model:` to any picker-supported string — the rest of oh-my-cursor still works (you just lose custom routing).
 
 
 ## Slash Commands
