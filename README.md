@@ -86,6 +86,18 @@ Every sentence maps to an orchestrator rule:
 
 Eight specialized agents, each mapped to an Avatar character with a dedicated model and role. Expand any agent for skills and working screenshots.
 
+<p align="center">
+  <a href="#agent-aang"><img src="screenshots/faces/aang.png" width="96" height="96" alt="Aang" /></a>&nbsp;&nbsp;
+  <a href="#agent-sokka"><img src="screenshots/faces/sokka.png" width="96" height="96" alt="Sokka" /></a>&nbsp;&nbsp;
+  <a href="#agent-katara"><img src="screenshots/faces/katara.png" width="96" height="96" alt="Katara" /></a>&nbsp;&nbsp;
+  <a href="#agent-zuko"><img src="screenshots/faces/zuko.png" width="96" height="96" alt="Zuko" /></a>&nbsp;&nbsp;
+  <a href="#agent-toph"><img src="screenshots/faces/toph.png" width="96" height="96" alt="Toph" /></a>&nbsp;&nbsp;
+  <a href="#agent-appa"><img src="screenshots/faces/appa.png" width="96" height="96" alt="Appa" /></a>&nbsp;&nbsp;
+  <a href="#agent-momo"><img src="screenshots/faces/momo.png" width="96" height="96" alt="Momo" /></a>&nbsp;&nbsp;
+  <a href="#agent-iroh"><img src="screenshots/faces/iroh.png" width="96" height="96" alt="Iroh" /></a>
+</p>
+
+<a id="agent-aang"></a>
 <details open>
 <summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
 
@@ -95,11 +107,12 @@ Deep multi-file executor + architecture consultant. Masters all elements.
 
 Skills: [`design-patterns-implementation`](skills/design-patterns-implementation/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
-<img src="screenshots/teamavatar/aang.png" alt="Aang working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/aang.png"><img src="screenshots/teamavatar/aang.png" alt="Aang working screenshot"></a></p>
 
 </details>
 
-<details>
+<a id="agent-sokka"></a>
+<details open>
 <summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
 Planning, ambiguity analysis, plan review. The brain behind every mission.
@@ -108,11 +121,12 @@ Planning, ambiguity analysis, plan review. The brain behind every mission.
 
 Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning/SKILL.md) · [`technical-roadmap-planning`](skills/technical-roadmap-planning/SKILL.md)
 
-<img src="screenshots/teamavatar/sokka.png" alt="Sokka working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/sokka.png"><img src="screenshots/teamavatar/sokka.png" alt="Sokka working screenshot"></a></p>
 
 </details>
 
-<details>
+<a id="agent-katara"></a>
+<details open>
 <summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
@@ -121,11 +135,12 @@ Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
 Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md)
 
-<img src="screenshots/teamavatar/katara.png" alt="Katara working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/katara.png"><img src="screenshots/teamavatar/katara.png" alt="Katara working screenshot"></a></p>
 
 </details>
 
-<details>
+<a id="agent-zuko"></a>
+<details open>
 <summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
 
 Visual design: image generation, icons, UI mockups. Brings designs to life.
@@ -134,10 +149,11 @@ Visual design: image generation, icons, UI mockups. Brings designs to life.
 
 Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-figma-designs`](skills/implementing-figma-designs/SKILL.md) · [`web-design-guidelines`](skills/web-design-guidelines/SKILL.md)
 
-<img src="screenshots/teamavatar/zuko.png" alt="Zuko working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/zuko.png"><img src="screenshots/teamavatar/zuko.png" alt="Zuko working screenshot"></a></p>
 
 </details>
 
+<a id="agent-toph"></a>
 <details>
 <summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>kimi-k2.5</code></summary>
 
@@ -147,10 +163,11 @@ Codebase search, external docs, media analysis. Sees everything.
 
 Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-codebases`](skills/exploring-codebases/SKILL.md) · [`mgrep-code-search`](skills/mgrep-code-search/SKILL.md)
 
-<img src="screenshots/teamavatar/toph.png" alt="Toph working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/toph.png"><img src="screenshots/teamavatar/toph.png" alt="Toph working screenshot"></a></p>
 
 </details>
 
+<a id="agent-appa"></a>
 <details>
 <summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>kimi-k2.5</code></summary>
 
@@ -160,10 +177,11 @@ Systematic task list execution. Carries the team.
 
 Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-composition-patterns`](skills/vercel-composition-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
-<img src="screenshots/teamavatar/appa.png" alt="Appa working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/appa.png"><img src="screenshots/teamavatar/appa.png" alt="Appa working screenshot"></a></p>
 
 </details>
 
+<a id="agent-momo"></a>
 <details>
 <summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>kimi-k2.5</code></summary>
 
@@ -173,10 +191,11 @@ Quick focused tasks. Small, agile, independent.
 
 Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
-<img src="screenshots/teamavatar/momo.png" alt="Momo working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/momo.png"><img src="screenshots/teamavatar/momo.png" alt="Momo working screenshot"></a></p>
 
 </details>
 
+<a id="agent-iroh"></a>
 <details>
 <summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
@@ -186,7 +205,7 @@ Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
 Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.md) · [`docs-write`](skills/docs-write/SKILL.md) · [`documentation-engineer`](skills/documentation-engineer/SKILL.md) · [`documentation-writing`](skills/documentation-writing/SKILL.md)
 
-<img src="screenshots/teamavatar/iroh.png" alt="Iroh working screenshot" width="560">
+<p align="center"><a href="screenshots/teamavatar/iroh.png"><img src="screenshots/teamavatar/iroh.png" alt="Iroh working screenshot"></a></p>
 
 </details>
 
