@@ -393,7 +393,12 @@ Or just use the slash commands:
 
 Skills are directories containing a `SKILL.md` file that Cursor auto-discovers and presents to agents as specialized context. They extend agents with domain knowledge without modifying agent prompts directly.
 
-oh-my-cursor bundles 19 skills vendored from the community. Skills are installed by default (copied from the repo's `skills/` directory into your Cursor skills folder). No Node.js required — it's a straight file copy. Use `--no-skills` to skip skill installation.
+oh-my-cursor bundles 19 skills vendored from the community and packaged in-repo for two reasons:
+
+- **Security** — We avoid pulling skills directly from their repos during install because at that point we have not verified any of those files. Fetching arbitrary third-party files during `curl | bash` is a trust problem. We use [Vercel's agent-skills](https://github.com/vercel-labs/agent-skills) and [skills.sh](https://skills.sh) to find skills; if you want an at-a-glance safety signal, check [skills.sh/audits](https://skills.sh/audits).
+- **Efficiency** — Installing skills one at a time is slow and cumbersome, and even “automatic” installation would be painful (Cursor doesn’t offer a headless CLI for this). Bundling them makes installation a straight file copy from the repo’s `skills/` directory.
+
+Skills are installed by default. No Node.js required. Use `--no-skills` to skip skill installation.
 
 ### Bundled skills
 
