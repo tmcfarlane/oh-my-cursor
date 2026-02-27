@@ -87,7 +87,7 @@ Every sentence maps to an orchestrator rule:
 Eight specialized agents, each mapped to an Avatar character with a dedicated model and role. Expand any agent for skills and working screenshots.
 
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>claude-4.6-sonnet</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -100,7 +100,7 @@ Skills: [`design-patterns-implementation`](skills/design-patterns-implementation
 </details>
 
 <details>
-<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus</code></summary>
+<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
 Planning, ambiguity analysis, plan review. The brain behind every mission.
 
@@ -113,7 +113,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 </details>
 
 <details>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>claude-4.6-sonnet</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -139,7 +139,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 </details>
 
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>fast</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>kimi-k2.5</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -178,7 +178,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 </details>
 
 <details>
-<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>fast</code></summary>
+<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
 Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
