@@ -103,7 +103,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
-> **Agent Swarm** — Multi-agent orchestration in action
+> **Master of all four elements** — Multi-agent orchestration in action
 
 Skills: [`design-patterns-implementation`](skills/design-patterns-implementation/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
@@ -173,7 +173,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 
 Systematic task list execution. Carries the team.
 
-> **Heavy Lifter** — Systematic task list execution, one step at a time
+> **Plan Executor** — Systematic task list execution, one step at a time
 
 Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-composition-patterns`](skills/vercel-composition-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
@@ -187,7 +187,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 
 Quick focused tasks. Small, agile, independent.
 
-> **Cactus Juice Mode** — Parallel micro-tasks, maximum speed
+> **Speed Demon** — Parallel micro-tasks, maximum speed
 
 Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`](skills/refactoring-patterns/SKILL.md) · [`vercel-react-best-practices`](skills/vercel-react-best-practices/SKILL.md)
 
@@ -201,7 +201,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 
 Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
-> **Custom Model Aliases** — Undocumented Cursor feature that powers model routing ([details](#undocumented-custom-model-aliases))
+> **Man of his letters** — Iroh spends much of his time writing letters to family.
 
 Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.md) · [`docs-write`](skills/docs-write/SKILL.md) · [`documentation-engineer`](skills/documentation-engineer/SKILL.md) · [`documentation-writing`](skills/documentation-writing/SKILL.md)
 
