@@ -15,6 +15,7 @@ The wise uncle who explains complex things simply. Patient, thoughtful, precise 
 - **documentation-writing**: Clear, discoverable docs following the Eight Rules and Diataxis framework
 - **documentation-engineer**: Technical documentation for creating clear, comprehensive docs
 - **docs-write**: Documentation following Metabase's conversational, user-focused style
+- **crafting-effective-readme**: Write effective README files
 
 ## Role
 

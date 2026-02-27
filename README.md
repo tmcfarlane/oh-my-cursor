@@ -405,6 +405,7 @@ Skills are installed by default. No Node.js required. Use `--no-skills` to skip 
 | architect | thebushidocollective/han | Sokka | System architecture and high-level technical design |
 | codebase-search | supercent-io/skills-template | Toph | Systematic search strategies for navigating large codebases |
 | create-an-asset | anthropics/knowledge-work-plugins | Zuko | Generate tailored sales assets (landing pages, decks, one-pagers) |
+| crafting-effective-readmes | community | Iroh | Templates and guidance for writing effective READMEs matched to project type |
 | debugging | oimiragieo/agent-studio | Katara | Systematic 4-phase debugging with root cause investigation |
 | design-patterns-implementation | aj-geddes/useful-ai-prompts | Aang | Apply design patterns (Singleton, Factory, Observer, Strategy, etc.) |
 | docs-write | metabase/metabase | Iroh | Documentation following Metabase's conversational, user-focused style |
