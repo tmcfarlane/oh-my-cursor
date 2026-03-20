@@ -902,8 +902,8 @@ function Main {
 
         if ($Scope -eq 'user') {
             $rulePath = Join-Path $dirs.RulesDir $RULE_FILE
-            Write-Host 'Note: Cursor requires manual approval for file-based user rules.' -ForegroundColor Yellow
-            Write-Host "  Open ${rulePath} in Cursor and click ""Always Allow"" to activate the orchestrator." -ForegroundColor Yellow
+            Write-Host 'Note: Cursor may require manual approval for file-based user rules.' -ForegroundColor Yellow
+            Write-Host "  If the rule does not appear, open ${rulePath} in Cursor and click ""Always Allow""." -ForegroundColor Yellow
             Write-Host ''
         }
     }
