@@ -318,8 +318,7 @@ function Get-SourcesFromGitHub {
 
         # Download skills via MANIFEST
         $manifestUrl = "${SourceBaseUrl}/skills/MANIFEST"
-        $manifestTmpBase = if ($env:TEMP) { $env:TEMP } elseif ($env:TMPDIR) { $env:TMPDIR } else { '/tmp' }
-        $manifestTmp = Join-Path $manifestTmpBase "oh-my-cursor-manifest-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
+        $manifestTmp = Join-Path ([System.IO.Path]::GetTempPath()) "oh-my-cursor-manifest-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
         try {
             Invoke-WebRequest -Uri $manifestUrl -OutFile $manifestTmp -UseBasicParsing
             $skillsOutDir = Join-Path $OutDir 'skills'
@@ -850,8 +849,7 @@ function Main {
         return
     }
 
-    $tempBase = if ($env:TEMP) { $env:TEMP } elseif ($env:TMPDIR) { $env:TMPDIR } else { '/tmp' }
-    $workDir = Join-Path $tempBase "oh-my-cursor-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
+    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) "oh-my-cursor-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
 
     try {
         Write-Host "oh-my-cursor v${VERSION}" -ForegroundColor White
