@@ -28,12 +28,25 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 
 </div>
 
-> **Note (March 2026):** I will be unable to support this repository for the next 30 days. If you enjoy this project, please consider [contributing](CONTRIBUTING.md) until I return. Bug reports and pull requests are still welcome — reviews will resume when I'm back. Thank you for your patience and support!
+> **What's next for oh-my-cursor?** Cursor 2.6 and Composer 2 dropped in March 2026 — here's what we're exploring:
+>
+> - **MCP Apps** — Team Avatar agents rendering interactive outputs: diagrams from Toph's search, charts from Appa's task execution, whiteboards from planning sessions
+> - **Automations** — Always-on background agents triggered by GitHub PRs, Slack, Linear, or PagerDuty — auto-review, auto-fix lint, auto-triage issues
+> - **Team Plugins** — Package oh-my-cursor as a distributable team plugin instead of a script install
+> - **Composer 2 routing** — Add Cursor's new frontier coding model as a model alias for agent routing
+>
+> Want to help build any of these? [Contributions welcome!](CONTRIBUTING.md)
 
 ## Quick Start (One Command)
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
 ```
 
 ## What Is This?
@@ -215,6 +228,8 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 **Requirements:** [Cursor](https://www.cursor.com/) with a plan that supports agent mode (subagents). No external runtime or dependencies.
 
+### macOS / Linux
+
 ```bash
 # [Default] Install to user scope (applies to all Cursor projects)
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
@@ -246,6 +261,56 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 > **Hacking on the repo locally?** Clone it, then run `bash install.sh` to install from source.
 
+### Windows (PowerShell)
+
+**One-liner** (default install):
+```powershell
+irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
+```
+
+**One-liner with flags** (PowerShell 7+ / Windows 11):
+```powershell
+# Install to project scope with force
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1))) -Scope project -Force
+
+# Also install for Claude Code and Codex compatibility
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1))) -AlsoClaude -AlsoCodex
+```
+
+**Clone + run locally** (works on all versions, lets you review the script first):
+```powershell
+git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
+
+# [Default] Install to user scope (applies to all Cursor projects)
+.\install.ps1
+
+# Install to this project only (.\.cursor\)
+.\install.ps1 -Scope project
+
+# Also install for Claude Code and Codex compatibility
+.\install.ps1 -AlsoClaude -AlsoCodex
+
+# Skip skills installation (skills are installed by default)
+.\install.ps1 -NoSkills
+
+# Preview changes
+.\install.ps1 -DryRun
+
+# Update/overwrite existing files
+.\install.ps1 -Force
+
+# Uninstall
+.\install.ps1 -Uninstall
+
+# Disable orchestration (Cursor stops applying the rule; agents and commands stay)
+.\install.ps1 -Disable
+
+# Re-enable orchestration
+.\install.ps1 -Enable
+```
+
+> **Note:** On Windows PowerShell 5.1, the `irm | iex` one-liner only supports default install. To pass flags, use the `& ([scriptblock]::Create(...))` syntax (PowerShell 7+) or clone the repo and run `.\install.ps1` directly.
+
 **Enable / disable:** Use `--disable` to turn off Team Avatar orchestration (the root thread can use normal tools again). Agents and slash commands remain installed; use `--enable` to turn orchestration back on. Use `--project` with `--disable` or `--enable` to toggle project scope only.
 
 ### What Gets Installed
@@ -257,6 +322,8 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 | `--claude` | Also `.claude/agents/` | Also `.claude/rules/` | Also `.claude/commands/` | Also `.claude/hooks/` | — |
 | `--codex` | Also `.codex/agents/` | Also `.codex/rules/` | Also `.codex/commands/` | Also `.codex/hooks/` | — |
 | `--no-skills` | ✓ | ✓ | ✓ | ✓ | Skipped |
+
+**First-time rule activation:** After installing to user scope, Cursor may require you to manually approve the orchestrator rule. If the rule does not appear, open `~/.cursor/rules/orchestrator.mdc` in Cursor and click **"Always Allow"** when prompted. This is a one-time step — Cursor treats file-based user rules as untrusted until explicitly approved.
 
 **Upgrading from oh-my-cursor v0.1 is automatic**
 
@@ -482,22 +549,40 @@ If your plan supports agent mode / subagents, yes. These files shape Cursor's ex
 
 #### How do I update?
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
 ```
 
+**Windows (PowerShell):**
+```powershell
+.\install.ps1 -Force
+```
+
 #### How do I uninstall?
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
+```
+
+**Windows (PowerShell):**
+```powershell
+.\install.ps1 -Uninstall
 ```
 
 #### Can I use this with Claude Code or Codex?
 
 Yes! Install with cross-tool flags:
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --claude --codex
+```
+
+**Windows (PowerShell):**
+```powershell
+.\install.ps1 -AlsoClaude -AlsoCodex
 ```
 
 
@@ -557,7 +642,7 @@ Result: **oh-my-cursor Agent Swarms** that do real work and also help you respon
 
 Contributions that improve clarity, behavior, or docs are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-**Local development:** Clone the repo and run `bash install.sh` to install from source. Changes to agents, rules, commands, or hooks take effect after reinstalling.
+**Local development:** Clone the repo and run `bash install.sh` (macOS/Linux) or `.\install.ps1` (Windows) to install from source. Changes to agents, rules, commands, or hooks take effect after reinstalling.
 
 ## Security
 
