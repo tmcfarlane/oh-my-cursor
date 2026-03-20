@@ -256,12 +256,21 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 ### Windows (PowerShell)
 
-**One-liner** (default install, no flags):
+**One-liner** (default install):
 ```powershell
 irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
 ```
 
-**Want to review the script first, or need to pass flags?** Clone + run locally:
+**One-liner with flags** (PowerShell 7+ / Windows 11):
+```powershell
+# Install to project scope with force
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1))) -Scope project -Force
+
+# Also install for Claude Code and Codex compatibility
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1))) -AlsoClaude -AlsoCodex
+```
+
+**Clone + run locally** (works on all versions, lets you review the script first):
 ```powershell
 git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
@@ -293,7 +302,7 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 .\install.ps1 -Enable
 ```
 
-> **Note:** The one-liner (`irm | iex`) only supports default install. To pass flags like `-Scope project`, `-Force`, or `-AlsoClaude`, clone the repo and run `.\install.ps1` directly.
+> **Note:** On Windows PowerShell 5.1, the `irm | iex` one-liner only supports default install. To pass flags, use the `& ([scriptblock]::Create(...))` syntax (PowerShell 7+) or clone the repo and run `.\install.ps1` directly.
 
 **Enable / disable:** Use `--disable` to turn off Team Avatar orchestration (the root thread can use normal tools again). Agents and slash commands remain installed; use `--enable` to turn orchestration back on. Use `--project` with `--disable` or `--enable` to toggle project scope only.
 
