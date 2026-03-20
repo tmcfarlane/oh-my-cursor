@@ -28,7 +28,7 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 
 </div>
 
-> **What's next for oh-my-cursor?** Cursor 2.6 and Composer 2 dropped in March 2026 — here's what we're exploring:
+> **What's next for oh-my-cursor? (March 20, 2026)** Cursor 2.6 and Composer 2 dropped in March 2026 — here's what we're exploring:
 >
 > - **MCP Apps** — Team Avatar agents rendering interactive outputs: diagrams from Toph's search, charts from Appa's task execution, whiteboards from planning sessions
 > - **Automations** — Always-on background agents triggered by GitHub PRs, Slack, Linear, or PagerDuty — auto-review, auto-fix lint, auto-triage issues
