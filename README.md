@@ -28,6 +28,15 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 
 </div>
 
+> **What's next for oh-my-cursor?** Cursor 2.6 and Composer 2 dropped in March 2026 — here's what we're exploring:
+>
+> - **MCP Apps** — Team Avatar agents rendering interactive outputs: diagrams from Toph's search, charts from Appa's task execution, whiteboards from planning sessions
+> - **Automations** — Always-on background agents triggered by GitHub PRs, Slack, Linear, or PagerDuty — auto-review, auto-fix lint, auto-triage issues
+> - **Team Plugins** — Package oh-my-cursor as a distributable team plugin instead of a script install
+> - **Composer 2 routing** — Add Cursor's new frontier coding model as a model alias for agent routing
+>
+> Want to help build any of these? [Contributions welcome!](CONTRIBUTING.md)
+
 ## Quick Start (One Command)
 
 **macOS / Linux:**
