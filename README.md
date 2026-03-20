@@ -28,8 +28,6 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 
 </div>
 
-> **Note (March 2026):** I will be unable to support this repository for the next 30 days. If you enjoy this project, please consider [contributing](CONTRIBUTING.md) until I return. Bug reports and pull requests are still welcome — reviews will resume when I'm back. Thank you for your patience and support!
-
 ## Quick Start (One Command)
 
 **macOS / Linux:**
