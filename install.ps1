@@ -59,7 +59,7 @@
 
 .EXAMPLE
     irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
-    # One-liner install from GitHub
+    # One-liner install from GitHub (default options only; clone the repo to pass flags)
 #>
 
 [CmdletBinding()]
