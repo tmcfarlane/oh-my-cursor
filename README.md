@@ -39,7 +39,7 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/copilot/add-windows-installation-script/install.ps1 | iex
 ```
 
 ## What Is This?
@@ -258,7 +258,7 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 
 ```powershell
 # [Default] Install to user scope (applies to all Cursor projects)
-irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/copilot/add-windows-installation-script/install.ps1 | iex
 
 # Install to this project only (.\.cursor\)
 .\install.ps1 -Scope project
@@ -298,6 +298,8 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 | `--claude` | Also `.claude/agents/` | Also `.claude/rules/` | Also `.claude/commands/` | Also `.claude/hooks/` | — |
 | `--codex` | Also `.codex/agents/` | Also `.codex/rules/` | Also `.codex/commands/` | Also `.codex/hooks/` | — |
 | `--no-skills` | ✓ | ✓ | ✓ | ✓ | Skipped |
+
+**First-time rule activation:** After installing to user scope, Cursor requires you to manually approve the orchestrator rule. Open `~/.cursor/rules/orchestrator.mdc` in Cursor and click **"Always Allow"** in the prompt that appears. This is a one-time step — Cursor treats file-based user rules as untrusted until explicitly approved.
 
 **Upgrading from oh-my-cursor v0.1 is automatic**
 

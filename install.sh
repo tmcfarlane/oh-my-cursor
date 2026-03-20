@@ -562,6 +562,13 @@ install_agents() {
     log "  ${GREEN}Agents: ${#AGENT_FILES[@]} | Commands: ${#COMMAND_FILES[@]} | Hooks: ${#HOOK_FILES[@]} | Skills: skipped${RESET}"
   fi
   log ""
+
+  if [ "$SCOPE" = "user" ]; then
+    local rule_path="${RULES_DIR}/${RULE_FILE}"
+    log "  ${YELLOW}Note: Cursor requires manual approval for file-based user rules.${RESET}"
+    log "  ${YELLOW}Open ${rule_path} in Cursor and click \"Always Allow\" to activate the orchestrator.${RESET}"
+    log ""
+  fi
 }
 
 # ---------------------------------------------------------------------------

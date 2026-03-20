@@ -58,7 +58,7 @@
     # Remove all components
 
 .EXAMPLE
-    irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
+    irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/copilot/add-windows-installation-script/install.ps1 | iex
     # One-liner install from GitHub
 #>
 
@@ -118,7 +118,7 @@ $SKILL_DIRS = @(
 $LEGACY_AGENT_FILES = @('atlas.md', 'explore.md', 'generalPurpose.md', 'hephaestus.md', 'librarian.md', 'metis.md', 'momus.md', 'multimodal-looker.md', 'oracle.md', 'prometheus.md', 'sisyphus.md')
 $LEGACY_PROTOCOL_FILES = @('protocols/swarm-coordinator.md')
 
-$SOURCE_BASE_URL_DEFAULT = 'https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main'
+$SOURCE_BASE_URL_DEFAULT = 'https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/copilot/add-windows-installation-script'
 $SourceBaseUrl = if ($env:OH_MY_CURSOR_SOURCE_BASE_URL) { $env:OH_MY_CURSOR_SOURCE_BASE_URL } else { $SOURCE_BASE_URL_DEFAULT }
 
 # ---------------------------------------------------------------------------
@@ -638,7 +638,7 @@ function Install-Skills {
     Write-Host ''
 
     # Check for legacy skills location
-    $legacySkillsDir = Join-Path $HOME '.agents' 'skills'
+    $legacySkillsDir = Join-Path (Join-Path $HOME '.agents') 'skills'
     if (Test-Path $legacySkillsDir) {
         $legacyCount = 0
         foreach ($skill in $SKILL_DIRS) {
@@ -659,8 +659,8 @@ function Compare-SkillDirs {
         [string]$DestDir
     )
 
-    $srcFiles = Get-ChildItem $SrcDir -Recurse -File | Where-Object { $_.Name -ne '.DS_Store' }
-    $destFiles = Get-ChildItem $DestDir -Recurse -File | Where-Object { $_.Name -ne '.DS_Store' }
+    $srcFiles = @(Get-ChildItem $SrcDir -Recurse -File | Where-Object { $_.Name -ne '.DS_Store' })
+    $destFiles = @(Get-ChildItem $DestDir -Recurse -File | Where-Object { $_.Name -ne '.DS_Store' })
 
     if ($srcFiles.Count -ne $destFiles.Count) { return $false }
 
@@ -899,6 +899,13 @@ function Main {
             Write-Host "  Agents: $($AGENT_FILES.Count) | Commands: $($COMMAND_FILES.Count) | Hooks: $($HOOK_FILES.Count) | Skills: skipped" -ForegroundColor Green
         }
         Write-Host ''
+
+        if ($Scope -eq 'user') {
+            $rulePath = Join-Path $dirs.RulesDir $RULE_FILE
+            Write-Host 'Note: Cursor requires manual approval for file-based user rules.' -ForegroundColor Yellow
+            Write-Host "  Open ${rulePath} in Cursor and click ""Always Allow"" to activate the orchestrator." -ForegroundColor Yellow
+            Write-Host ''
+        }
     }
     finally {
         if (Test-Path $workDir) {
