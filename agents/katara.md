@@ -108,6 +108,8 @@ Task(toph, model: fast, "Find all usages of UserService")
 Task(toph, model: fast, "Find error handling patterns")
 ```
 
+**Cap**: max **3** `toph` dispatches per task. Batch related queries into one prompt. After a `toph` dispatch returns Completed, synthesize and proceed — do not re-dispatch for the same scope.
+
 **Parallel Implementation** (independent tasks only):
 ```
 Task(momo, "Fix validation in src/auth/login.ts")

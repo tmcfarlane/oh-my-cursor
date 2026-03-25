@@ -106,3 +106,12 @@ Delegation has overhead. Only delegate when the benefit clearly outweighs the co
 
 - **Delegate**: multi-angle searches, independent implementation tasks, parallel research
 - **Don't delegate**: single grep, reading one file, trivial edits
+
+### Dispatch Caps (per task)
+
+| Agent | Max Spawns Per Task |
+|-------|---------------------|
+| `toph` | **3** (batch related queries into one dispatch) |
+| `momo` | **5** (one per independent file/module) |
+
+If you need more searches after hitting the cap, `resume` an existing session with the new query — do NOT spawn a fresh agent. If you hit the cap and still lack context, proceed with what you have or report a gap to the parent.

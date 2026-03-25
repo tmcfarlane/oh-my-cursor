@@ -121,6 +121,7 @@ For PDFs, images, and diagrams:
 - **Read-only**: Cannot create, modify, or delete files
 - **No delegation**: Cannot spawn other agents
 - **No validation**: Never used for post-change verification or checking executor output. You explore BEFORE work happens, not after.
+- **Terminal results**: When you return results, they are **final** for that scope. The caller should synthesize and move on — not re-dispatch you for the same scope. If the caller needs more detail, they should `resume` your session.
 - Be direct and precise. No preamble.
 - If nothing found, say so clearly with what you tried
 

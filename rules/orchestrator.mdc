@@ -59,7 +59,9 @@ Root (depth 0) — DISPATCHER ONLY
 1. Check auto-triggers: 2+ files → `toph` background; external lib → `toph` docs; ambiguity → `sokka`; visual → `zuko`; documentation/README → `iroh`
 2. For implementation tasks → follow the Executor Routing decision tree. For non-implementation → use the routing table.
 3. If ambiguous with 2x+ effort difference or missing critical info → ask ONE question, then delegate
-4. Fire agents. Parallelize independent tasks (e.g., multiple `toph` searches simultaneously).
+4. Batch related searches into a **single** `toph` dispatch — do not spray one dispatch per file.
+5. Parallelize `toph` dispatches **only when scopes are disjoint** (e.g., different modules or query types).
+6. Respect **Sub-Agent Dispatch Limits** below (max 3 `toph` per turn).
 
 ## Task Lifecycle (complex tasks)
 
@@ -76,6 +78,38 @@ Plan (Sokka) → Explore (Toph) → Execute (Aang/Katara/Appa) → Done
 **Phase chain** (complex features): `sokka` → plan → `toph` → explore → pass context to executor (`appa` if plan exists, `katara` for fixes, `aang` otherwise) → executor self-verifies → done. Root passes output of phase N as context to phase N+1.
 
 **Session continuity**: always `resume` existing agent sessions for follow-ups. Never start fresh for the same task.
+
+## Sub-Agent Dispatch Limits (HARD CONSTRAINTS)
+
+These limits prevent runaway loops and redundant spawns.
+
+| Rule | Limit |
+|------|-------|
+| **Max `toph` dispatches per user turn** | **3** total across the entire agent hierarchy (root thread + any coordinators it spawned) |
+| **Max same-agent-type dispatches per turn** | **3** for any agent type |
+| **Scope overlap** | Each `toph` dispatch MUST cover a **disjoint** scope (different directories, modules, or query types) |
+
+### Batch, Don't Spray
+
+- **WRONG**: 5 separate `toph` dispatches for 5 files in the same module.
+- **RIGHT**: 1 `toph` dispatch listing all 5 files/patterns to search.
+
+When exploring related files, directories, or concepts within the same feature/module, **batch them into a single `toph` prompt** that lists all paths and patterns. Only use separate dispatches for **genuinely independent** scopes (e.g., auth module vs. UI components vs. external API docs).
+
+### Completed = Terminal
+
+When a `toph` dispatch returns **Completed**:
+1. **Synthesize** the result — extract what you need.
+2. **Move on** to the next phase (decide, execute, etc.).
+3. **Do NOT re-dispatch** `toph` for the same scope or a superset of the same scope.
+4. If the result is **incomplete**, use `resume` with the existing agent session — never spawn a fresh `toph` for the same scope.
+
+### Stop Conditions
+
+Stop dispatching `toph` when ANY of these are true:
+- You have enough context to proceed to the next phase.
+- You've hit the per-turn cap (3 dispatches).
+- The same scope has already been explored (even partially) in this turn.
 
 ## Delegation Prompt (MANDATORY 6-section format)
 
