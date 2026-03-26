@@ -96,13 +96,22 @@ These limits prevent runaway loops and redundant spawns.
 
 When exploring related files, directories, or concepts within the same feature/module, **batch them into a single `toph` prompt** that lists all paths and patterns. Only use separate dispatches for **genuinely independent** scopes (e.g., auth module vs. UI components vs. external API docs).
 
+### Dedup Before Dispatch
+
+Before spawning any sub-agent, check whether an equivalent dispatch already occurred in this turn:
+- **Same agent type + overlapping scope** → reuse the completed result or `resume` the existing session.
+- **Same or substantially similar task description** (e.g., "find auth patterns in src/" vs. "search for authentication in src/auth/") → skip the dispatch entirely.
+
+If a previous `toph` already explored files in `src/auth/`, do NOT dispatch another `toph` for `src/auth/login.ts` — the result is already available.
+
 ### Completed = Terminal
 
 When a `toph` dispatch returns **Completed**:
-1. **Synthesize** the result — extract what you need.
-2. **Move on** to the next phase (decide, execute, etc.).
-3. **Do NOT re-dispatch** `toph` for the same scope or a superset of the same scope.
-4. If the result is **incomplete**, use `resume` with the existing agent session — never spawn a fresh `toph` for the same scope.
+1. **Record the result** — keep a brief summary of what was explored and what was found.
+2. **Inject into context** — before deciding the next action, include the summary of all completed sub-agent results so the parent model knows what has already been explored.
+3. **Move on** to the next phase (decide, execute, etc.).
+4. **Do NOT re-dispatch** `toph` for the same scope or a superset of the same scope.
+5. If the result is **incomplete**, use `resume` with the existing agent session — never spawn a fresh `toph` for the same scope.
 
 ### Stop Conditions
 
@@ -110,6 +119,7 @@ Stop dispatching `toph` when ANY of these are true:
 - You have enough context to proceed to the next phase.
 - You've hit the per-turn cap (3 dispatches).
 - The same scope has already been explored (even partially) in this turn.
+- A previous dispatch's result already covers the intended scope (dedup).
 
 ## Delegation Prompt (MANDATORY 6-section format)
 

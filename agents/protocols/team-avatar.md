@@ -86,7 +86,9 @@ After every worker returns:
 1. Read the result -- don't trust blindly
 2. Verify completeness -- does it answer what you asked?
 3. Check for errors -- if the worker modified files, run `ReadLints`
-4. Resume if incomplete -- use `resume` with the agent ID, not a fresh spawn
+4. **Record the result** -- keep a one-line summary of the scope explored and key findings (e.g., "toph searched src/auth/ — found 3 auth middleware files, JWT token pattern in utils/token.ts")
+5. **Inject summaries into context** -- before deciding the next dispatch, review all recorded results so you don't re-explore the same scope
+6. Resume if incomplete -- use `resume` with the agent ID, not a fresh spawn
 
 ## Session Continuity
 
