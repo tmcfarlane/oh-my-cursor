@@ -1,3 +1,21 @@
+.env
+.env.*
+!.env.example
+
 .env*.local
+
 .DS_Store
 **/.DS_Store
+
+node_modules/
+
+# Local agent/runtime artifacts
+.cursor/
+.omc/
+.claude/
+.codex/
+
+# Build/test outputs
+dist/
+coverage/
+*.log
