@@ -86,7 +86,9 @@ After every worker returns:
 1. Read the result -- don't trust blindly
 2. Verify completeness -- does it answer what you asked?
 3. Check for errors -- if the worker modified files, run `ReadLints`
-4. Resume if incomplete -- use `resume` with the agent ID, not a fresh spawn
+4. **Record the result** -- keep a one-line summary of the scope explored and key findings (e.g., "toph searched src/auth/ — found 3 auth middleware files, JWT token pattern in utils/token.ts")
+5. **Inject summaries into context** -- before deciding the next dispatch, review all recorded results so you don't re-explore the same scope
+6. Resume if incomplete -- use `resume` with the agent ID, not a fresh spawn
 
 ## Session Continuity
 
@@ -106,3 +108,12 @@ Delegation has overhead. Only delegate when the benefit clearly outweighs the co
 
 - **Delegate**: multi-angle searches, independent implementation tasks, parallel research
 - **Don't delegate**: single grep, reading one file, trivial edits
+
+### Dispatch Caps (per task)
+
+| Agent | Max Spawns Per Task |
+|-------|---------------------|
+| `toph` | **3** (batch related queries into one dispatch) |
+| `momo` | **5** (one per independent file/module) |
+
+If you need more searches after hitting the cap, `resume` an existing session with the new query — do NOT spawn a fresh agent. If you hit the cap and still lack context, proceed with what you have or report a gap to the parent.

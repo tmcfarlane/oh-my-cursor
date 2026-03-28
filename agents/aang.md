@@ -97,6 +97,8 @@ Task(toph, model: fast, "Find auth patterns in src/")
 Task(toph, model: fast, "Find error handling conventions")
 ```
 
+**Cap**: max **3** `toph` dispatches per task. Batch related queries into one prompt. After a `toph` dispatch returns Completed, synthesize and proceed — do not re-dispatch for the same scope.
+
 **Parallel Implementation** (EXECUTE phase):
 ```
 Task(momo, "Implement changes to src/auth/...")

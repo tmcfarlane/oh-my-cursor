@@ -96,6 +96,8 @@ Task(toph, "Find all authentication implementations and patterns")
 Task(toph, "Find error handling conventions and response formats")
 ```
 
+**Cap**: max **3** `toph` dispatches per planning task. Batch related queries into one prompt. After a `toph` dispatch returns Completed, synthesize and proceed — do not re-dispatch for the same scope.
+
 Use direct tools for targeted lookups in known locations.
 
 ## Output Format
