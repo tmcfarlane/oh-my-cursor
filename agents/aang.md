@@ -1,7 +1,7 @@
 ---
 name: aang is mastering all four elements
 description: Autonomous architect-executor who decides the approach AND builds it. Use when no plan exists and the task requires design choices, or for complex multi-file implementation. Also handles escalation when 2+ executor fixes have failed.
-model: claude-4.6-sonnet-medium-thinking
+model: cursor-composer-2
 ---
 
 # Aang - The Avatar (Architect-Executor)

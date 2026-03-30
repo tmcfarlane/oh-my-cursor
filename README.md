@@ -33,7 +33,6 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 > - **MCP Apps** — Team Avatar agents rendering interactive outputs: diagrams from Toph's search, charts from Appa's task execution, whiteboards from planning sessions
 > - **Automations** — Always-on background agents triggered by GitHub PRs, Slack, Linear, or PagerDuty — auto-review, auto-fix lint, auto-triage issues
 > - **Team Plugins** — Package oh-my-cursor as a distributable team plugin instead of a script install
-> - **Composer 2 routing** — Add Cursor's new frontier coding model as a model alias for agent routing
 >
 > Want to help build any of these? [Contributions welcome!](CONTRIBUTING.md)
 
@@ -113,7 +112,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 
 <a id="agent-aang"></a>
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>cursor-composer-2</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -141,7 +140,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 
 <a id="agent-katara"></a>
 <details open>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>claude-4.6-sonnet-medium-thinking</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>cursor-composer-2</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -169,7 +168,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 
 <a id="agent-toph"></a>
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>kimi-k2.5</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>cursor-composer-2</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -183,7 +182,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 
 <a id="agent-appa"></a>
 <details>
-<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>kimi-k2.5</code></summary>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>cursor-composer-2</code></summary>
 
 Systematic task list execution. Carries the team.
 
@@ -197,7 +196,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 
 <a id="agent-momo"></a>
 <details>
-<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>kimi-k2.5</code></summary>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>cursor-composer-2</code></summary>
 
 Quick focused tasks. Small, agile, independent.
 
@@ -223,6 +222,23 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 </details>
 
+## Model policy (Composer 2 by default)
+
+Team Avatar uses **[Composer 2](https://cursor.com/docs/models/cursor-composer-2.md)** (`cursor-composer-2` in agent frontmatter) as the **default** model for agents that are not deliberately routed to **Opus** or **Gemini**. That aligns usage with Cursor’s **Auto + Composer** pool where applicable, keeps latency low for routine agent work, and avoids leaning on third-party API billing for workloads that fit Composer 2. Tracked in [issue #20](https://github.com/tmcfarlane/oh-my-cursor/issues/20).
+
+**Rule:** If it is not intentionally **Opus** or **Gemini**, it should be **`cursor-composer-2`**.
+
+**Exceptions (deliberate routing):**
+
+| Agent | Model | Reason |
+|-------|--------|--------|
+| **Sokka** | `claude-4.6-opus-max-thinking` | Complex planning and ambiguous scope — maximum reasoning depth |
+| **Iroh** | `claude-4.6-opus-max-thinking` | Documentation and long-form narrative quality |
+| **Zuko** | `gemini-3.1-pro` | Multimodal / visual stack (images, icons, UI mockups) |
+
+**Subagent `Task(..., model: fast)`:** Coordinator protocols and [Cactus Juice](#cactus-juice-mode) still use Cursor’s built-in **`fast`** tier for spawned workers ([subagent model configuration](https://cursor.com/docs/subagents.md#model-configuration)). That is separate from per-agent `model:` frontmatter; do not assume it maps 1:1 to `cursor-composer-2`.
+
+**Rollback / exceptions:** If a workflow regresses on Composer 2, change the relevant agent’s `model:` in its markdown file (or fork and document a one-line exception in your team’s fork). Prefer listing the agent, model, owner, and reason next to the table above when contributing upstream.
 
 ## How to Install
 
@@ -346,7 +362,7 @@ Example:
 ```yaml
 ---
 name: momo is doing some quick code changes
-model: kimi-k2.5
+model: cursor-composer-2
 ---
 ```
 
@@ -422,7 +438,7 @@ flowchart TD
   PLAN --> IMPL["Task(aang / katara)<br/>Coordinators"]
 
   IMPL -->|"spawns"| T2["toph (fast)"]
-  IMPL -->|"spawns"| M2["momo (kimi-k2.5)"]
+  IMPL -->|"spawns"| M2["momo (cursor-composer-2)"]
 
   IG -->|"task list"| AP["Task(appa)<br/>Heavy Lifter"]
   AP -->|"spawns"| M3["momo"]

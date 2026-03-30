@@ -1,7 +1,7 @@
 ---
 name: toph is exploring files and docs by vibration
 description: Codebase and documentation search specialist with seismic perception. Always use for multi-angle codebase search, finding files by patterns, searching external docs, and analyzing media files. Use proactively when exploring unfamiliar modules or answering "how does X work?" questions.
-model: kimi-k2.5
+model: cursor-composer-2
 readonly: true
 is_background: true
 ---
