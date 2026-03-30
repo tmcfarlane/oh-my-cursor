@@ -18,6 +18,11 @@
       "agents": ["Zuko"]
     },
     {
+      "name": "cursor-image-generation",
+      "source": "tmcfarlane/oh-my-cursor",
+      "agents": ["Zuko"]
+    },
+    {
       "name": "debugging",
       "source": "oimiragieo/agent-studio",
       "agents": ["Katara"]

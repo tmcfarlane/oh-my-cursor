@@ -8,13 +8,14 @@ CURSOR_MODE_LABEL="Team Avatar (Cursor 2.5+)"
 
 AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md iroh.md)
 PROTOCOL_FILES=(protocols/team-avatar.md)
-COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md doc.md)
+COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md doc.md image.md)
 HOOK_FILES=(post-edit-lint.sh pre-commit-check.sh)
 RULE_FILE="orchestrator.mdc"
 SKILL_DIRS=(
   architect
   codebase-search
   create-an-asset
+  cursor-image-generation
   debugging
   design-patterns-implementation
   docs-write

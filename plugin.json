@@ -25,7 +25,9 @@
     "commands/fix.md",
     "commands/tasks.md",
     "commands/scout.md",
-    "commands/cactus-juice.md"
+    "commands/cactus-juice.md",
+    "commands/doc.md",
+    "commands/image.md"
   ],
   "hooks": [
     "hooks/post-edit-lint.sh",
