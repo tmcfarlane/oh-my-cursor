@@ -34,11 +34,11 @@ The bullets below are a **condensed synthesis** of common guidance for Nano Bana
 
 They align with the spirit of Google’s public guides ([prompt tips](https://blog.google/products/gemini/prompting-tips-nano-banana-pro), [Google Cloud guide](https://cloud.google.com/blog/products/ai-machine-learning/ultimate-prompting-guide-for-nano-banana), [DeepMind prompt guide](https://deepmind.google/models/gemini-image/prompt-guide/)):
 
-1. **Brief a human artist** — Use clear, grammatical sentences. Avoid keyword soup (`“cyber, 4k, hdr, epic”`) unless you deliberately want a tag-like aesthetic.
+1. **Brief a human artist** — Use clear, grammatical sentences. Avoid keyword soup (`"cyber, 4k, hdr, epic"`) unless you deliberately want a tag-like aesthetic.
 2. **Layer the description** — Subject → action/pose → environment → **camera** (wide shot, isometric, macro) → **lighting** (soft window light, neon rim, overcast) → **materials** (brushed aluminum, matte paper, glass) → **style** (editorial photo, flat illustration, low-poly 3D render).
-3. **Text in images** — Put exact wording in **double quotes** and specify typography feel (e.g. “bold geometric sans”, “narrow serif for headlines”). Ask for legibility and high contrast if the text is important.
+3. **Text in images** — Put exact wording in **double quotes** and specify typography feel (e.g. `"bold geometric sans"`, `"narrow serif for headlines"`). Ask for legibility and high contrast if the text is important.
 4. **Aspect ratio and framing** — State **orientation** (square, 16:9 landscape, 9:16 story) and **safe margins** if the asset will be cropped (e.g. app icon: centered subject, padding).
-5. **Edit, don’t always re-roll** — If the image is roughly right, ask for **specific changes** (“change the background to warm beige”, “make the logo 20% larger”, “remove the extra person on the left”) instead of a full new prompt.
+5. **Edit, don't always re-roll** — If the image is roughly right, ask for **specific changes** (`"change the background to warm beige"`, `"make the logo 20% larger"`, `"remove the extra person on the left"`) instead of a full new prompt.
 6. **Reference images** — When the user supplies a reference, describe **what to keep** (palette, mood, composition) and **what to change** so the model does not drift.
 
 ## Anti-patterns
@@ -58,25 +58,39 @@ They align with the spirit of Google’s public guides ([prompt tips](https://bl
 
 ## Prompting patterns (copy and adapt)
 
-**App icon (square, legible at small size)**  
-“Square app icon, centered symbol of [subject], flat vector style with subtle depth, limited palette [colors], 10% safe margin from edges, no tiny text, crisp edges, high contrast on [background tone].”
+Square brackets `[like-this]` mark placeholders to fill in. Double quotes `"..."` mark exact text the model should render in the image.
 
-**UI mockup still (marketing)**  
-“Photorealistic product screenshot of a [mobile/web] app, [screen name] view, centered device, soft studio lighting, neutral background, clean sans UI, placeholder text in quotes where needed: “[headline]”, “[CTA]” — modern SaaS aesthetic.”
+**App icon (square, legible at small size)**
 
-**Illustration (not photo)**  
-“Editorial illustration of [subject], [mood], limited palette [colors], visible brush texture or clean vector shapes (pick one), generous whitespace, no photorealistic faces unless requested.”
+```text
+Square app icon, centered symbol of [subject], flat vector style with subtle depth, limited palette [colors], 10% safe margin from edges, no tiny text, crisp edges, high contrast on [background tone].
+```
 
-**Diagram / concept**  
-“Isometric diagram of [system], labeled zones only if labels are in quotes: “[A]”, “[B]”, simple shapes, light grid, high contrast lines, no clutter, presentation slide style.”
+**UI mockup still (marketing)**
+
+```text
+Photorealistic product screenshot of a [mobile/web] app, [screen name] view, centered device, soft studio lighting, neutral background, clean sans UI. Render the following text exactly: headline "[headline text]", button label "[CTA text]". Modern SaaS aesthetic.
+```
+
+**Illustration (not photo)**
+
+```text
+Editorial illustration of [subject], [mood], limited palette [colors], visible brush texture or clean vector shapes (pick one), generous whitespace, no photorealistic faces unless requested.
+```
+
+**Diagram / concept**
+
+```text
+Isometric diagram of [system], simple shapes, light grid, high contrast lines, no clutter, presentation slide style. Label the zones exactly: "[zone A label]", "[zone B label]".
+```
 
 ## Examples: weak vs stronger
 
 | Weak | Stronger |
 |------|----------|
-| “A nice logo for my app” | “Minimal wordmark for a productivity app, lowercase sans-serif feel, single accent color #2563EB on white, generous letter-spacing, no icon, horizontal logo lockup.” |
-| “Cyberpunk city” | “Wide 16:9 cinematic shot of a rainy cyberpunk street at night, neon reflections on wet asphalt, single vanishing point, shallow depth of field, no readable text, teal and magenta accents.” |
-| “Fix the image” | “Keep the same subject and composition; change only the background to soft gradient from #0f172a to #1e293b; leave lighting on the subject unchanged.” |
+| `"A nice logo for my app"` | `Minimal wordmark for a productivity app, lowercase sans-serif feel, single accent color #2563EB on white, generous letter-spacing, no icon, horizontal logo lockup.` |
+| `"Cyberpunk city"` | `Wide 16:9 cinematic shot of a rainy cyberpunk street at night, neon reflections on wet asphalt, single vanishing point, shallow depth of field, no readable text, teal and magenta accents.` |
+| `"Fix the image"` | `Keep the same subject and composition; change only the background to soft gradient from #0f172a to #1e293b; leave lighting on the subject unchanged.` |
 
 ## References
 
