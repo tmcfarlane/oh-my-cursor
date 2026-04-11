@@ -236,7 +236,7 @@ Team Avatar uses **[Composer 2](https://cursor.com/docs/models/cursor-composer-2
 | **Iroh** | `claude-4.6-opus-max-thinking` | Documentation and long-form narrative quality |
 | **Zuko** | `gemini-3.1-pro` | Multimodal / visual stack (images, icons, UI mockups) |
 
-**Subagent `Task(..., model: fast)`:** Coordinator protocols and [Cactus Juice](#cactus-juice-mode) still use Cursor’s built-in **`fast`** tier for spawned workers ([subagent model configuration](https://cursor.com/docs/subagents.md#model-configuration)). That is separate from per-agent `model:` frontmatter; do not assume it maps 1:1 to `composer-2`.
+**Subagent routing (`Task(..., model: fast)` and inherited model):** Some coordinator-spawned workers still use Cursor’s built-in **`fast`** tier ([subagent model configuration](https://cursor.com/docs/subagents.md#model-configuration))—specifically `toph` and `momo` simple paths—and [Cactus Juice](#cactus-juice-mode) also uses `fast`. However, `momo` complex paths inherit the coordinator’s model instead of forcing `fast`. This is separate from per-agent `model:` frontmatter; do not assume spawned-worker routing maps 1:1 to `composer-2`.
 
 **Rollback / exceptions:** If a workflow regresses on Composer 2, change the relevant agent’s `model:` in its markdown file (or fork and document a one-line exception in your team’s fork). Prefer listing the agent, model, owner, and reason next to the table above when contributing upstream.
 
