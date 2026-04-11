@@ -33,13 +33,15 @@ Root (depth 0) — DISPATCHER ONLY
 
 ## Agent Routing
 
+**Model policy:** default **`composer-2`** (Composer 2, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-4.6-opus-max-thinking`** only for deliberate depth (Sokka, Iroh); **`gemini-3.1-pro`** only for the multimodal stack (Zuko). See [Model policy (Composer 2 by default)](../README.md#model-policy-composer-2-by-default) in the project README.
+
 | Agent | Model | Fire When |
 |-------|-------|-----------|
-| **Toph** | `kimi-k2.5` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
-| **Momo** | `kimi-k2.5` | Simple single-file changes, quick focused tasks |
-| **Appa** | `kimi-k2.5` | Plan exists → executes plan step-by-step, no improvisation |
-| **Katara** | `claude-4.6-sonnet-medium-thinking` | No plan + needs fixing → surgical fix, smallest possible change |
-| **Aang** | `claude-4.6-sonnet-medium-thinking` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
+| **Toph** | `composer-2` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
+| **Momo** | `composer-2` | Simple single-file changes, quick focused tasks |
+| **Appa** | `composer-2` | Plan exists → executes plan step-by-step, no improvisation |
+| **Katara** | `composer-2` | No plan + needs fixing → surgical fix, smallest possible change |
+| **Aang** | `composer-2` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
 | **Sokka** | `claude-4.6-opus-max-thinking` | Complex planning, ambiguous scope analysis |
 | **Zuko** | `gemini-3.1-pro` | Images, icons, UI mockups, visual design |
 | **Iroh** | `claude-4.6-opus-max-thinking` | README writes, CHANGELOG updates, any documentation task |
