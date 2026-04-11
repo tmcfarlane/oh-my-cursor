@@ -33,7 +33,7 @@ Root (depth 0) — DISPATCHER ONLY
 
 ## Agent Routing
 
-**Model policy:** default **`composer-2`** (Composer 2, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-4.6-opus-max-thinking`** only for deliberate depth (Sokka, Iroh); **`gemini-3.1-pro`** only for the multimodal stack (Zuko). See [Model policy (Composer 2 by default)](https://github.com/tmcfarlane/oh-my-cursor/blob/main/README.md#model-policy-composer-2-by-default) in the project README.
+**Model policy:** default **`composer-2`** (Composer 2, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-4.6-opus-max-thinking`** only for deliberate depth (Sokka, Iroh); **`gemini-3.1-pro`** only for the multimodal stack (Zuko). See [Model policy (Composer 2 by default)](../README.md#model-policy-composer-2-by-default) in the project README.
 
 | Agent | Model | Fire When |
 |-------|-------|-----------|
