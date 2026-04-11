@@ -438,7 +438,7 @@ flowchart TD
   PLAN --> IMPL["Task(aang / katara)<br/>Coordinators"]
 
   IMPL -->|"spawns"| T2["toph (fast)"]
-  IMPL -->|"spawns"| M2["momo (composer-2)"]
+  IMPL -->|"spawns"| M2["momo (fast / inherited)"]
 
   IG -->|"task list"| AP["Task(appa)<br/>Heavy Lifter"]
   AP -->|"spawns"| M3["momo"]
