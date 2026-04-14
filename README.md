@@ -325,22 +325,21 @@ model: gemini-3.1-pro # multimodal tasks
 
 Type these in Cursor's chat to invoke specific workflows:
 
-| Command         | Agent  | Purpose                                                                                                 |
-| --------------- | ------ | ------------------------------------------------------------------------------------------------------- |
-| `/plan`         | Sokka  | Full planning pipeline: ambiguity analysis, plan creation, self-review                                  |
-| `/build`        | Aang   | Deep multi-file implementation with verification                                                        |
-| `/search`       | Toph   | Multi-angle codebase + docs exploration                                                                 |
-| `/fix`          | Katara | Methodical debugging and code healing                                                                   |
-| `/tasks`        | Appa   | Systematic task list execution                                                                          |
-| `/scout`        | Momo   | Quick focused tasks                                                                                     |
-| `/doc`          | Iroh   | Documentation generation and updates                                                                    |
+| Command         | Agent  | Purpose                                                                                                  |
+| --------------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| `/plan`         | Sokka  | Full planning pipeline: ambiguity analysis, plan creation, self-review                                   |
+| `/build`        | Aang   | Deep multi-file implementation with verification                                                         |
+| `/search`       | Toph   | Multi-angle codebase + docs exploration                                                                  |
+| `/fix`          | Katara | Methodical debugging and code healing                                                                    |
+| `/tasks`        | Appa   | Systematic task list execution                                                                           |
+| `/scout`        | Momo   | Quick focused tasks                                                                                      |
+| `/doc`          | Iroh   | Documentation generation and updates                                                                     |
 | `/image`        | Zuko   | Cursor image generation (Nano Banana Pro): icons, mockups, prompts via **cursor-image-generation** skill |
-| `/cactus-juice` | Swarm  | Decompose into micro-tasks, spawn up to 10 parallel workers                                             |
+| `/cactus-juice` | Swarm  | Decompose into micro-tasks, spawn up to 10 parallel workers                                              |
 
 ### Image generation (Cursor agent)
 
 The agent can generate images via **Google Nano Banana Pro**; previews save under **`assets/`** by default. Team Avatar routes visual generation to **Zuko**, which uses the **`cursor-image-generation`** skill ([`skills/cursor-image-generation/SKILL.md`](skills/cursor-image-generation/SKILL.md)) to **rewrite** short user requests into full prompts, then iterate. Use **`/image`** or delegate **`Task(zuko)`** for image-only work.
-
 
 ## Two Orchestration Modes
 
@@ -458,15 +457,25 @@ Or use slash commands: `/plan add OAuth support with JWT tokens` then `/build ba
 
 ## FAQ
 
-**Do I need to manually choose agents?** No — the orchestrator auto-delegates. Slash commands (`/plan`, `/build`, `/fix`, etc.) give explicit control when you want it.
+### Do I need to manually choose agents?
 
-**Will this work on any Cursor plan?** Yes, if your plan supports agent mode / subagents.
+No — the orchestrator auto-delegates. Slash commands (`/plan`, `/build`, `/fix`, etc.) give explicit control when you want it.
 
-**How do I update?** Re-run the install command with `--force` (or `-Force` on Windows).
+### Will this work on any Cursor plan?
 
-**How do I uninstall?** Re-run with `--uninstall` (or `-Uninstall` on Windows).
+Yes, if your plan supports agent mode / subagents.
 
-**Claude Code / Codex?** Yes — install with `--claude --codex` (or `-AlsoClaude -AlsoCodex`).
+### How do I update?
+
+Re-run the install command with `--force` (or `-Force` on Windows).
+
+### How do I uninstall?
+
+Re-run with `--uninstall` (or `-Uninstall` on Windows).
+
+### Claude Code / Codex?
+
+Yes — install with `--claude --codex` (or `-AlsoClaude -AlsoCodex`).
 
 ## Origin Story
 
