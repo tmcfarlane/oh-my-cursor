@@ -1,5 +1,3 @@
-
-
 <div align="center">
 
 <div style="font-size: 2.0em; font-weight: 800; line-height: 1.1;">
@@ -18,7 +16,7 @@
 </div>
 
 Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
-*Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>*
+_Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 **NOW USING UNDOCUMENTED FEATURES OF CURSOR!**
 
@@ -28,22 +26,25 @@ Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
 
 </div>
 
-> **March 20, 2026 — What's next for oh-my-cursor?** Cursor 2.6 and Composer 2 dropped in March 2026 — here's what we're exploring:
+> **April 14, 2026 — Welcome [@bastien70](https://github.com/bastien70) to Team Avatar!** Two fantastic PRs just landed:
 >
-> - **MCP Apps** — Team Avatar agents rendering interactive outputs: diagrams from Toph's search, charts from Appa's task execution, whiteboards from planning sessions
-> - **Automations** — Always-on background agents triggered by GitHub PRs, Slack, Linear, or PagerDuty — auto-review, auto-fix lint, auto-triage issues
-> - **Team Plugins** — Package oh-my-cursor as a distributable team plugin instead of a script install
+> - **Composer 2 migration** — All default agents now run on Composer 2, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
+> - **Zuko gets Nana Banana** — Zuko now has image generation capabilities powered by Nana Banana, leveling up the Firebender's visual toolkit
 >
-> Want to help build any of these? [Contributions welcome!](CONTRIBUTING.md)
+> These contributions were so solid that [@bastien70](https://github.com/bastien70) has been added as a **CODEOWNER** — they can now approve PRs from other contributors. Welcome to the project! 🎉
+>
+> Want to contribute too? [Contributions welcome!](CONTRIBUTING.md)
 
 ## Quick Start (One Command)
 
 **macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
 ```
@@ -59,9 +60,9 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 
 No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.**
 
-**NOW USING UNDOCUMENTED FEATURES OF CURSOR.**  
-> Team Avatar relies on Cursor accepting custom strings in agent `model:` frontmatter for per-agent routing. It’s unofficial and may change; see [Undocumented: Custom Model Aliases](#undocumented-custom-model-aliases).
+**NOW USING UNDOCUMENTED FEATURES OF CURSOR.**
 
+> Team Avatar relies on Cursor accepting custom strings in agent `model:` frontmatter for per-agent routing. It’s unofficial and may change; see [Undocumented: Custom Model Aliases](#undocumented-custom-model-aliases).
 
 ## Contents
 
@@ -76,7 +77,6 @@ No external runtime. No wrapper CLI. **Just Cursor's built-in `Task` subagents.*
 - [FAQ](#faq)
 - [Contributing](#contributing)
 - [License](#license)
-
 
 ## Always Use the Orchestrator
 
@@ -111,6 +111,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 </p>
 
 <a id="agent-aang"></a>
+
 <details open>
 <summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2</code></summary>
 
@@ -125,6 +126,7 @@ Skills: [`design-patterns-implementation`](skills/design-patterns-implementation
 </details>
 
 <a id="agent-sokka"></a>
+
 <details open>
 <summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
@@ -139,6 +141,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 </details>
 
 <a id="agent-katara"></a>
+
 <details open>
 <summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2</code></summary>
 
@@ -153,6 +156,7 @@ Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refac
 </details>
 
 <a id="agent-zuko"></a>
+
 <details open>
 <summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
 
@@ -167,6 +171,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 </details>
 
 <a id="agent-toph"></a>
+
 <details>
 <summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2</code></summary>
 
@@ -181,6 +186,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 </details>
 
 <a id="agent-appa"></a>
+
 <details>
 <summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2</code></summary>
 
@@ -195,6 +201,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 </details>
 
 <a id="agent-momo"></a>
+
 <details>
 <summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2</code></summary>
 
@@ -209,6 +216,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 </details>
 
 <a id="agent-iroh"></a>
+
 <details>
 <summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.6-opus-max-thinking</code></summary>
 
@@ -230,11 +238,11 @@ Team Avatar uses **[Composer 2](https://cursor.com/docs/models/cursor-composer-2
 
 **Exceptions (deliberate routing):**
 
-| Agent | Model | Reason |
-|-------|--------|--------|
+| Agent     | Model                          | Reason                                                         |
+| --------- | ------------------------------ | -------------------------------------------------------------- |
 | **Sokka** | `claude-4.6-opus-max-thinking` | Complex planning and ambiguous scope — maximum reasoning depth |
-| **Iroh** | `claude-4.6-opus-max-thinking` | Documentation and long-form narrative quality |
-| **Zuko** | `gemini-3.1-pro` | Multimodal / visual stack (images, icons, UI mockups) |
+| **Iroh**  | `claude-4.6-opus-max-thinking` | Documentation and long-form narrative quality                  |
+| **Zuko**  | `gemini-3.1-pro`               | Multimodal / visual stack (images, icons, UI mockups)          |
 
 **Subagent routing (`Task(..., model: fast)` and inherited model):** Some coordinator-spawned workers still use Cursor’s built-in **`fast`** tier ([subagent model configuration](https://cursor.com/docs/subagents.md#model-configuration))—specifically `toph` and `momo` simple paths—and [Cactus Juice](#cactus-juice-mode) also uses `fast`. However, `momo` complex paths inherit the coordinator’s model instead of forcing `fast`. This is separate from per-agent `model:` frontmatter; do not assume spawned-worker routing maps 1:1 to `composer-2`.
 
@@ -280,11 +288,13 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 ### Windows (PowerShell)
 
 **One-liner** (default install):
+
 ```powershell
 irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 | iex
 ```
 
 **One-liner with flags** (PowerShell 7+ / Windows 11):
+
 ```powershell
 # Install to project scope with force
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1))) -Scope project -Force
@@ -294,6 +304,7 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 ```
 
 **Clone + run locally** (works on all versions, lets you review the script first):
+
 ```powershell
 git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
@@ -331,13 +342,13 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
 ### What Gets Installed
 
-| Scope | Agents | Rules | Commands | Hooks | Skills |
-|-------|--------|-------|----------|-------|--------|
-| `--user` (default) | `~/.cursor/agents/` | `~/.cursor/rules/` | `~/.cursor/commands/` | `~/.cursor/hooks/` | `~/.cursor/skills/` |
-| `--project` | `./.cursor/agents/` | `./.cursor/rules/` | `./.cursor/commands/` | `./.cursor/hooks/` | `./.cursor/skills/` |
-| `--claude` | Also `.claude/agents/` | Also `.claude/rules/` | Also `.claude/commands/` | Also `.claude/hooks/` | — |
-| `--codex` | Also `.codex/agents/` | Also `.codex/rules/` | Also `.codex/commands/` | Also `.codex/hooks/` | — |
-| `--no-skills` | ✓ | ✓ | ✓ | ✓ | Skipped |
+| Scope              | Agents                 | Rules                 | Commands                 | Hooks                 | Skills              |
+| ------------------ | ---------------------- | --------------------- | ------------------------ | --------------------- | ------------------- |
+| `--user` (default) | `~/.cursor/agents/`    | `~/.cursor/rules/`    | `~/.cursor/commands/`    | `~/.cursor/hooks/`    | `~/.cursor/skills/` |
+| `--project`        | `./.cursor/agents/`    | `./.cursor/rules/`    | `./.cursor/commands/`    | `./.cursor/hooks/`    | `./.cursor/skills/` |
+| `--claude`         | Also `.claude/agents/` | Also `.claude/rules/` | Also `.claude/commands/` | Also `.claude/hooks/` | —                   |
+| `--codex`          | Also `.codex/agents/`  | Also `.codex/rules/`  | Also `.codex/commands/`  | Also `.codex/hooks/`  | —                   |
+| `--no-skills`      | ✓                      | ✓                     | ✓                        | ✓                     | Skipped             |
 
 **First-time rule activation:** After installing to user scope, Cursor may require you to manually approve the orchestrator rule. If the rule does not appear, open `~/.cursor/rules/orchestrator.mdc` in Cursor and click **"Always Allow"** when prompted. This is a one-time step — Cursor treats file-based user rules as untrusted until explicitly approved.
 
@@ -345,13 +356,11 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
 The installer automatically detects and removes old agent files (hephaestus, prometheus, atlas, etc.) when installing the new Team Avatar agents.
 
-
 ### Undocumented: Custom Model Aliases
 
 <p align="center">
   <img src="screenshots/guy-spills-it.png" alt="Cursor accepting custom model aliases in agent frontmatter">
 </p>
-
 
 Cursor has a quiet superpower: the `model:` field in agent frontmatter will accept **arbitrary model alias strings** — not just the built-in options in Cursor’s model picker.
 
@@ -375,22 +384,21 @@ model: gemini-3.1-pro
 
 > **This is currently undocumented by Cursor and may change without notice.** It works as of February 2026. If Cursor removes or changes alias support, swap `model:` to any picker-supported string — the rest of oh-my-cursor still works (you just lose custom routing).
 
-
 ## Slash Commands
 
 Type these in Cursor's chat to invoke specific workflows:
 
-| Command | Agent | Purpose |
-|---------|-------|---------|
-| `/plan` | Sokka | Full planning pipeline: ambiguity analysis, plan creation, self-review |
-| `/build` | Aang | Deep multi-file implementation with verification |
-| `/search` | Toph | Multi-angle codebase + docs exploration |
-| `/fix` | Katara | Methodical debugging and code healing |
-| `/tasks` | Appa | Systematic task list execution |
-| `/scout` | Momo | Quick focused tasks |
-| `/doc` | Iroh | Documentation generation and updates |
-| `/image` | Zuko | Cursor image generation (Nano Banana Pro): icons, mockups, prompts via **cursor-image-generation** skill |
-| `/cactus-juice` | Swarm | Decompose into micro-tasks, spawn up to 10 parallel workers |
+| Command         | Agent  | Purpose                                                                                                 |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| `/plan`         | Sokka  | Full planning pipeline: ambiguity analysis, plan creation, self-review                                  |
+| `/build`        | Aang   | Deep multi-file implementation with verification                                                        |
+| `/search`       | Toph   | Multi-angle codebase + docs exploration                                                                 |
+| `/fix`          | Katara | Methodical debugging and code healing                                                                   |
+| `/tasks`        | Appa   | Systematic task list execution                                                                          |
+| `/scout`        | Momo   | Quick focused tasks                                                                                     |
+| `/doc`          | Iroh   | Documentation generation and updates                                                                    |
+| `/image`        | Zuko   | Cursor image generation (Nano Banana Pro): icons, mockups, prompts via **cursor-image-generation** skill |
+| `/cactus-juice` | Swarm  | Decompose into micro-tasks, spawn up to 10 parallel workers                                             |
 
 ### Image generation (Cursor agent)
 
@@ -408,7 +416,6 @@ The default mode. Coordinated, tiered, using the full Team Avatar hierarchy with
 <p align="left">
   <img src="screenshots/cactus-juice/cactus-juice.jpg" alt="" width="360">
 </p>
-
 
 Activated via `/cactus-juice`. Named after the desert cactus juice that made Sokka hallucinate -- "It'll Quench Ya!"
 
@@ -459,7 +466,6 @@ flowchart TD
   end
 ```
 
-
 ## Async Subagents (Cursor 2.5+)
 
 This project implements a **two-tier swarm architecture** using Cursor's native async subagent support:
@@ -470,22 +476,20 @@ This project implements a **two-tier swarm architecture** using Cursor's native 
 
 **Three async dispatch patterns:**
 
-| Pattern | How It Works |
-|---------|-------------|
+| Pattern               | How It Works                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------- |
 | **Fire-and-Continue** | Spawn Toph in background (`is_background: true`), continue working, collect results later |
-| **Fire-and-Collect** | Spawn multiple Momo workers for independent tasks, wait for all, verify each |
-| **Research-then-Act** | Spawn Toph workers in parallel for research, use findings to guide implementation |
-
+| **Fire-and-Collect**  | Spawn multiple Momo workers for independent tasks, wait for all, verify each              |
+| **Research-then-Act** | Spawn Toph workers in parallel for research, use findings to guide implementation         |
 
 ## Hooks
 
 System-level enforcement that doesn't rely on agents remembering to verify:
 
-| Hook | Purpose |
-|------|---------|
-| `post-edit-lint.sh` | Automatically run lints after agent edits |
+| Hook                  | Purpose                                                                         |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `post-edit-lint.sh`   | Automatically run lints after agent edits                                       |
 | `pre-commit-check.sh` | Enforce hard constraints (`as any`, empty catches, `@ts-ignore`) before commits |
-
 
 ## Prompting Tips
 
@@ -503,7 +507,6 @@ Or just use the slash commands:
 /build based on the plan above
 ```
 
-
 ## Skills
 
 Skills are directories containing a `SKILL.md` file that Cursor auto-discovers and presents to agents as specialized context. They extend agents with domain knowledge without modifying agent prompts directly.
@@ -517,28 +520,28 @@ Skills are installed by default. No Node.js required. Use `--no-skills` to skip 
 
 ### Bundled skills
 
-| Skill | Source | Agents | What it provides |
-|-------|--------|--------|------------------|
-| architect | thebushidocollective/han | Sokka | System architecture and high-level technical design |
-| codebase-search | supercent-io/skills-template | Toph | Systematic search strategies for navigating large codebases |
-| create-an-asset | anthropics/knowledge-work-plugins | Zuko | Generate tailored sales assets (landing pages, decks, one-pagers) |
-| crafting-effective-readmes | community | Iroh | Templates and guidance for writing effective READMEs matched to project type |
-| debugging | oimiragieo/agent-studio | Katara | Systematic 4-phase debugging with root cause investigation |
-| design-patterns-implementation | aj-geddes/useful-ai-prompts | Aang | Apply design patterns (Singleton, Factory, Observer, Strategy, etc.) |
-| docs-write | metabase/metabase | Iroh | Documentation following Metabase's conversational, user-focused style |
-| documentation-engineer | charon-fan/agent-playbook | Iroh | Technical documentation for creating clear, comprehensive docs |
-| documentation-writing | rysweet/amplihack | Iroh | Clear, discoverable docs following the Eight Rules and Diataxis framework |
-| exploring-codebases | community | Toph | Semantic search using AST-aware expansion for full context |
-| frontend-builder | daffy0208/ai-dev-standards | Appa | Modern React/Next.js frontend patterns and component architecture |
-| implementing-figma-designs | onekeyhq/app-monorepo | Zuko | Implement Figma designs 1:1 using component libraries |
-| mgrep-code-search | intellectronica/agent-skills | Toph | Semantic code search using mgrep for efficient exploration |
-| planning | thebushidocollective/han | Sokka | Technical implementation planning and architecture design |
-| refactoring | eyadsibai/ltk | Katara, Momo | Code restructuring, renaming, extraction, and migration |
-| refactoring-patterns | wondelai/skills | Aang, Katara, Momo | Named refactoring transformations to improve code structure |
-| technical-roadmap-planning | aj-geddes/useful-ai-prompts | Sokka | Comprehensive technical roadmaps aligned with business goals |
-| vercel-composition-patterns | vercel-labs/agent-skills | Appa | React composition patterns that scale |
-| vercel-react-best-practices | vercel-labs/agent-skills | Aang, Appa, Momo | React and Next.js performance optimization from Vercel Engineering |
-| web-design-guidelines | vercel-labs/agent-skills | Zuko | Web Interface Guidelines compliance for UI review |
+| Skill                          | Source                            | Agents             | What it provides                                                             |
+| ------------------------------ | --------------------------------- | ------------------ | ---------------------------------------------------------------------------- |
+| architect                      | thebushidocollective/han          | Sokka              | System architecture and high-level technical design                          |
+| codebase-search                | supercent-io/skills-template      | Toph               | Systematic search strategies for navigating large codebases                  |
+| create-an-asset                | anthropics/knowledge-work-plugins | Zuko               | Generate tailored sales assets (landing pages, decks, one-pagers)            |
+| crafting-effective-readmes     | community                         | Iroh               | Templates and guidance for writing effective READMEs matched to project type |
+| debugging                      | oimiragieo/agent-studio           | Katara             | Systematic 4-phase debugging with root cause investigation                   |
+| design-patterns-implementation | aj-geddes/useful-ai-prompts       | Aang               | Apply design patterns (Singleton, Factory, Observer, Strategy, etc.)         |
+| docs-write                     | metabase/metabase                 | Iroh               | Documentation following Metabase's conversational, user-focused style        |
+| documentation-engineer         | charon-fan/agent-playbook         | Iroh               | Technical documentation for creating clear, comprehensive docs               |
+| documentation-writing          | rysweet/amplihack                 | Iroh               | Clear, discoverable docs following the Eight Rules and Diataxis framework    |
+| exploring-codebases            | community                         | Toph               | Semantic search using AST-aware expansion for full context                   |
+| frontend-builder               | daffy0208/ai-dev-standards        | Appa               | Modern React/Next.js frontend patterns and component architecture            |
+| implementing-figma-designs     | onekeyhq/app-monorepo             | Zuko               | Implement Figma designs 1:1 using component libraries                        |
+| mgrep-code-search              | intellectronica/agent-skills      | Toph               | Semantic code search using mgrep for efficient exploration                   |
+| planning                       | thebushidocollective/han          | Sokka              | Technical implementation planning and architecture design                    |
+| refactoring                    | eyadsibai/ltk                     | Katara, Momo       | Code restructuring, renaming, extraction, and migration                      |
+| refactoring-patterns           | wondelai/skills                   | Aang, Katara, Momo | Named refactoring transformations to improve code structure                  |
+| technical-roadmap-planning     | aj-geddes/useful-ai-prompts       | Sokka              | Comprehensive technical roadmaps aligned with business goals                 |
+| vercel-composition-patterns    | vercel-labs/agent-skills          | Appa               | React composition patterns that scale                                        |
+| vercel-react-best-practices    | vercel-labs/agent-skills          | Aang, Appa, Momo   | React and Next.js performance optimization from Vercel Engineering           |
+| web-design-guidelines          | vercel-labs/agent-skills          | Zuko               | Web Interface Guidelines compliance for UI review                            |
 
 ### Installing skills
 
@@ -571,11 +574,13 @@ If your plan supports agent mode / subagents, yes. These files shape Cursor's ex
 #### How do I update?
 
 **macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --force
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 .\install.ps1 -Force
 ```
@@ -583,11 +588,13 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 #### How do I uninstall?
 
 **macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --uninstall
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 .\install.ps1 -Uninstall
 ```
@@ -597,18 +604,16 @@ curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/instal
 Yes! Install with cross-tool flags:
 
 **macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.sh | bash -s -- --claude --codex
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 .\install.ps1 -AlsoClaude -AlsoCodex
 ```
-
-
-
-
 
 ## Example Task Brief
 
@@ -632,7 +637,6 @@ Every delegation to an agent follows the orchestrator's mandatory 6-part format.
 - Example content to insert is exactly what the user provided (the 1–6 TASK/EXPECTED OUTCOME/REQUIRED TOOLS/MUST DO/MUST NOT DO/CONTEXT block).
 ````
 
-
 ## The Origin Story (aka: Token Optimization for Degenerates)
 
 I upgraded my Cursor account to Ultra right before my usage was going to roll over.
@@ -648,8 +652,6 @@ So I did what any natural-born crayon eating ape would do:
 - and that **all it takes** is dropping some files into Cursor config + one prioritised orchestration rule
 
 Result: **oh-my-cursor Agent Swarms** that do real work and also help you responsibly (irresponsibly) "optimize" your token burn.
-
-
 
 ## Inspiration
 
