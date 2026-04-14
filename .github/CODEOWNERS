@@ -1,3 +1,10 @@
 # GitHub CODEOWNERS
-# Applies to the default branch once merged.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Code owners are automatically requested for review when a PR modifies
+# code they own. Applies to the default branch.
+#
+# Order matters: the last matching pattern takes precedence.
+
+# Default owner for everything in the repo
 * @tmcfarlane
