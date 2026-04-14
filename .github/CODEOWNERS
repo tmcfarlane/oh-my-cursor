@@ -7,4 +7,4 @@
 # Order matters: the last matching pattern takes precedence.
 
 # Default owner for everything in the repo
-*   @tmcfarlane
+* @tmcfarlane
