@@ -389,7 +389,12 @@ Type these in Cursor's chat to invoke specific workflows:
 | `/tasks` | Appa | Systematic task list execution |
 | `/scout` | Momo | Quick focused tasks |
 | `/doc` | Iroh | Documentation generation and updates |
+| `/image` | Zuko | Cursor image generation (Nano Banana Pro): icons, mockups, prompts via **cursor-image-generation** skill |
 | `/cactus-juice` | Swarm | Decompose into micro-tasks, spawn up to 10 parallel workers |
+
+### Image generation (Cursor agent)
+
+The agent can generate images via **Google Nano Banana Pro**; previews save under **`assets/`** by default. Team Avatar routes visual generation to **Zuko**, which uses the **`cursor-image-generation`** skill ([`skills/cursor-image-generation/SKILL.md`](skills/cursor-image-generation/SKILL.md)) to **rewrite** short user requests into full prompts, then iterate. Use **`/image`** or delegate **`Task(zuko)`** for image-only work.
 
 
 ## Two Orchestration Modes
