@@ -28,7 +28,7 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 > **April 14, 2026 — Welcome [@bastien70](https://github.com/bastien70) to Team Avatar!** Two fantastic PRs just landed:
 >
-> - **Composer 2 migration** — All default agents now run on Composer 2, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
+> - **Composer 2 Fast migration** — All default agents now run on Composer 2 Fast, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
 > - **Zuko gets Nana Banana** — Zuko now has image generation capabilities powered by Nana Banana, leveling up the Firebender's visual toolkit
 >
 > These contributions were so solid that [@bastien70](https://github.com/bastien70) has been added as a **CODEOWNER** — they can now approve PRs from other contributors. Welcome to the project! 🎉
@@ -99,7 +99,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 <a id="agent-aang"></a>
 
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2-fast</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -129,7 +129,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 <a id="agent-katara"></a>
 
 <details open>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2-fast</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -159,7 +159,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 <a id="agent-toph"></a>
 
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2-fast</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -174,7 +174,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 <a id="agent-appa"></a>
 
 <details>
-<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2</code></summary>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2-fast</code></summary>
 
 Systematic task list execution. Carries the team.
 
@@ -189,7 +189,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 <a id="agent-momo"></a>
 
 <details>
-<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2</code></summary>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2-fast</code></summary>
 
 Quick focused tasks. Small, agile, independent.
 
@@ -218,7 +218,7 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 ## Model Policy
 
-Default model: **[Composer 2](https://cursor.com/docs/models/cursor-composer-2.md)** (`composer-2`). Low latency, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
+Default model: **[Composer 2 Fast](https://cursor.com/docs/models/cursor-composer-2.md)** (`composer-2-fast`). Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
 
 **Exceptions:**
 
@@ -228,7 +228,7 @@ Default model: **[Composer 2](https://cursor.com/docs/models/cursor-composer-2.m
 | **Iroh**  | `claude-4.6-opus-max-thinking` | Long-form documentation quality        |
 | **Zuko**  | `gemini-3.1-pro`               | Multimodal / visual stack              |
 
-Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2, change `model:` in the agent’s markdown file.
+Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2 Fast, change `model:` in the agent’s markdown file.
 
 ## How to Install
 
@@ -309,7 +309,7 @@ Cursor’s `model:` field in agent frontmatter accepts **arbitrary model alias s
 
 ```yaml
 ---
-model: composer-2 # fast agent work
+model: composer-2-fast # fast agent work
 ---
 ```
 

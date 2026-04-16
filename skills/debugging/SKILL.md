@@ -2,7 +2,7 @@
 name: debugging
 description: Systematic 4-phase debugging with root cause investigation. Use when fixing bugs to prevent random fixes.
 version: 1.1.1
-model: composer-2
+model: composer-2-fast
 invoked_by: both
 user_invocable: true
 tools: [Read, Write, Edit, Bash, Glob, Grep]
