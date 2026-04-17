@@ -114,7 +114,7 @@ Skills: [`design-patterns-implementation`](skills/design-patterns-implementation
 <a id="agent-sokka"></a>
 
 <details open>
-<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.6-opus-max-thinking</code></summary>
+<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.7-opus-max-thinking</code></summary>
 
 Planning, ambiguity analysis, plan review. The brain behind every mission.
 
@@ -204,7 +204,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 <a id="agent-iroh"></a>
 
 <details>
-<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.6-opus-max-thinking</code></summary>
+<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.7-opus-max-thinking</code></summary>
 
 Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
@@ -224,8 +224,8 @@ Default model: **Composer 2 Fast** (`composer-2-fast`). See the **[Composer 2 do
 
 | Agent     | Model                          | Reason                                 |
 | --------- | ------------------------------ | -------------------------------------- |
-| **Sokka** | `claude-4.6-opus-max-thinking` | Maximum reasoning for complex planning |
-| **Iroh**  | `claude-4.6-opus-max-thinking` | Long-form documentation quality        |
+| **Sokka** | `claude-4.7-opus-max-thinking` | Maximum reasoning for complex planning |
+| **Iroh**  | `claude-4.7-opus-max-thinking` | Long-form documentation quality        |
 | **Zuko**  | `gemini-3.1-pro`               | Multimodal / visual stack              |
 
 Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2 Fast, change `model:` in the agent’s markdown file.
