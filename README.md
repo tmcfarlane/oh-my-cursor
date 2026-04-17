@@ -218,7 +218,7 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 ## Model Policy
 
-Default model: **[Composer 2 Fast](https://cursor.com/docs/models/cursor-composer-2.md)** (`composer-2-fast`). Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
+Default model: **Composer 2 Fast** (`composer-2-fast`). See the **[Composer 2 docs](https://cursor.com/docs/models/cursor-composer-2.md)**, which also apply to the Fast variant. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
 
 **Exceptions:**
 
