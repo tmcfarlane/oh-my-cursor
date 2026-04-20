@@ -49,9 +49,9 @@ Should I delegate this sub-task?
 
 ## Async Dispatch Patterns
 
-### Fire-and-Continue (non-blocking research)
+### Parallel Research (non-blocking multi-dispatch)
 
-Spawn search agents asynchronously while you continue working with direct tools. Collect results when you need them.
+Spawn multiple search agents in parallel, wait for all to complete, then synthesize findings before proceeding.
 
 ### Fire-and-Collect (parallel fan-out)
 
@@ -89,6 +89,14 @@ After every worker returns:
 4. **Record the result** -- keep a one-line summary of the scope explored and key findings (e.g., "toph searched src/auth/ — found 3 auth middleware files, JWT token pattern in utils/token.ts")
 5. **Inject summaries into context** -- before deciding the next dispatch, review all recorded results so you don't re-explore the same scope
 6. Resume if incomplete -- use `resume` with the agent ID, not a fresh spawn
+
+### Empty-Output Recovery
+
+If a worker's status is **Completed** but the response body is empty or missing:
+1. **`resume` the same agent ID** -- do NOT spawn a fresh agent or switch agent types
+2. If the second attempt also returns empty, retry `resume` **once more**
+3. After two failed `resume` attempts, fall back to doing the work yourself with direct tools
+4. **Never** spawn a different agent type (e.g. switching from `toph` to `momo`) to redo the same scope -- the replacement agent lacks the original context
 
 ## Session Continuity
 

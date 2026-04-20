@@ -400,11 +400,10 @@ flowchart TD
 
 Two-tier swarm: **Coordinators** (Aang, Sokka, Katara, Appa) spawn **Workers** (Toph, Momo) as leaf nodes. Zuko is root-only.
 
-| Pattern               | How It Works                                                      |
-| --------------------- | ----------------------------------------------------------------- |
-| **Fire-and-Continue** | Spawn Toph in background, continue working, collect results later |
-| **Fire-and-Collect**  | Spawn multiple Momo workers, wait for all, verify each            |
-| **Research-then-Act** | Parallel Toph research, then use findings to guide implementation |
+| Pattern               | How It Works                                                        |
+| --------------------- | ------------------------------------------------------------------- |
+| **Research-then-Act** | Spawn Toph for parallel research, collect results, then implement   |
+| **Fire-and-Collect**  | Spawn multiple Momo workers, wait for all, verify each              |
 
 ## Hooks
 
