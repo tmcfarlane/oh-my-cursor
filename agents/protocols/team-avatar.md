@@ -51,7 +51,7 @@ Should I delegate this sub-task?
 
 ### Parallel Research (non-blocking multi-dispatch)
 
-Spawn multiple search agents in parallel, wait for all to complete, then synthesize findings before proceeding.
+Spawn multiple search agents in parallel, continue any other independent coordinator work while they run, and wait only when you are ready to collect and synthesize their findings before proceeding.
 
 ### Fire-and-Collect (parallel fan-out)
 
