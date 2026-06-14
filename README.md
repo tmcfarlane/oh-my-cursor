@@ -144,7 +144,7 @@ Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refac
 <a id="agent-zuko"></a>
 
 <details open>
-<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
+<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.5-flash</code></summary>
 
 Visual design: image generation, icons, UI mockups. Brings designs to life.
 
@@ -226,7 +226,7 @@ Default model: **Composer 2.5** (`cursor-composer-2-5`). See Cursor model docs f
 | --------- | ------------------------------ | -------------------------------------- |
 | **Sokka** | `claude-4.7-opus-max-thinking` | Maximum reasoning for complex planning |
 | **Iroh**  | `claude-4.7-opus-max-thinking` | Long-form documentation quality        |
-| **Zuko**  | `gemini-3.1-pro`               | Multimodal / visual stack              |
+| **Zuko**  | `gemini-3.5-flash`             | Multimodal / visual stack              |
 
 Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2.5, change `model:` in the agent’s markdown file.
 
@@ -315,7 +315,7 @@ model: cursor-composer-2-5 # fast agent work
 
 ```yaml
 ---
-model: gemini-3.1-pro # multimodal tasks
+model: gemini-3.5-flash # multimodal tasks
 ---
 ```
 
