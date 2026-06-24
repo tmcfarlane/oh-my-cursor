@@ -42,23 +42,38 @@ model that runs — not silently downgraded.
 For each agent, dispatch it and inspect which model the subagent thread reports in
 Cursor's UI (the model badge on the subagent tab / the run metadata).
 
-| Agent  | Frontmatter model     | Expected model in UI | Actually ran on (3.8.23) | Pass? |
-| ------ | --------------------- | -------------------- | ------------------------ | ----- |
-| Aang   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
-| Appa   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
-| Katara | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
-| Momo   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
-| Toph   | `cursor-composer-2-5` | Composer 2.5         | Composer 2.5 Fast        | ✅    |
-| Sokka  | `claude-opus-4.8`     | Claude Opus 4.8      | Opus 4.8 High            | ✅    |
-| Iroh   | `claude-opus-4.8`     | Claude Opus 4.8      | (not dispatched)         | —     |
-| Zuko   | `gemini-3.1-pro`      | Gemini 3.1 Pro       | Gemini 3.1 Pro           | ✅    |
+Full 8-agent sweep, dispatched as **subagents via the Task tool** (the orchestrator's
+actual flow), read from each subagent thread's execution badge:
 
-> **Result (2026-06-24, Cursor 3.8.23):** Custom per-agent aliases **route correctly** —
-> no refusals, no silent downgrade to `composer-1`. The project's headline mechanism
-> holds on the latest Cursor. `cursor-composer-2-5` resolves to *Composer 2.5 Fast* and
-> `claude-opus-4.8` to *Opus 4.8 High*. The earlier `gemini-3.5-flash` (from PR #38) did
-> **not** route — Cursor silently fell back to *Gemini 3.1 Pro* — so Zuko was reverted to
-> `gemini-3.1-pro`, which routes cleanly and is the stronger tier for visual work.
+| Agent  | Frontmatter model     | Expected         | Subagent execution badge (3.8.23) | Pass? |
+| ------ | --------------------- | ---------------- | --------------------------------- | ----- |
+| Aang   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
+| Appa   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
+| Katara | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
+| Momo   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
+| Toph   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
+| Sokka  | `claude-opus-4.8`     | Opus 4.8 High    | **Composer 2.5 Fast**             | ❌    |
+| Iroh   | `claude-opus-4.8`     | Opus 4.8 High    | **Composer 2.5 Fast**             | ❌    |
+| Zuko   | `gemini-3.1-pro`      | Gemini 3.1 Pro   | **Composer 2.5 Fast**             | ❌    |
+
+> **Result (2026-06-24, Cursor 3.8.23) — PARTIAL / key finding:** Composer-tier agents run
+> on Composer 2.5 Fast as expected. But the **non-Composer models are forced to Composer
+> when the agent runs as a Task subagent** — Sokka/Iroh (`claude-opus-4.8`) and Zuko
+> (`gemini-3.1-pro`) all executed as *Composer 2.5 Fast*. The configured model shows in the
+> **dispatch metadata** (the root's Task card advertises Opus/Gemini), but the **actual
+> subagent thread runs Composer**. This matches Cursor community reports that subagents are
+> pinned to the Composer family.
+>
+> **This contradicts the earlier 3-agent run** (where Sokka showed "Opus 4.8 High" and Zuko
+> "Gemini 3.1 Pro"). The most likely explanation: that run read the *dispatch metadata*,
+> not the executing thread's badge. The full sweep opened each thread and read the real
+> model — so it supersedes the first run. ⇒ **Confirm with a 30-second manual check before
+> re-architecting** (open one Sokka subagent thread, read the running-model badge directly).
+>
+> **Implication for the next version:** per-agent model routing only sticks for the
+> **primary/foreground** agent. Under the orchestrator's delegate-everything-via-Task
+> design, Sokka/Iroh never actually get Opus reasoning and Zuko never gets Gemini — they
+> all run Composer. The next version must design around this (see §3 / architecture notes).
 
 Quick dispatch prompt (run in a fresh Cursor chat):
 
@@ -76,14 +91,17 @@ outline a trivial plan, and @zuko to describe an icon. Do no work yourself.
   model choice is locked in your build. **This is the finding that decides the next
   version's architecture** — record it and stop before the feature work.
 
-Open questions — status after the 3.8.23 run:
-- [x] `cursor-composer-2-5` routes → resolves to **Composer 2.5 Fast**. Good enough; no
-      need to switch to `composer-2.5` / `composer-2.5-fast`.
-- [x] Opus thinking variant: `claude-opus-4.8` already runs as **Opus 4.8 High** (high
-      reasoning effort) for Sokka/Iroh — no separate alias needed.
-- [x] **`gemini-3.5-flash` does NOT route** — Cursor silently substitutes **Gemini 3.1
-      Pro**. Zuko reverted to `gemini-3.1-pro` (routes cleanly, better tier for visuals).
-      Open follow-up: find the *correct* alias if Gemini 3.5 is ever wanted for Zuko.
+Open questions — status after the 3.8.23 runs:
+- [x] `cursor-composer-2-5` routes → resolves to **Composer 2.5 Fast** for subagents.
+- [x] **Non-Composer models are forced to Composer for Task subagents** — `claude-opus-4.8`
+      (Sokka/Iroh) and `gemini-3.1-pro` (Zuko) all executed as Composer 2.5 Fast in the
+      full sweep. Frontmatter only shows in dispatch metadata, not in execution.
+- [ ] **Tiebreak (do this next):** manually dispatch one Sokka subagent and read the
+      *executing* thread's model badge (not the dispatch card). Confirms the lockdown.
+- [ ] **Does the model stick when the agent is the PRIMARY (not a subagent)?** The 3-agent
+      run suggests maybe — worth a direct test: select Sokka as the main agent and check.
+- [x] `gemini-3.5-flash` from PR #38 did not route (fell back to Gemini 3.1 Pro); Zuko is
+      back on `gemini-3.1-pro` regardless of the subagent question.
 - [ ] Still unverified (not dispatched): Aang/Appa/Katara/Momo (share Toph's alias, so
       very likely fine) and Iroh (shares Sokka's alias).
 
@@ -172,10 +190,11 @@ code isn't the one grading it. Cursor builds; Codex looks at the running UI and 
 First run recorded below; re-run and append as the roster shifts.
 
 - Cursor version tested: `3.8.23 (Universal)` — 2026-06-24
-- Custom model aliases route correctly? **yes** (no refusals, no `composer-1` downgrade)
-- If partial/no, which agents were forced to which model: `gemini-3.5-flash → Gemini 3.1 Pro (fixed by reverting Zuko to gemini-3.1-pro)`
+- Custom model aliases route correctly? **partial** — Composer-tier yes; non-Composer
+  (Opus/Gemini) forced to Composer 2.5 Fast when run as Task subagents
+- If partial/no, which agents were forced to which model: `Sokka, Iroh (claude-opus-4.8) and Zuko (gemini-3.1-pro) → all ran Composer 2.5 Fast as subagents`
 - Picker default fast model string: `cursor-composer-2-5` → runs as *Composer 2.5 Fast*
-- Zuko: keep Flash or move to Pro? `Pro — gemini-3.5-flash didn't route AND Pro is better for visuals`
+- Zuko: keep Flash or move to Pro? `gemini-3.1-pro in config (gemini-3.5-flash didn't route); moot if subagents are Composer-locked`
 - Codex Computer Use platform used: `macOS (Codex.app 26.616.81150, gpt-5.5); needed Screen Recording + Accessibility + per-app Allow`
 - Features from §3 confirmed available: `(pending)`
-- **Recommended next step:** `re-test Aang/Appa/Katara/Momo/Iroh (share validated aliases), then §3 feature inventory`
+- **Recommended next step:** `tiebreak the subagent-model lockdown (manual read of an executing Sokka thread + test model on a PRIMARY agent), then decide next-version architecture`
