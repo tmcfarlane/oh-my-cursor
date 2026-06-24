@@ -33,7 +33,7 @@ Root (depth 0) — DISPATCHER ONLY
 
 ## Agent Routing
 
-**Model policy:** default **`cursor-composer-2-5`** (Composer 2.5, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-opus-4.8`** only for deliberate depth (Sokka, Iroh); **`gemini-3.5-flash`** only for the multimodal stack (Zuko). See [Model Policy](../README.md#model-policy) in the project README.
+**Model policy:** default **`cursor-composer-2-5`** (Composer 2.5, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-opus-4.8`** only for deliberate depth (Sokka, Iroh); **`gemini-3.1-pro`** only for the multimodal stack (Zuko). See [Model Policy](../README.md#model-policy) in the project README.
 
 | Agent | Model | Fire When |
 |-------|-------|-----------|
@@ -43,7 +43,7 @@ Root (depth 0) — DISPATCHER ONLY
 | **Katara** | `cursor-composer-2-5` | No plan + needs fixing → surgical fix, smallest possible change |
 | **Aang** | `cursor-composer-2-5` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
 | **Sokka** | `claude-opus-4.8` | Complex planning, ambiguous scope analysis |
-| **Zuko** | `gemini-3.5-flash` | Images, icons, UI mockups, visual design |
+| **Zuko** | `gemini-3.1-pro` | Images, icons, UI mockups, visual design |
 | **Iroh** | `claude-opus-4.8` | README writes, CHANGELOG updates, any documentation task |
 
 **There is NO request type where the root does the work itself.**

@@ -42,16 +42,23 @@ model that runs — not silently downgraded.
 For each agent, dispatch it and inspect which model the subagent thread reports in
 Cursor's UI (the model badge on the subagent tab / the run metadata).
 
-| Agent  | Frontmatter model     | Expected model in UI | Actually ran on | Pass? |
-| ------ | --------------------- | -------------------- | --------------- | ----- |
-| Aang   | `cursor-composer-2-5` | Composer 2.5         |                 | ☐     |
-| Appa   | `cursor-composer-2-5` | Composer 2.5         |                 | ☐     |
-| Katara | `cursor-composer-2-5` | Composer 2.5         |                 | ☐     |
-| Momo   | `cursor-composer-2-5` | Composer 2.5         |                 | ☐     |
-| Toph   | `cursor-composer-2-5` | Composer 2.5         |                 | ☐     |
-| Sokka  | `claude-opus-4.8`     | Claude Opus 4.8      |                 | ☐     |
-| Iroh   | `claude-opus-4.8`     | Claude Opus 4.8      |                 | ☐     |
-| Zuko   | `gemini-3.5-flash`    | Gemini 3.5 Flash     |                 | ☐     |
+| Agent  | Frontmatter model     | Expected model in UI | Actually ran on (3.8.23) | Pass? |
+| ------ | --------------------- | -------------------- | ------------------------ | ----- |
+| Aang   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
+| Appa   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
+| Katara | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
+| Momo   | `cursor-composer-2-5` | Composer 2.5         | (not dispatched)         | —     |
+| Toph   | `cursor-composer-2-5` | Composer 2.5         | Composer 2.5 Fast        | ✅    |
+| Sokka  | `claude-opus-4.8`     | Claude Opus 4.8      | Opus 4.8 High            | ✅    |
+| Iroh   | `claude-opus-4.8`     | Claude Opus 4.8      | (not dispatched)         | —     |
+| Zuko   | `gemini-3.1-pro`      | Gemini 3.1 Pro       | Gemini 3.1 Pro           | ✅    |
+
+> **Result (2026-06-24, Cursor 3.8.23):** Custom per-agent aliases **route correctly** —
+> no refusals, no silent downgrade to `composer-1`. The project's headline mechanism
+> holds on the latest Cursor. `cursor-composer-2-5` resolves to *Composer 2.5 Fast* and
+> `claude-opus-4.8` to *Opus 4.8 High*. The earlier `gemini-3.5-flash` (from PR #38) did
+> **not** route — Cursor silently fell back to *Gemini 3.1 Pro* — so Zuko was reverted to
+> `gemini-3.1-pro`, which routes cleanly and is the stronger tier for visual work.
 
 Quick dispatch prompt (run in a fresh Cursor chat):
 
@@ -69,13 +76,16 @@ outline a trivial plan, and @zuko to describe an icon. Do no work yourself.
   model choice is locked in your build. **This is the finding that decides the next
   version's architecture** — record it and stop before the feature work.
 
-Open questions to settle while you're here:
-- [ ] Is the default alias `cursor-composer-2-5`, or does the picker want `composer-2.5`
-      / `composer-2.5-fast`? Note the string that actually routes: `______________`
-- [ ] Does a max-thinking / extended-thinking variant of Opus 4.8 exist for Sokka/Iroh?
-      If so, note the exact string: `______________`
-- [ ] **Zuko is on `gemini-3.5-flash` (fast/cheap tier).** For a visual/design agent you
-      may want `gemini-3.x-pro` instead. Decide after seeing image/mockup quality: `______________`
+Open questions — status after the 3.8.23 run:
+- [x] `cursor-composer-2-5` routes → resolves to **Composer 2.5 Fast**. Good enough; no
+      need to switch to `composer-2.5` / `composer-2.5-fast`.
+- [x] Opus thinking variant: `claude-opus-4.8` already runs as **Opus 4.8 High** (high
+      reasoning effort) for Sokka/Iroh — no separate alias needed.
+- [x] **`gemini-3.5-flash` does NOT route** — Cursor silently substitutes **Gemini 3.1
+      Pro**. Zuko reverted to `gemini-3.1-pro` (routes cleanly, better tier for visuals).
+      Open follow-up: find the *correct* alias if Gemini 3.5 is ever wanted for Zuko.
+- [ ] Still unverified (not dispatched): Aang/Appa/Katara/Momo (share Toph's alias, so
+      very likely fine) and Iroh (shares Sokka's alias).
 
 ---
 
@@ -159,13 +169,13 @@ code isn't the one grading it. Cursor builds; Codex looks at the running UI and 
 
 ## Results summary
 
-Fill in after a run so the next version is built on facts, not assumptions:
+First run recorded below; re-run and append as the roster shifts.
 
-- Cursor version tested: `__________`
-- Custom model aliases route correctly? **yes / partial / no**
-- If partial/no, which agents were forced to which model: `__________`
-- Picker default fast model string: `__________`
-- Zuko: keep Flash or move to Pro? `__________`
-- Codex Computer Use platform used: `__________`
-- Features from §3 confirmed available: `__________`
-- **Recommended next step:** `__________`
+- Cursor version tested: `3.8.23 (Universal)` — 2026-06-24
+- Custom model aliases route correctly? **yes** (no refusals, no `composer-1` downgrade)
+- If partial/no, which agents were forced to which model: `gemini-3.5-flash → Gemini 3.1 Pro (fixed by reverting Zuko to gemini-3.1-pro)`
+- Picker default fast model string: `cursor-composer-2-5` → runs as *Composer 2.5 Fast*
+- Zuko: keep Flash or move to Pro? `Pro — gemini-3.5-flash didn't route AND Pro is better for visuals`
+- Codex Computer Use platform used: `macOS (Codex.app 26.616.81150, gpt-5.5); needed Screen Recording + Accessibility + per-app Allow`
+- Features from §3 confirmed available: `(pending)`
+- **Recommended next step:** `re-test Aang/Appa/Katara/Momo/Iroh (share validated aliases), then §3 feature inventory`
