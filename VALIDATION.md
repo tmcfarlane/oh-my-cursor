@@ -80,9 +80,15 @@ Shorthand → valid slug fixes applied to this branch:
 `cursor-composer-2-5` → `composer-2.5-fast`; `claude-opus-4.8` → `claude-opus-4-8-thinking-high`.
 
 > **Status:** slugs corrected in all agent frontmatter, orchestrator, README, and the
-> debugging skill. **Re-run the sweep to confirm** Sokka/Iroh now execute as Opus 4.8 and
-> Zuko as Gemini 3.1 Pro (Zuko already validated). The project's per-agent routing premise
-> holds — it just needs the correct slugs.
+> debugging skill. The project's per-agent routing premise holds — it just needs the
+> correct slugs.
+>
+> **Re-run (2026-06-24, post-slug-fix, via Codex):** all 8 agents dispatched and replied
+> **in-character with no refusals** — full functional pass (aang gave a real architecture
+> design, sokka a risk analysis + acceptance criterion, katara a surgical one-line fix,
+> zuko visual-hierarchy guidance, etc.). Still **open:** capture the per-thread *execution
+> model badges* for Sokka/Iroh (expect Opus 4.8 High) and Zuko (expect Gemini 3.1 Pro) to
+> turn this from a behavioral pass into a confirmed routing pass.
 
 Quick dispatch prompt (run in a fresh Cursor chat):
 
