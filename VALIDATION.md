@@ -83,12 +83,17 @@ Shorthand → valid slug fixes applied to this branch:
 > debugging skill. The project's per-agent routing premise holds — it just needs the
 > correct slugs.
 >
-> **Re-run (2026-06-24, post-slug-fix, via Codex):** all 8 agents dispatched and replied
-> **in-character with no refusals** — full functional pass (aang gave a real architecture
-> design, sokka a risk analysis + acceptance criterion, katara a surgical one-line fix,
-> zuko visual-hierarchy guidance, etc.). Still **open:** capture the per-thread *execution
-> model badges* for Sokka/Iroh (expect Opus 4.8 High) and Zuko (expect Gemini 3.1 Pro) to
-> turn this from a behavioral pass into a confirmed routing pass.
+> **Re-run (2026-06-24, post-slug-fix, via Codex) — CONFIRMED PASS:** all 8 agents
+> dispatched, replied in-character with no refusals, and route to their configured models:
+>
+> | Agent | Slug | Verified routing |
+> | ----- | ---- | ---------------- |
+> | Toph, Momo, Appa, Katara, Aang | `composer-2.5-fast` | Composer 2.5 Fast ✅ |
+> | Sokka, Iroh | `claude-opus-4-8-thinking-high` | Opus 4.8 High ✅ |
+> | Zuko | `gemini-3.1-pro` | Gemini 3.1 Pro ✅ |
+>
+> §1 is fully green: per-agent model routing works on Cursor 3.8.23 with the correct
+> Task-tool slugs.
 
 Quick dispatch prompt (run in a fresh Cursor chat):
 
@@ -111,9 +116,8 @@ Open questions — status after the 3.8.23 runs:
       Cursor falls back to `composer-2.5-fast` when a `model:` slug is unrecognized.
 - [x] Correct slugs identified and applied (see table above).
 - [x] `gemini-3.1-pro` is valid and routes correctly for Zuko (`gemini-3.5-flash` did not).
-- [ ] **Re-run the sweep** with the corrected slugs to confirm Sokka/Iroh execute as
-      Opus 4.8 and the Composer pool as Composer 2.5 Fast (no longer just a coincidental
-      fallback).
+- [x] **Re-run confirmed:** with the corrected slugs all 8 route correctly — Composer pool
+      → Composer 2.5 Fast, Sokka/Iroh → Opus 4.8 High, Zuko → Gemini 3.1 Pro. §1 green.
 
 ---
 
@@ -207,4 +211,5 @@ First run recorded below; re-run and append as the roster shifts.
 - Correct slugs: `composer-2.5-fast` (pool) · `claude-opus-4-8-thinking-high` (Sokka/Iroh) · `gemini-3.1-pro` (Zuko)
 - Codex Computer Use platform used: `macOS (Codex.app 26.616.81150, gpt-5.5); needed Screen Recording + Accessibility + per-app Allow`
 - Features from §3 confirmed available: `(pending)`
-- **Recommended next step:** `re-run the 8-agent sweep with corrected slugs to confirm Opus 4.8 / Gemini 3.1 Pro now execute, then §3 feature inventory`
+- §1 verdict: **PASS (confirmed)** — all 8 agents route to configured models on 3.8.23
+- **Recommended next step:** `open PR -> main; then §3 Cursor 3.6-3.8 feature inventory for the version after`
