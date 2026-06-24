@@ -85,7 +85,7 @@ $ErrorActionPreference = 'Stop'
 # ---------------------------------------------------------------------------
 
 $VERSION = '0.2.0'
-$CURSOR_MODE_LABEL = 'Team Avatar (Cursor 2.5+)'
+$CURSOR_MODE_LABEL = 'Team Avatar (Cursor 3.4+)'
 
 $AGENT_FILES = @('aang.md', 'sokka.md', 'katara.md', 'zuko.md', 'toph.md', 'appa.md', 'momo.md', 'iroh.md')
 $PROTOCOL_FILES = @('protocols/team-avatar.md')

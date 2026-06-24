@@ -28,7 +28,7 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 > **April 14, 2026 — Welcome [@bastien70](https://github.com/bastien70) to Team Avatar!** Two fantastic PRs just landed:
 >
-> - **Composer 2 Fast migration** — All default agents now run on Composer 2 Fast, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
+> - **Composer 2.5 migration** — All default agents now run on Composer 2.5, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
 > - **Zuko gets Nana Banana** — Zuko now has image generation capabilities powered by Nana Banana, leveling up the Firebender's visual toolkit
 >
 > These contributions were so solid that [@bastien70](https://github.com/bastien70) has been added as a **CODEOWNER** — they can now approve PRs from other contributors. Welcome to the project! 🎉
@@ -99,7 +99,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 <a id="agent-aang"></a>
 
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2-fast</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>cursor-composer-2-5</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -129,7 +129,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 <a id="agent-katara"></a>
 
 <details open>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2-fast</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>cursor-composer-2-5</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -144,7 +144,7 @@ Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refac
 <a id="agent-zuko"></a>
 
 <details open>
-<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
+<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.5-flash</code></summary>
 
 Visual design: image generation, icons, UI mockups. Brings designs to life.
 
@@ -159,7 +159,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 <a id="agent-toph"></a>
 
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2-fast</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>cursor-composer-2-5</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -174,7 +174,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 <a id="agent-appa"></a>
 
 <details>
-<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2-fast</code></summary>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>cursor-composer-2-5</code></summary>
 
 Systematic task list execution. Carries the team.
 
@@ -189,7 +189,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 <a id="agent-momo"></a>
 
 <details>
-<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2-fast</code></summary>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>cursor-composer-2-5</code></summary>
 
 Quick focused tasks. Small, agile, independent.
 
@@ -218,7 +218,7 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 ## Model Policy
 
-Default model: **Composer 2 Fast** (`composer-2-fast`). See the **[Composer 2 docs](https://cursor.com/docs/models/cursor-composer-2.md)**, which also apply to the Fast variant. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
+Default model: **Composer 2.5** (`cursor-composer-2-5`). See Cursor model docs for current availability and routing behavior. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
 
 **Exceptions:**
 
@@ -226,13 +226,13 @@ Default model: **Composer 2 Fast** (`composer-2-fast`). See the **[Composer 2 do
 | --------- | ------------------------------ | -------------------------------------- |
 | **Sokka** | `claude-4.7-opus-max-thinking` | Maximum reasoning for complex planning |
 | **Iroh**  | `claude-4.7-opus-max-thinking` | Long-form documentation quality        |
-| **Zuko**  | `gemini-3.1-pro`               | Multimodal / visual stack              |
+| **Zuko**  | `gemini-3.5-flash`             | Multimodal / visual stack              |
 
-Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2 Fast, change `model:` in the agent’s markdown file.
+Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2.5, change `model:` in the agent’s markdown file.
 
 ## How to Install
 
-**Requirements:** [Cursor](https://www.cursor.com/) with agent mode (subagents). No external runtime.
+**Requirements:** [Cursor](https://www.cursor.com/) **3.4+** with agent mode (subagents). No external runtime.
 
 ### macOS / Linux
 
@@ -309,13 +309,13 @@ Cursor’s `model:` field in agent frontmatter accepts **arbitrary model alias s
 
 ```yaml
 ---
-model: composer-2-fast # fast agent work
+model: cursor-composer-2-5 # fast agent work
 ---
 ```
 
 ```yaml
 ---
-model: gemini-3.1-pro # multimodal tasks
+model: gemini-3.5-flash # multimodal tasks
 ---
 ```
 
@@ -391,12 +391,12 @@ flowchart TD
   V -->|pass| DONE["Done"]
   V -->|fail| FR["Failure recovery<br/>(retry → aang → user)"]
 
-  subgraph swarmNote ["Swarm Mode (Cursor 2.5+)"]
+  subgraph swarmNote ["Swarm Mode (Cursor 3.4+)"]
     N1["Coordinators spawn workers async.<br/>Max depth = 2. Workers are leaf nodes."]
   end
 ```
 
-## Async Subagents (Cursor 2.5+)
+## Async Subagents (Cursor 3.4+)
 
 Two-tier swarm: **Coordinators** (Aang, Sokka, Katara, Appa) spawn **Workers** (Toph, Momo) as leaf nodes. Zuko is root-only.
 
