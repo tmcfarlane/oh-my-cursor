@@ -26,12 +26,11 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 </div>
 
-> **April 14, 2026 — Welcome [@bastien70](https://github.com/bastien70) to Team Avatar!** Two fantastic PRs just landed:
+> **June 24, 2026 — v0.3.0: Verified on Cursor 3.8.** Per-agent model routing is now validated live against **Cursor 3.8.23** using the correct Task-tool model slugs:
 >
-> - **Composer 2.5 migration** — All default agents now run on Composer 2.5, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
-> - **Zuko gets Nana Banana** — Zuko now has image generation capabilities powered by Nana Banana, leveling up the Firebender's visual toolkit
->
-> These contributions were so solid that [@bastien70](https://github.com/bastien70) has been added as a **CODEOWNER** — they can now approve PRs from other contributors. Welcome to the project! 🎉
+> - **Model refresh** — default pool on `composer-2.5-fast`, Sokka & Iroh on `claude-opus-4-8-thinking-high`, Zuko on `gemini-3.1-pro`.
+> - **Slug fix** — Cursor's Task tool silently falls back to Composer when a `model:` slug is unrecognized; every agent now uses a **verified** slug that actually routes (the old `cursor-composer-2-5` / `claude-opus-4.8` shorthands did not).
+> - **Validation harness** — new [`VALIDATION.md`](VALIDATION.md) documents the checks and a **Codex computer-vision loop** that drives the Cursor agent window to confirm routing end-to-end.
 >
 > Want to contribute too? [Contributions welcome!](CONTRIBUTING.md)
 
@@ -53,7 +52,7 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 
 **8 agent manifests, 8 slash commands, hooks, and one orchestration rule** — themed around Avatar: The Last Airbender. No external runtime, no wrapper CLI — just Cursor's built-in `Task` subagents and Markdown config files.
 
-> Uses [undocumented custom model aliases](#undocumented-custom-model-aliases) for per-agent model routing. Unofficial — may change.
+> Uses Cursor's `model:` field for [per-agent model routing](#per-agent-model-routing). Requires exact, valid Task-tool slugs — undocumented and version-dependent.
 
 ## Contents
 
@@ -99,7 +98,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 <a id="agent-aang"></a>
 
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2.5-fast</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -114,7 +113,7 @@ Skills: [`design-patterns-implementation`](skills/design-patterns-implementation
 <a id="agent-sokka"></a>
 
 <details open>
-<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-4.7-opus-max-thinking</code></summary>
+<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-opus-4-8-thinking-high</code></summary>
 
 Planning, ambiguity analysis, plan review. The brain behind every mission.
 
@@ -129,7 +128,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 <a id="agent-katara"></a>
 
 <details open>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2.5-fast</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -144,7 +143,7 @@ Skills: [`debugging`](skills/debugging/SKILL.md) · [`refactoring`](skills/refac
 <a id="agent-zuko"></a>
 
 <details open>
-<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.5-flash</code></summary>
+<summary><img src="screenshots/faces/zuko.png" width="20" height="20" /> <strong>Zuko</strong> — <em>The Firebender</em> · <code>gemini-3.1-pro</code></summary>
 
 Visual design: image generation, icons, UI mockups. Brings designs to life.
 
@@ -159,7 +158,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 <a id="agent-toph"></a>
 
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2.5-fast</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -174,7 +173,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 <a id="agent-appa"></a>
 
 <details>
-<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2.5-fast</code></summary>
 
 Systematic task list execution. Carries the team.
 
@@ -189,7 +188,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 <a id="agent-momo"></a>
 
 <details>
-<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2.5-fast</code></summary>
 
 Quick focused tasks. Small, agile, independent.
 
@@ -204,7 +203,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 <a id="agent-iroh"></a>
 
 <details>
-<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-4.7-opus-max-thinking</code></summary>
+<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-opus-4-8-thinking-high</code></summary>
 
 Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
@@ -218,15 +217,15 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 ## Model Policy
 
-Default model: **Composer 2.5** (`cursor-composer-2-5`). See Cursor model docs for current availability and routing behavior. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
+Default model: **Composer 2.5** (`composer-2.5-fast`). See Cursor model docs for current availability and routing behavior. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
 
 **Exceptions:**
 
 | Agent     | Model                          | Reason                                 |
 | --------- | ------------------------------ | -------------------------------------- |
-| **Sokka** | `claude-4.7-opus-max-thinking` | Maximum reasoning for complex planning |
-| **Iroh**  | `claude-4.7-opus-max-thinking` | Long-form documentation quality        |
-| **Zuko**  | `gemini-3.5-flash`             | Multimodal / visual stack              |
+| **Sokka** | `claude-opus-4-8-thinking-high` | Maximum reasoning for complex planning |
+| **Iroh**  | `claude-opus-4-8-thinking-high` | Long-form documentation quality        |
+| **Zuko**  | `gemini-3.1-pro`             | Multimodal / visual stack              |
 
 Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2.5, change `model:` in the agent’s markdown file.
 
@@ -299,27 +298,31 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
 > **Upgrading from v0.1:** The installer auto-removes old agent files (hephaestus, prometheus, atlas, etc.).
 
-### Undocumented: Custom Model Aliases
+### Per-Agent Model Routing
 
 <p align="center">
-  <img src="screenshots/guy-spills-it.png" alt="Cursor accepting custom model aliases in agent frontmatter">
+  <img src="screenshots/guy-spills-it.png" alt="Cursor per-agent model routing in agent frontmatter">
 </p>
 
-Cursor’s `model:` field in agent frontmatter accepts **arbitrary model alias strings** — not just built-in options. This enables per-agent model routing:
+Cursor’s `model:` field in agent frontmatter routes each agent to a specific model. It must be an **exact, valid Cursor Task-tool slug** — it does **not** accept arbitrary alias strings:
 
 ```yaml
 ---
-model: cursor-composer-2-5 # fast agent work
+model: composer-2.5-fast # fast executor pool
 ---
 ```
 
 ```yaml
 ---
-model: gemini-3.5-flash # multimodal tasks
+model: gemini-3.1-pro # multimodal tasks
 ---
 ```
 
-> **Undocumented — may change without notice.** Works as of February 2026. If removed, swap `model:` to any picker-supported string; the rest of oh-my-cursor still works.
+> ⚠️ **An unrecognized slug does not error — it silently falls back to `composer-2.5-fast`.** A typo or stale name looks like it "works" while quietly running the wrong model. Always use a verified slug and confirm routing (see [`VALIDATION.md`](VALIDATION.md)). Omitting `model:` makes a subagent inherit its parent's model.
+
+**Valid slugs (Cursor 3.8.x, verified June 2026):** `composer-2.5-fast`, `claude-opus-4-8-thinking-high`, `gemini-3.1-pro`, `claude-4.6-opus-high-thinking`, `claude-4.6-sonnet-medium-thinking`, `claude-fable-5-thinking-high`, `gpt-5.3-codex-high-fast`, `gpt-5.5-medium`, `kimi-k2.5`.
+
+> **Undocumented & version-dependent — model slugs change often.** Re-verify against your Cursor build before relying on routing; the [`VALIDATION.md`](VALIDATION.md) sweep makes this a 2-minute check.
 
 ## Slash Commands
 

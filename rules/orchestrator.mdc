@@ -33,18 +33,18 @@ Root (depth 0) — DISPATCHER ONLY
 
 ## Agent Routing
 
-**Model policy:** default **`cursor-composer-2-5`** (Composer 2.5, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-4.7-opus-max-thinking`** only for deliberate depth (Sokka, Iroh); **`gemini-3.5-flash`** only for the multimodal stack (Zuko). See [Model Policy](../README.md#model-policy) in the project README.
+**Model policy:** default **`composer-2.5-fast`** (Composer 2.5, [Auto + Composer pool](https://cursor.com/docs/models-and-pricing.md)); **`claude-opus-4-8-thinking-high`** only for deliberate depth (Sokka, Iroh); **`gemini-3.1-pro`** only for the multimodal stack (Zuko). See [Model Policy](../README.md#model-policy) in the project README.
 
 | Agent | Model | Fire When |
 |-------|-------|-----------|
-| **Toph** | `cursor-composer-2-5` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
-| **Momo** | `cursor-composer-2-5` | Simple single-file changes, quick focused tasks |
-| **Appa** | `cursor-composer-2-5` | Plan exists → executes plan step-by-step, no improvisation |
-| **Katara** | `cursor-composer-2-5` | No plan + needs fixing → surgical fix, smallest possible change |
-| **Aang** | `cursor-composer-2-5` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
-| **Sokka** | `claude-4.7-opus-max-thinking` | Complex planning, ambiguous scope analysis |
-| **Zuko** | `gemini-3.5-flash` | Images, icons, UI mockups, visual design |
-| **Iroh** | `claude-4.7-opus-max-thinking` | README writes, CHANGELOG updates, any documentation task |
+| **Toph** | `composer-2.5-fast` | Any search, exploration, "how does X work", docs lookup; skill discovery ("how do I extend X") |
+| **Momo** | `composer-2.5-fast` | Simple single-file changes, quick focused tasks |
+| **Appa** | `composer-2.5-fast` | Plan exists → executes plan step-by-step, no improvisation |
+| **Katara** | `composer-2.5-fast` | No plan + needs fixing → surgical fix, smallest possible change |
+| **Aang** | `composer-2.5-fast` | No plan + needs building → decides approach + builds. Also: 2+ failed executor fixes |
+| **Sokka** | `claude-opus-4-8-thinking-high` | Complex planning, ambiguous scope analysis |
+| **Zuko** | `gemini-3.1-pro` | Images, icons, UI mockups, visual design |
+| **Iroh** | `claude-opus-4-8-thinking-high` | README writes, CHANGELOG updates, any documentation task |
 
 **There is NO request type where the root does the work itself.**
 
