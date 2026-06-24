@@ -99,7 +99,7 @@ Eight specialized agents, each mapped to an Avatar character with a dedicated mo
 <a id="agent-aang"></a>
 
 <details open>
-<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/aang.png" width="20" height="20" /> <strong>Aang</strong> — <em>The Avatar</em> · <code>composer-2.5-fast</code></summary>
 
 Deep multi-file executor + architecture consultant. Masters all elements.
 
@@ -114,7 +114,7 @@ Skills: [`design-patterns-implementation`](skills/design-patterns-implementation
 <a id="agent-sokka"></a>
 
 <details open>
-<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-opus-4.8</code></summary>
+<summary><img src="screenshots/faces/sokka.png" width="20" height="20" /> <strong>Sokka</strong> — <em>The Strategist</em> · <code>claude-opus-4-8-thinking-high</code></summary>
 
 Planning, ambiguity analysis, plan review. The brain behind every mission.
 
@@ -129,7 +129,7 @@ Skills: [`architect`](skills/architect/SKILL.md) · [`planning`](skills/planning
 <a id="agent-katara"></a>
 
 <details open>
-<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/katara.png" width="20" height="20" /> <strong>Katara</strong> — <em>The Healer</em> · <code>composer-2.5-fast</code></summary>
 
 Disciplined implementation, debugging, methodical fixes. Mends broken code.
 
@@ -159,7 +159,7 @@ Skills: [`create-an-asset`](skills/create-an-asset/SKILL.md) · [`implementing-f
 <a id="agent-toph"></a>
 
 <details>
-<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/toph.png" width="20" height="20" /> <strong>Toph</strong> — <em>The Seer</em> · <code>composer-2.5-fast</code></summary>
 
 Codebase search, external docs, media analysis. Sees everything.
 
@@ -174,7 +174,7 @@ Skills: [`codebase-search`](skills/codebase-search/SKILL.md) · [`exploring-code
 <a id="agent-appa"></a>
 
 <details>
-<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/appa.png" width="20" height="20" /> <strong>Appa</strong> — <em>The Heavy Lifter</em> · <code>composer-2.5-fast</code></summary>
 
 Systematic task list execution. Carries the team.
 
@@ -189,7 +189,7 @@ Skills: [`frontend-builder`](skills/frontend-builder/SKILL.md) · [`vercel-compo
 <a id="agent-momo"></a>
 
 <details>
-<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>cursor-composer-2-5</code></summary>
+<summary><img src="screenshots/faces/momo.png" width="20" height="20" /> <strong>Momo</strong> — <em>The Scout</em> · <code>composer-2.5-fast</code></summary>
 
 Quick focused tasks. Small, agile, independent.
 
@@ -204,7 +204,7 @@ Skills: [`refactoring`](skills/refactoring/SKILL.md) · [`refactoring-patterns`]
 <a id="agent-iroh"></a>
 
 <details>
-<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-opus-4.8</code></summary>
+<summary><img src="screenshots/faces/iroh.png" width="20" height="20" /> <strong>Iroh</strong> — <em>The Storyteller</em> · <code>claude-opus-4-8-thinking-high</code></summary>
 
 Documentation specialist. Sole owner of README, CHANGELOG, and all project docs.
 
@@ -218,14 +218,14 @@ Skills: [`crafting-effective-readmes`](skills/crafting-effective-readmes/SKILL.m
 
 ## Model Policy
 
-Default model: **Composer 2.5** (`cursor-composer-2-5`). See Cursor model docs for current availability and routing behavior. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
+Default model: **Composer 2.5** (`composer-2.5-fast`). See Cursor model docs for current availability and routing behavior. Higher speed, uses Cursor’s Auto + Composer pool. ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20), [#21](https://github.com/tmcfarlane/oh-my-cursor/issues/21))
 
 **Exceptions:**
 
 | Agent     | Model                          | Reason                                 |
 | --------- | ------------------------------ | -------------------------------------- |
-| **Sokka** | `claude-opus-4.8` | Maximum reasoning for complex planning |
-| **Iroh**  | `claude-opus-4.8` | Long-form documentation quality        |
+| **Sokka** | `claude-opus-4-8-thinking-high` | Maximum reasoning for complex planning |
+| **Iroh**  | `claude-opus-4-8-thinking-high` | Long-form documentation quality        |
 | **Zuko**  | `gemini-3.1-pro`             | Multimodal / visual stack              |
 
 Coordinator-spawned workers may use Cursor’s `fast` tier or inherit the coordinator’s model. If a workflow regresses on Composer 2.5, change `model:` in the agent’s markdown file.
@@ -309,7 +309,7 @@ Cursor’s `model:` field in agent frontmatter accepts **arbitrary model alias s
 
 ```yaml
 ---
-model: cursor-composer-2-5 # fast agent work
+model: composer-2.5-fast # fast agent work
 ---
 ```
 

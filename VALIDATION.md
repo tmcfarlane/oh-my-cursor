@@ -42,38 +42,47 @@ model that runs — not silently downgraded.
 For each agent, dispatch it and inspect which model the subagent thread reports in
 Cursor's UI (the model badge on the subagent tab / the run metadata).
 
-Full 8-agent sweep, dispatched as **subagents via the Task tool** (the orchestrator's
-actual flow), read from each subagent thread's execution badge:
+What the full 8-agent sweep (dispatched as Task subagents) actually exposed: the
+`model:` slugs were **invalid**, so the Task tool rejected 7 of 8 and Cursor fell back to
+its default subagent model — *Composer 2.5 Fast*. It was **never a subagent "lockdown"**;
+it was wrong slugs masquerading as one (and the Composer agents "passed" only because the
+fallback happens to be Composer too).
 
-| Agent  | Frontmatter model     | Expected         | Subagent execution badge (3.8.23) | Pass? |
-| ------ | --------------------- | ---------------- | --------------------------------- | ----- |
-| Aang   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
-| Appa   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
-| Katara | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
-| Momo   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
-| Toph   | `cursor-composer-2-5` | Composer 2.5     | Composer 2.5 Fast                 | ✅    |
-| Sokka  | `claude-opus-4.8`     | Opus 4.8 High    | **Composer 2.5 Fast**             | ❌    |
-| Iroh   | `claude-opus-4.8`     | Opus 4.8 High    | **Composer 2.5 Fast**             | ❌    |
-| Zuko   | `gemini-3.1-pro`      | Gemini 3.1 Pro   | **Composer 2.5 Fast**             | ❌    |
+| Agent  | Slug tried (invalid)  | Valid? | What ran            |
+| ------ | --------------------- | ------ | ------------------- |
+| Aang   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
+| Appa   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
+| Katara | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
+| Momo   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
+| Toph   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
+| Sokka  | `claude-opus-4.8`     | ✗      | Composer 2.5 Fast (fallback) |
+| Iroh   | `claude-opus-4.8`     | ✗      | Composer 2.5 Fast (fallback) |
+| Zuko   | `gemini-3.1-pro`      | ✓      | Gemini 3.1 Pro      |
 
-> **Result (2026-06-24, Cursor 3.8.23) — PARTIAL / key finding:** Composer-tier agents run
-> on Composer 2.5 Fast as expected. But the **non-Composer models are forced to Composer
-> when the agent runs as a Task subagent** — Sokka/Iroh (`claude-opus-4.8`) and Zuko
-> (`gemini-3.1-pro`) all executed as *Composer 2.5 Fast*. The configured model shows in the
-> **dispatch metadata** (the root's Task card advertises Opus/Gemini), but the **actual
-> subagent thread runs Composer**. This matches Cursor community reports that subagents are
-> pinned to the Composer family.
->
-> **This contradicts the earlier 3-agent run** (where Sokka showed "Opus 4.8 High" and Zuko
-> "Gemini 3.1 Pro"). The most likely explanation: that run read the *dispatch metadata*,
-> not the executing thread's badge. The full sweep opened each thread and read the real
-> model — so it supersedes the first run. ⇒ **Confirm with a 30-second manual check before
-> re-architecting** (open one Sokka subagent thread, read the running-model badge directly).
->
-> **Implication for the next version:** per-agent model routing only sticks for the
-> **primary/foreground** agent. Under the orchestrator's delegate-everything-via-Task
-> design, Sokka/Iroh never actually get Opus reasoning and Zuko never gets Gemini — they
-> all run Composer. The next version must design around this (see §3 / architecture notes).
+### Valid Task-tool model slugs (Cursor 3.8.23, 2026-06-24)
+
+The Task tool only accepts specific slugs; the README/orchestrator shorthand is **not**
+valid. Omitting `model:` makes a subagent inherit the parent's model.
+
+| Slug                            | Role |
+| ------------------------------- | ---- |
+| `composer-2.5-fast`             | Default executor pool (Aang, Appa, Katara, Momo, Toph) |
+| `claude-opus-4-8-thinking-high` | Deep planning / docs (Sokka, Iroh) |
+| `gemini-3.1-pro`                | Multimodal / visual (Zuko) |
+| `claude-4.6-opus-high-thinking` | Opus-tier thinking (alt) |
+| `claude-4.6-sonnet-medium-thinking` | Sonnet-tier thinking |
+| `claude-fable-5-thinking-high`  | Fable thinking |
+| `gpt-5.3-codex-high-fast`       | Codex fast |
+| `gpt-5.5-medium`                | GPT medium |
+| `kimi-k2.5`                     | Kimi |
+
+Shorthand → valid slug fixes applied to this branch:
+`cursor-composer-2-5` → `composer-2.5-fast`; `claude-opus-4.8` → `claude-opus-4-8-thinking-high`.
+
+> **Status:** slugs corrected in all agent frontmatter, orchestrator, README, and the
+> debugging skill. **Re-run the sweep to confirm** Sokka/Iroh now execute as Opus 4.8 and
+> Zuko as Gemini 3.1 Pro (Zuko already validated). The project's per-agent routing premise
+> holds — it just needs the correct slugs.
 
 Quick dispatch prompt (run in a fresh Cursor chat):
 
@@ -92,18 +101,13 @@ outline a trivial plan, and @zuko to describe an icon. Do no work yourself.
   version's architecture** — record it and stop before the feature work.
 
 Open questions — status after the 3.8.23 runs:
-- [x] `cursor-composer-2-5` routes → resolves to **Composer 2.5 Fast** for subagents.
-- [x] **Non-Composer models are forced to Composer for Task subagents** — `claude-opus-4.8`
-      (Sokka/Iroh) and `gemini-3.1-pro` (Zuko) all executed as Composer 2.5 Fast in the
-      full sweep. Frontmatter only shows in dispatch metadata, not in execution.
-- [ ] **Tiebreak (do this next):** manually dispatch one Sokka subagent and read the
-      *executing* thread's model badge (not the dispatch card). Confirms the lockdown.
-- [ ] **Does the model stick when the agent is the PRIMARY (not a subagent)?** The 3-agent
-      run suggests maybe — worth a direct test: select Sokka as the main agent and check.
-- [x] `gemini-3.5-flash` from PR #38 did not route (fell back to Gemini 3.1 Pro); Zuko is
-      back on `gemini-3.1-pro` regardless of the subagent question.
-- [ ] Still unverified (not dispatched): Aang/Appa/Katara/Momo (share Toph's alias, so
-      very likely fine) and Iroh (shares Sokka's alias).
+- [x] Root cause of the Composer downgrade = **invalid slugs**, not a subagent lockdown.
+      Cursor falls back to `composer-2.5-fast` when a `model:` slug is unrecognized.
+- [x] Correct slugs identified and applied (see table above).
+- [x] `gemini-3.1-pro` is valid and routes correctly for Zuko (`gemini-3.5-flash` did not).
+- [ ] **Re-run the sweep** with the corrected slugs to confirm Sokka/Iroh execute as
+      Opus 4.8 and the Composer pool as Composer 2.5 Fast (no longer just a coincidental
+      fallback).
 
 ---
 
@@ -190,11 +194,11 @@ code isn't the one grading it. Cursor builds; Codex looks at the running UI and 
 First run recorded below; re-run and append as the roster shifts.
 
 - Cursor version tested: `3.8.23 (Universal)` — 2026-06-24
-- Custom model aliases route correctly? **partial** — Composer-tier yes; non-Composer
-  (Opus/Gemini) forced to Composer 2.5 Fast when run as Task subagents
-- If partial/no, which agents were forced to which model: `Sokka, Iroh (claude-opus-4.8) and Zuko (gemini-3.1-pro) → all ran Composer 2.5 Fast as subagents`
-- Picker default fast model string: `cursor-composer-2-5` → runs as *Composer 2.5 Fast*
-- Zuko: keep Flash or move to Pro? `gemini-3.1-pro in config (gemini-3.5-flash didn't route); moot if subagents are Composer-locked`
+- Custom model aliases route correctly? **yes, with the correct slugs** — the earlier
+  "downgrade to Composer" was invalid slugs falling back, not a subagent lockdown
+- Root cause found: `cursor-composer-2-5` and `claude-opus-4.8` are not valid Task slugs;
+  Cursor falls back to `composer-2.5-fast`. Valid slugs now applied (see §1 table)
+- Correct slugs: `composer-2.5-fast` (pool) · `claude-opus-4-8-thinking-high` (Sokka/Iroh) · `gemini-3.1-pro` (Zuko)
 - Codex Computer Use platform used: `macOS (Codex.app 26.616.81150, gpt-5.5); needed Screen Recording + Accessibility + per-app Allow`
 - Features from §3 confirmed available: `(pending)`
-- **Recommended next step:** `tiebreak the subagent-model lockdown (manual read of an executing Sokka thread + test model on a PRIMARY agent), then decide next-version architecture`
+- **Recommended next step:** `re-run the 8-agent sweep with corrected slugs to confirm Opus 4.8 / Gemini 3.1 Pro now execute, then §3 feature inventory`
