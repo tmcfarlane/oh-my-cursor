@@ -52,7 +52,7 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 
 **8 agent manifests, 8 slash commands, hooks, and one orchestration rule** — themed around Avatar: The Last Airbender. No external runtime, no wrapper CLI — just Cursor's built-in `Task` subagents and Markdown config files.
 
-> Uses [undocumented custom model aliases](#undocumented-custom-model-aliases) for per-agent model routing. Unofficial — may change.
+> Uses Cursor's `model:` field for [per-agent model routing](#per-agent-model-routing). Requires exact, valid Task-tool slugs — undocumented and version-dependent.
 
 ## Contents
 
@@ -298,17 +298,17 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
 
 > **Upgrading from v0.1:** The installer auto-removes old agent files (hephaestus, prometheus, atlas, etc.).
 
-### Undocumented: Custom Model Aliases
+### Per-Agent Model Routing
 
 <p align="center">
-  <img src="screenshots/guy-spills-it.png" alt="Cursor accepting custom model aliases in agent frontmatter">
+  <img src="screenshots/guy-spills-it.png" alt="Cursor per-agent model routing in agent frontmatter">
 </p>
 
-Cursor’s `model:` field in agent frontmatter accepts **arbitrary model alias strings** — not just built-in options. This enables per-agent model routing:
+Cursor’s `model:` field in agent frontmatter routes each agent to a specific model. It must be an **exact, valid Cursor Task-tool slug** — it does **not** accept arbitrary alias strings:
 
 ```yaml
 ---
-model: composer-2.5-fast # fast agent work
+model: composer-2.5-fast # fast executor pool
 ---
 ```
 
@@ -318,7 +318,11 @@ model: gemini-3.1-pro # multimodal tasks
 ---
 ```
 
-> **Undocumented — may change without notice.** Works as of February 2026. If removed, swap `model:` to any picker-supported string; the rest of oh-my-cursor still works.
+> ⚠️ **An unrecognized slug does not error — it silently falls back to `composer-2.5-fast`.** A typo or stale name looks like it "works" while quietly running the wrong model. Always use a verified slug and confirm routing (see [`VALIDATION.md`](VALIDATION.md)). Omitting `model:` makes a subagent inherit its parent's model.
+
+**Valid slugs (Cursor 3.8.x, verified June 2026):** `composer-2.5-fast`, `claude-opus-4-8-thinking-high`, `gemini-3.1-pro`, `claude-4.6-opus-high-thinking`, `claude-4.6-sonnet-medium-thinking`, `claude-fable-5-thinking-high`, `gpt-5.3-codex-high-fast`, `gpt-5.5-medium`, `kimi-k2.5`.
+
+> **Undocumented & version-dependent — model slugs change often.** Re-verify against your Cursor build before relying on routing; the [`VALIDATION.md`](VALIDATION.md) sweep makes this a 2-minute check.
 
 ## Slash Commands
 
