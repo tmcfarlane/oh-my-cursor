@@ -26,12 +26,11 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 </div>
 
-> **April 14, 2026 — Welcome [@bastien70](https://github.com/bastien70) to Team Avatar!** Two fantastic PRs just landed:
+> **June 24, 2026 — v0.3.0: Verified on Cursor 3.8.** Per-agent model routing is now validated live against **Cursor 3.8.23** using the correct Task-tool model slugs:
 >
-> - **Composer 2.5 migration** — All default agents now run on Composer 2.5, aligning with Cursor's Auto + Composer pool for lower latency and cost ([#20](https://github.com/tmcfarlane/oh-my-cursor/issues/20))
-> - **Zuko gets Nana Banana** — Zuko now has image generation capabilities powered by Nana Banana, leveling up the Firebender's visual toolkit
->
-> These contributions were so solid that [@bastien70](https://github.com/bastien70) has been added as a **CODEOWNER** — they can now approve PRs from other contributors. Welcome to the project! 🎉
+> - **Model refresh** — default pool on `composer-2.5-fast`, Sokka & Iroh on `claude-opus-4-8-thinking-high`, Zuko on `gemini-3.1-pro`.
+> - **Slug fix** — Cursor's Task tool silently falls back to Composer when a `model:` slug is unrecognized; every agent now uses a **verified** slug that actually routes (the old `cursor-composer-2-5` / `claude-opus-4.8` shorthands did not).
+> - **Validation harness** — new [`VALIDATION.md`](VALIDATION.md) documents the checks and a **Codex computer-vision loop** that drives the Cursor agent window to confirm routing end-to-end.
 >
 > Want to contribute too? [Contributions welcome!](CONTRIBUTING.md)
 
