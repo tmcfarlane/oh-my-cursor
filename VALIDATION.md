@@ -25,10 +25,12 @@ build second.**
 
 - [ ] Cursor Pro active (agent mode + subagents enabled)
 - [ ] Cursor updated to the latest version — note it here: `Cursor v________`
-- [ ] oh-my-cursor installed from **this branch** (not the published `main`):
+- [ ] oh-my-cursor installed from **the branch/tag you’re validating** (not the published `main`):
       ```bash
-      git clone -b claude/agent-harness-next-version-x6sx5i https://github.com/tmcfarlane/oh-my-cursor.git
-      cd oh-my-cursor && bash install.sh --force
+      git clone https://github.com/tmcfarlane/oh-my-cursor.git
+      cd oh-my-cursor
+      git checkout <branch-or-tag-under-test>
+      bash install.sh --force
       ```
 - [ ] Open `~/.cursor/rules/orchestrator.mdc` and click **"Always Allow"** when prompted
 
