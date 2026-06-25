@@ -1,7 +1,8 @@
 # v0.4 Scoping — Adopting Cursor 3.6–3.8 Features
 
-Status: **DRAFT / scoping.** Each item must pass a Cursor Pro validation (per `VALIDATION.md`)
-before it ships. Snapshot: June 2026, Cursor 3.8.23.
+Status: **SCOPED — both tracks (enforcement + automation), cloud in scope.** Each item must
+pass a Cursor Pro validation (per `VALIDATION.md`) before it ships. Snapshot: June 2026,
+Cursor 3.8.23.
 
 ## Context
 
@@ -59,6 +60,22 @@ its "HARD CONSTRAINTS" actually enforceable:
 2. Confirm `permissions.json` keys + run-mode behavior on Pro.
 3. Confirm automation triggers the user's plan exposes.
 
-## Open questions for prioritization
-- Is the headline of v0.4 **enforcement** (P0/P1 hooks + auto-review) or **automation** (P2)?
-- Cloud-agent/automation features depend on plan tier — in scope now, or defer?
+## Decisions (2026-06-24)
+- **Both tracks in v0.4:** enforcement (P0 hooks + P1 auto-review) is the core; automation
+  (P2 recipes + `/automate`) ships alongside, not deferred.
+- **Cloud/automation features are in scope now** — validated against the user's plan tier
+  before each ships.
+
+## Build sequence
+1. **M1 — Enforcement core (P0+P1).** `.cursor/hooks.json` (observe-only first, then promote
+   the agent-allowlist / destructive-shell / post-edit-lint hooks to blocking) + a tuned
+   `permissions.json` auto-review policy. Validate on Pro, then enable blocking.
+2. **M2 — Automation recipes (P2).** Ship 2–3 Team Avatar automations (PR review comment →
+   Katara; design label → Zuko; Slack 🔥 → routed dispatch) + `/automate` docs. Validate
+   triggers against the user's plan.
+3. **M3 — Native computer-use QA (P3, exploratory).** Wire an automation that self-verifies
+   with computer use; compare against the Codex loop and decide whether to keep both.
+4. **Release v0.4.0** once M1+M2 pass validation (M3 can trail as a point release).
+
+Each milestone follows the v0.3 pattern: branch → implement → validate on Pro (Codex
+computer-vision where useful) → record results → PR → release.
