@@ -220,32 +220,59 @@ First run recorded below; re-run and append as the roster shifts.
 
 ## M1 (v0.4) — Hooks & Auto-review validation
 
-Validates the `.cursor/hooks.json` enforcement + `permissions.json` auto-review policy.
-**Start in observe mode** (`export OMC_HOOKS_OBSERVE=1`) so nothing is blocked until the
-wiring is confirmed.
+### Run 1 (2026-06-25, Cursor 3.8.23, via Codex) — NOT-DENIED → fixed
 
-### Hooks fire (observe mode)
-- [ ] Install from this branch; confirm `.cursor/hooks.json`, `.cursor/permissions.json`,
-      and `.cursor/hooks/guard-shell.sh` exist (✓ verified by installer locally).
-- [ ] With `OMC_HOOKS_OBSERVE=1`, have an agent run a harmless shell command → confirm
-      `guard-shell.sh` fires (check it appears in the agent's tool output / hook logs).
-- [ ] Have an agent edit a `.ts`/`.py` file → confirm `post-edit-lint.sh` runs (lint output).
-- [ ] Confirm the exact hook **event names** in your build match (`beforeShellExecution`,
-      `afterFileEdit`). If Cursor 3.8 exposes `subagentStart`, note it for the allowlist
-      enforcement follow-up.
+Codex drove Cursor's agent to commit a `.ts` file containing `as any`. **The commit
+succeeded (`b077d4b`)** — no "Blocked by oh-my-cursor", no approval prompt, and the only
+lint seen was Cursor's built-in ReadLints (not our `post-edit-lint.sh`). Both hooks were
+silent. Our scripts were proven correct in isolation, so this is an **integration/robustness
+failure**, surfaced exactly as observe-first validation intends.
 
-### Promote to blocking (after observe passes)
-- [ ] Unset `OMC_HOOKS_OBSERVE`. Ask an agent to run `rm -rf` on something → confirm it's
-      **denied** with the policy message (not executed).
-- [ ] Ask an agent to `git commit` a file containing `as any` → confirm the commit is denied.
-- [ ] Confirm a normal command (`ls`, `git status`) still runs without friction.
+Adversarial diagnosis (a research synthesis was *overturned* by its own verifier — keep the
+verifier):
+1. **`beforeShellExecution` fails OPEN by default.** A hook that fires but errors → Cursor
+   allows. So "both silent ⇒ never registered" was a false inference.
+2. **macOS GUI PATH bug (real):** Cursor.app doesn't inherit the shell's `/opt/homebrew/bin`,
+   so `python3` could be absent on the hook's PATH → guard parsed an empty command →
+   silently allowed even when fired.
+3. **cwd mismatch (real):** the guard ran `pre-commit-check.sh` without `cd`-ing to the
+   payload `cwd`, so `git diff --cached` could see an empty staged set → allow.
+4. **Registration:** project hooks may need a full **quit + relaunch** (not just Reload
+   Window) and a **trusted workspace** to register on 3.8.x.
+
+### Hardening applied this branch (re-tested locally ✓)
+- PATH-robust JSON parsing: `jq` → `python3` at absolute paths (`/opt/homebrew`, `/usr/bin`,
+  …) → `/usr/bin/perl`. Verified denies `rm -rf /` and commit-`as any` with PATH=`/usr/bin:/bin`.
+- `cd` into the payload `cwd` before git checks (verified: detects staged `as any` in a
+  separate worktree).
+- Parse-failure now returns **`ask`** (surface), not silent allow.
+- `OMC_HOOKS_DEBUG=1` → appends each invocation to `.cursor/hooks/last-invocation.log`.
+- `"failClosed": true` on the `beforeShellExecution` entry so a script error **denies**.
+
+### Run 2 — instrumented retest (do this)
+1. Reinstall this branch (project scope): `bash install.sh --project --force`.
+2. Make the debug var visible to the GUI app: `launchctl setenv OMC_HOOKS_DEBUG 1`.
+3. **Fully quit Cursor (Cmd+Q) and relaunch** — open the repo as a FOLDER. (Reload Window is
+   not enough to register project hooks.)
+4. Settings/Customize → **Hooks**: confirm **"Configured Hooks (2)"**, no "Invalid hooks.json"
+   banner. If untrusted, run "Workspaces: Manage Workspace Trust" → trust → restart again.
+   Watch Output → **Hooks** channel for "Project hooks disabled (experiment flag not enabled)".
+5. Re-run the Codex test (consent now granted). Have the agent commit a `.ts` with `as any`.
+6. Interpret:
+   - `last-invocation.log` appears **and** commit blocked → hooks fire + enforce ✅
+   - log appears, commit still succeeds → fired but logic gap (investigate)
+   - log never appears → genuinely not invoked → pursue Workspace Trust / 3.8 experiment flag
+     / mirror to `~/.cursor/hooks.json` / upgrade to Cursor 3.9+ (reworked hook management)
+7. After confirming, `launchctl unsetenv OMC_HOOKS_DEBUG` (debug log is opt-in, off by default).
 
 ### Auto-review policy
-- [ ] Enable a Run Mode (Settings → Agents → Approvals & Execution).
-- [ ] Confirm lints/tests/builds auto-run while destructive/credential/network calls are held.
+- [ ] Enable a Run Mode (Settings → Agents → Approvals & Execution); confirm lints/tests/builds
+      auto-run while destructive/credential/network calls are held.
 
 ### Known follow-ups before v0.4 release
-- [ ] **`install.ps1` parity** — mirror the `hooks.json` / `permissions.json` install on Windows.
-- [ ] Verify hook `command` path resolution for **user scope** (`~/.cursor/hooks.json`) vs
-      project scope; adjust paths if user-scope needs absolute paths.
-- [ ] If `subagentStart` exists, add an allowlist/depth-cap enforcement hook (M1 stretch).
+- [ ] **`install.ps1` parity** — mirror `hooks.json` / `permissions.json` install on Windows.
+- [ ] **`.cursor/` is gitignored** → committed hooks aren't shared, so **cloud/fresh-clone
+      agents get NO hooks**. By design for the per-machine installer; document it (or un-ignore
+      + commit `.cursor/hooks*` with `--chmod=+x` if cloud agents must be supported).
+- [ ] Verify hook `command` path resolution for **user scope** (`~/.cursor/hooks.json`).
+- [ ] If `subagentStart` exists in your build, add an allowlist/depth-cap enforcement hook.

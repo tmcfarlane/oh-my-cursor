@@ -2,7 +2,7 @@
   "version": 1,
   "hooks": {
     "beforeShellExecution": [
-      { "command": ".cursor/hooks/guard-shell.sh" }
+      { "command": ".cursor/hooks/guard-shell.sh", "failClosed": true }
     ],
     "afterFileEdit": [
       { "command": ".cursor/hooks/post-edit-lint.sh" }
