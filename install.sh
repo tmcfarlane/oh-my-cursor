@@ -499,7 +499,12 @@ install_to_dir() {
   install_file_set "$WORK_DIR" "$agents_dir" "protocols" "${PROTOCOL_FILES[@]}"
   install_file_set "${WORK_DIR}/commands" "$commands_dir" "commands" "${COMMAND_FILES[@]}"
   install_file_set "${WORK_DIR}/hooks" "$hooks_dir" "hooks" "${HOOK_FILES[@]}"
-  install_file_set "$WORK_DIR" "$cursor_dir" "config" "${CONFIG_FILES[@]}"
+  # Hook config (hooks.json / permissions.json) is PROJECT-scoped only: its hook command
+  # paths are relative to the workspace root, so user-scope (~/.cursor) hooks would not
+  # resolve across other projects. Install it only for a project-scope cursor install.
+  if [ "$SCOPE" = "project" ] && [ "$cursor_dir" = "$CURSOR_DIR" ]; then
+    install_file_set "$WORK_DIR" "$cursor_dir" "config" "${CONFIG_FILES[@]}"
+  fi
 
   # Install rule file
   log "Installing rules to ${BOLD}${rules_dir}${RESET}"

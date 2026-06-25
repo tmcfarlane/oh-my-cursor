@@ -274,5 +274,8 @@ verifier):
 - [ ] **`.cursor/` is gitignored** → committed hooks aren't shared, so **cloud/fresh-clone
       agents get NO hooks**. By design for the per-machine installer; document it (or un-ignore
       + commit `.cursor/hooks*` with `--chmod=+x` if cloud agents must be supported).
-- [ ] Verify hook `command` path resolution for **user scope** (`~/.cursor/hooks.json`).
+- [x] User-scope path resolution: **resolved** — hook config is now project-scope only
+      (installer skips `hooks.json`/`permissions.json` at user scope; relative command paths
+      only resolve in a project workspace). Confirmed on 3.8.23 that BOTH user & project
+      hooks register in the Hooks panel, so Run 1's failure was fail-open, not registration.
 - [ ] If `subagentStart` exists in your build, add an allowlist/depth-cap enforcement hook.

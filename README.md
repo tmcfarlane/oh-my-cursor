@@ -415,6 +415,11 @@ Cursor's [hooks](https://cursor.com/docs/hooks) system via **`.cursor/hooks.json
 hook is a script that receives a JSON payload on stdin and (for `beforeShellExecution`)
 returns an allow/deny/ask decision.
 
+> **Hooks are project-scoped.** Install them with **`install.sh --project`** inside a repo;
+> hook command paths are relative to the workspace root, so a user-scope (`~/.cursor`) install
+> deliberately skips the hook config. After installing, **fully restart Cursor (Cmd+Q)** —
+> a window reload is not enough to register project hooks — and ensure the workspace is trusted.
+
 | Hook handler          | Event                  | Purpose                                                                         |
 | --------------------- | ---------------------- | ------------------------------------------------------------------------------- |
 | `guard-shell.sh`      | `beforeShellExecution` | **Blocks** destructive commands (`rm -rf /`, force-push to `main`, hard reset of shared branches) and commits containing forbidden anti-patterns (`as any`, `@ts-ignore`, empty catches) |
