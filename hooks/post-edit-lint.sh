@@ -1,47 +1,47 @@
 #!/usr/bin/env bash
-# Post-edit hook: automatically run lints on changed files after agent edits.
-# Place in .cursor/hooks/ and configure via Cursor's hook system.
+# afterFileEdit hook — lints a file right after the agent edits it.
 #
-# This surfaces lint errors immediately rather than relying on agents
-# to remember to run ReadLints after every change.
+# Reads a JSON payload on stdin (fields: file_path, edits, hook_event_name, ...).
+# afterFileEdit is INFORMATIONAL: Cursor ignores the output, so this hook only
+# surfaces lint findings; it cannot (and should not) block the edit.
+#
+# Surfaces lint errors immediately rather than relying on agents to remember
+# to run ReadLints after every change.
 
-set -euo pipefail
+set -uo pipefail
 
-CHANGED_FILES=("$@")
+INPUT="$(cat)"
 
-if [ ${#CHANGED_FILES[@]} -eq 0 ]; then
-  exit 0
-fi
+FILE="$(printf '%s' "$INPUT" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("file_path", ""))
+except Exception:
+    print("")' 2>/dev/null)"
 
-for file in "${CHANGED_FILES[@]}"; do
-  if [ ! -f "$file" ]; then
-    continue
-  fi
+[ -z "$FILE" ] && exit 0
+[ -f "$FILE" ] || exit 0
 
-  ext="${file##*.}"
+ext="${FILE##*.}"
 
-  case "$ext" in
-    ts|tsx|js|jsx)
-      if command -v npx >/dev/null 2>&1; then
-        npx eslint --no-error-on-unmatched-pattern "$file" 2>/dev/null || true
-      fi
-      ;;
-    py)
-      if command -v ruff >/dev/null 2>&1; then
-        ruff check "$file" 2>/dev/null || true
-      elif command -v flake8 >/dev/null 2>&1; then
-        flake8 "$file" 2>/dev/null || true
-      fi
-      ;;
-    rs)
-      if command -v cargo >/dev/null 2>&1; then
-        cargo clippy --message-format=short 2>/dev/null || true
-      fi
-      ;;
-    go)
-      if command -v golangci-lint >/dev/null 2>&1; then
-        golangci-lint run "$file" 2>/dev/null || true
-      fi
-      ;;
-  esac
-done
+case "$ext" in
+  ts|tsx|js|jsx)
+    if command -v npx >/dev/null 2>&1; then
+      npx eslint --no-error-on-unmatched-pattern "$FILE" 2>/dev/null || true
+    fi
+    ;;
+  py)
+    if command -v ruff >/dev/null 2>&1; then
+      ruff check "$FILE" 2>/dev/null || true
+    elif command -v flake8 >/dev/null 2>&1; then
+      flake8 "$FILE" 2>/dev/null || true
+    fi
+    ;;
+  rs)
+    command -v cargo >/dev/null 2>&1 && cargo clippy --message-format=short 2>/dev/null || true
+    ;;
+  go)
+    command -v golangci-lint >/dev/null 2>&1 && golangci-lint run "$FILE" 2>/dev/null || true
+    ;;
+esac
+
+exit 0

@@ -215,3 +215,37 @@ First run recorded below; re-run and append as the roster shifts.
 - Features from §3 confirmed available: `(pending)`
 - §1 verdict: **PASS (confirmed)** — all 8 agents route to configured models on 3.8.23
 - **Recommended next step:** `open PR -> main; then §3 Cursor 3.6-3.8 feature inventory for the version after`
+
+---
+
+## M1 (v0.4) — Hooks & Auto-review validation
+
+Validates the `.cursor/hooks.json` enforcement + `permissions.json` auto-review policy.
+**Start in observe mode** (`export OMC_HOOKS_OBSERVE=1`) so nothing is blocked until the
+wiring is confirmed.
+
+### Hooks fire (observe mode)
+- [ ] Install from this branch; confirm `.cursor/hooks.json`, `.cursor/permissions.json`,
+      and `.cursor/hooks/guard-shell.sh` exist (✓ verified by installer locally).
+- [ ] With `OMC_HOOKS_OBSERVE=1`, have an agent run a harmless shell command → confirm
+      `guard-shell.sh` fires (check it appears in the agent's tool output / hook logs).
+- [ ] Have an agent edit a `.ts`/`.py` file → confirm `post-edit-lint.sh` runs (lint output).
+- [ ] Confirm the exact hook **event names** in your build match (`beforeShellExecution`,
+      `afterFileEdit`). If Cursor 3.8 exposes `subagentStart`, note it for the allowlist
+      enforcement follow-up.
+
+### Promote to blocking (after observe passes)
+- [ ] Unset `OMC_HOOKS_OBSERVE`. Ask an agent to run `rm -rf` on something → confirm it's
+      **denied** with the policy message (not executed).
+- [ ] Ask an agent to `git commit` a file containing `as any` → confirm the commit is denied.
+- [ ] Confirm a normal command (`ls`, `git status`) still runs without friction.
+
+### Auto-review policy
+- [ ] Enable a Run Mode (Settings → Agents → Approvals & Execution).
+- [ ] Confirm lints/tests/builds auto-run while destructive/credential/network calls are held.
+
+### Known follow-ups before v0.4 release
+- [ ] **`install.ps1` parity** — mirror the `hooks.json` / `permissions.json` install on Windows.
+- [ ] Verify hook `command` path resolution for **user scope** (`~/.cursor/hooks.json`) vs
+      project scope; adjust paths if user-scope needs absolute paths.
+- [ ] If `subagentStart` exists, add an allowlist/depth-cap enforcement hook (M1 stretch).

@@ -408,14 +408,33 @@ Two-tier swarm: **Coordinators** (Aang, Sokka, Katara, Appa) spawn **Workers** (
 | **Research-then-Act** | Spawn Toph for parallel research, collect results, then implement   |
 | **Fire-and-Collect**  | Spawn multiple Momo workers, wait for all, verify each              |
 
-## Hooks
+## Hooks (Cursor agent-loop)
 
-System-level enforcement that doesn't rely on agents remembering to verify:
+System-level enforcement that doesn't rely on agents remembering to verify. Wired through
+Cursor's [hooks](https://cursor.com/docs/hooks) system via **`.cursor/hooks.json`** — each
+hook is a script that receives a JSON payload on stdin and (for `beforeShellExecution`)
+returns an allow/deny/ask decision.
 
-| Hook                  | Purpose                                                                         |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `post-edit-lint.sh`   | Automatically run lints after agent edits                                       |
-| `pre-commit-check.sh` | Enforce hard constraints (`as any`, empty catches, `@ts-ignore`) before commits |
+| Hook handler          | Event                  | Purpose                                                                         |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------------- |
+| `guard-shell.sh`      | `beforeShellExecution` | **Blocks** destructive commands (`rm -rf /`, force-push to `main`, hard reset of shared branches) and commits containing forbidden anti-patterns (`as any`, `@ts-ignore`, empty catches) |
+| `post-edit-lint.sh`   | `afterFileEdit`        | Runs lints on the edited file (informational — surfaces issues immediately)     |
+| `pre-commit-check.sh` | (library)              | Anti-pattern checker invoked by `guard-shell.sh`; also usable as a git pre-commit hook |
+
+**Observe mode:** set `OMC_HOOKS_OBSERVE=1` to run `guard-shell.sh` non-blocking — it logs
+what it *would* block without denying. Use this to validate hooks on your build before
+trusting them to block.
+
+### Auto-review policy (`permissions.json`)
+
+Ships a tuned [auto-review](https://cursor.com/docs/agent/security) policy
+(`autoRun.allow_instructions` / `block_instructions`) so Team Avatar agents auto-run safe
+calls (lints, tests, builds, read-only git) and hold risky ones (destructive fs, history
+rewrites, credential/secret access, outbound network) for review. Takes effect when a Run
+Mode is enabled in **Cursor Settings → Agents → Approvals & Execution**.
+
+> Hooks and auto-review are **best-effort**, not a security boundary — they reduce footguns
+> and approval spam, but don't replace real sandboxing.
 
 ## Prompting Tips
 
