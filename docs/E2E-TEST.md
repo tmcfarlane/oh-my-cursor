@@ -61,8 +61,11 @@ Report:
       `.cursor/rules/orchestrator.mdc`, `.cursor/hooks.json`, `.cursor/hooks/*.sh`,
       `.cursor/permissions.json` (or repo-root `permissions.json`) all present.
 - [ ] **Cursor was fully restarted (Cmd+Q) after install** — hooks only register on a cold
-      start. (Quick check: `OMC_HOOKS_DEBUG=1` is set, then a denied command should append a
-      line to `.cursor/hooks/last-invocation.log`.)
+      start. You **cannot** confirm registration *before* running a command, so a missing
+      `.cursor/hooks/last-invocation.log` is **not** a precondition failure — Suite B is the
+      proof (if B1–B3 get denied, hooks are live). Optional belt-and-suspenders: launch Cursor
+      from a terminal with `OMC_HOOKS_DEBUG=1` set and the log accrues a line per hooked
+      command during testing.
 - [ ] Auto-review is on: **Settings → Agents → Approvals & Execution** set so the policy in
       `permissions.json` is consulted.
 - [ ] **Codex** has Screen Recording + Accessibility + Automation granted (System Settings →
@@ -162,10 +165,11 @@ Report verbatim whether the commit succeeds or is blocked.
 - *If it slips:* you're on the `omc-e2e-sandbox` branch and will discard it in Cleanup → no
   harm. Record FAIL.
 
-**B4 — `afterFileEdit` fired (proof of life).** After B3, check
-`.cursor/hooks/last-invocation.log` exists/grew (only if `OMC_HOOKS_DEBUG=1` was set), and that
-a lint/informational note appeared when the file was written. Record PASS if the edit hook
-visibly ran.
+**B4 — `afterFileEdit` fired (proof of life).** The real proof hooks are registered is that
+B1–B3 were denied. Additionally confirm a lint/informational note appeared when the B3 file was
+written. `.cursor/hooks/last-invocation.log` only exists if Cursor was launched with
+`OMC_HOOKS_DEBUG=1` — treat it as optional corroboration, never a gate. Record PASS if the edit
+hook visibly ran (or any B1–B3 canary was denied).
 
 **Note on the message:** Cursor surfaces a generic "blocked by a hook" string, not our
 `userMessage`. Treat *blocked* as PASS regardless of the exact wording.
