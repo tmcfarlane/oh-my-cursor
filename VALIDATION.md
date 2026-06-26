@@ -1,295 +1,219 @@
-# Validation Guide
+# Cursor Subagent Internals — Validated Reference
 
-A hands-on checklist to run **once you have a Cursor Pro plan**, before trusting the
-next version of oh-my-cursor. It exists because two things move faster than this repo:
+A field-tested reference for Cursor's subagent system: **which model slugs actually
+route, what silently breaks, and how hooks really behave** — verified against a specific
+Cursor build, not guessed from the docs.
 
-1. **Cursor's model roster** — names and availability change almost monthly.
-2. **Cursor's subagent model controls** — recent releases have tightened how (and
-   whether) a `model:` string in agent frontmatter actually routes. Several builds
-   have been reported to silently force subagents onto Composer, ignore
-   `model: inherit` (falling back to `composer-1`), or whitelist only a single
-   Composer variant for the `Task` tool.
+Cursor documents the *shape* of subagents ([cursor.com/docs/subagents](https://cursor.com/docs/subagents)).
+This doc covers the parts it doesn't: the silent-fallback footgun, the hooks fail-open
+default, and a slug list confirmed to route on a real build. Re-run the
+[2-minute check](#2-minute-validation) after any Cursor update and update the matrix.
 
-If per-agent routing has been locked down in your build, the headline feature of this
-project ("undocumented custom model aliases") may no longer hold — so **validate first,
-build second.**
-
-> Snapshot date: **June 2026**. Cursor 3.8 is current; Composer 3 is announced but not
-> yet in the picker. Re-check [`cursor.com/changelog`](https://cursor.com/changelog) and
-> the [available-models docs](https://cursor.com/docs/models-and-usage/available-models)
-> before you start — update the tables below if the roster has shifted.
+> **Last validated:** Cursor **3.8.23 (Universal)** · 2026-06-26
+> Re-check [`cursor.com/changelog`](https://cursor.com/changelog) and the
+> [models reference](https://cursor.com/docs/models-and-usage/available-models) before relying on the tables below.
 
 ---
 
-## 0. Prerequisites
+## Compatibility matrix
 
-- [ ] Cursor Pro active (agent mode + subagents enabled)
-- [ ] Cursor updated to the latest version — note it here: `Cursor v________`
-- [ ] oh-my-cursor installed from **the branch/tag you’re validating** (not the published `main`):
-      ```bash
-      git clone https://github.com/tmcfarlane/oh-my-cursor.git
-      cd oh-my-cursor
-      git checkout <branch-or-tag-under-test>
-      bash install.sh --force
-      ```
-- [ ] Open `~/.cursor/rules/orchestrator.mdc` and click **"Always Allow"** when prompted
+| Capability | Cursor 3.8.23 | Notes |
+| ---------- | :-----------: | ----- |
+| Per-agent `model:` routing (frontmatter) | ✅ | Now documented; **invalid slug silently downgrades** — see gotcha #1 |
+| Subagent nesting depth | ✅ (2 levels) | Documented since Cursor 2.5: main + direct subagents can spawn; their children can't |
+| `beforeShellExecution` hook (block/ask/allow) | ✅ | **Fails open by default** — set `failClosed` — see gotcha #2 |
+| `afterFileEdit` hook | ✅ | Fires on agent edit-tool writes (informational lint) |
+| `permissions.json` auto-review | ✅ | Auto-runs safe calls, holds risky ones; needs a Run Mode enabled |
+| Automations (event-driven dispatch) | ⚠️ cloud-only | No committable config file yet — ships as paste-in `/automate` recipes |
+
+Legend: ✅ works as configured · ⚠️ works with a caveat · ❌ unavailable/blocked.
 
 ---
 
-## 1. Model routing (the critical test)
+## Validated Task-tool model slugs
 
-**Goal:** confirm each agent's frontmatter `model:` string actually resolves and is the
-model that runs — not silently downgraded.
+The Task tool accepts **specific slugs only** — the README/orchestrator shorthand is not
+valid. Omitting `model:` makes a subagent inherit its parent's model (`inherit`).
 
-For each agent, dispatch it and inspect which model the subagent thread reports in
-Cursor's UI (the model badge on the subagent tab / the run metadata).
+| Slug | Routes to | Used by |
+| ---- | --------- | ------- |
+| `composer-2.5-fast` | Composer 2.5 Fast (default pool) | Aang, Appa, Katara, Momo, Toph |
+| `claude-opus-4-8-thinking-high` | Opus 4.8, high thinking | Sokka, Iroh |
+| `gemini-3.1-pro` | Gemini 3.1 Pro | Zuko |
+| `claude-4.6-opus-high-thinking` | Opus 4.6 thinking | (alt) |
+| `claude-4.6-sonnet-medium-thinking` | Sonnet 4.6 thinking | (alt) |
+| `claude-fable-5-thinking-high` | Fable 5 thinking | (alt) |
+| `gpt-5.3-codex-high-fast` | GPT-5.3 Codex | (alt) |
+| `gpt-5.5-medium` | GPT-5.5 | (alt) |
+| `kimi-k2.5` | Kimi K2.5 | (alt) |
 
-What the full 8-agent sweep (dispatched as Task subagents) actually exposed: the
-`model:` slugs were **invalid**, so the Task tool rejected 7 of 8 and Cursor fell back to
-its default subagent model — *Composer 2.5 Fast*. It was **never a subagent "lockdown"**;
-it was wrong slugs masquerading as one (and the Composer agents "passed" only because the
-fallback happens to be Composer too).
+**Shorthand that does *not* work** (and silently downgrades):
+`cursor-composer-2-5` → use `composer-2.5-fast`; `claude-opus-4.8` → use `claude-opus-4-8-thinking-high`;
+`gemini-3.5-flash` was rejected — `gemini-3.1-pro` routes.
 
-| Agent  | Slug tried (invalid)  | Valid? | What ran            |
-| ------ | --------------------- | ------ | ------------------- |
-| Aang   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
-| Appa   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
-| Katara | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
-| Momo   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
-| Toph   | `cursor-composer-2-5` | ✗      | Composer 2.5 Fast (fallback) |
-| Sokka  | `claude-opus-4.8`     | ✗      | Composer 2.5 Fast (fallback) |
-| Iroh   | `claude-opus-4.8`     | ✗      | Composer 2.5 Fast (fallback) |
-| Zuko   | `gemini-3.1-pro`      | ✓      | Gemini 3.1 Pro      |
+---
 
-### Valid Task-tool model slugs (Cursor 3.8.23, 2026-06-24)
+## Gotchas the docs don't tell you
 
-The Task tool only accepts specific slugs; the README/orchestrator shorthand is **not**
-valid. Omitting `model:` makes a subagent inherit the parent's model.
+**1. An invalid or stale slug silently downgrades to `composer-2.5-fast` — it does not error.**
+Cursor's docs only mention fallback for plan/admin/Max-Mode reasons. In practice, a *typo
+or outdated slug* falls through to the default Composer model with no warning. A wrong slug
+"works" while quietly running the wrong (and often cheaper) model. This is the single most
+important reason to validate routing after every update. In our first 8-agent sweep, 7/8
+agents were on invalid slugs and all silently ran Composer 2.5 Fast — it looked like a
+"subagent model lockdown" but was just wrong slugs.
 
-| Slug                            | Role |
-| ------------------------------- | ---- |
-| `composer-2.5-fast`             | Default executor pool (Aang, Appa, Katara, Momo, Toph) |
-| `claude-opus-4-8-thinking-high` | Deep planning / docs (Sokka, Iroh) |
-| `gemini-3.1-pro`                | Multimodal / visual (Zuko) |
-| `claude-4.6-opus-high-thinking` | Opus-tier thinking (alt) |
-| `claude-4.6-sonnet-medium-thinking` | Sonnet-tier thinking |
-| `claude-fable-5-thinking-high`  | Fable thinking |
-| `gpt-5.3-codex-high-fast`       | Codex fast |
-| `gpt-5.5-medium`                | GPT medium |
-| `kimi-k2.5`                     | Kimi |
+**2. `beforeShellExecution` hooks fail *open* by default.**
+A hook that fires but errors (bad PATH, parse failure) → Cursor **allows** the command. So
+"nothing was blocked" does **not** mean "the hook never ran." Set `"failClosed": true` on
+the hook entry so a script error denies instead of allowing.
 
-Shorthand → valid slug fixes applied to this branch:
-`cursor-composer-2-5` → `composer-2.5-fast`; `claude-opus-4.8` → `claude-opus-4-8-thinking-high`.
+**3. macOS GUI PATH doesn't include Homebrew.**
+Cursor.app doesn't inherit your shell's `/opt/homebrew/bin`, so `jq`/`python3` can be absent
+on the hook's PATH → the guard parses an empty command → silently allows. Resolve
+interpreters at absolute paths (`/opt/homebrew/bin`, `/usr/bin`) with a `perl` fallback.
 
-> **Status:** slugs corrected in all agent frontmatter, orchestrator, README, and the
-> debugging skill. The project's per-agent routing premise holds — it just needs the
-> correct slugs.
->
-> **Re-run (2026-06-24, post-slug-fix, via Codex) — CONFIRMED PASS:** all 8 agents
-> dispatched, replied in-character with no refusals, and route to their configured models:
->
-> | Agent | Slug | Verified routing |
-> | ----- | ---- | ---------------- |
-> | Toph, Momo, Appa, Katara, Aang | `composer-2.5-fast` | Composer 2.5 Fast ✅ |
-> | Sokka, Iroh | `claude-opus-4-8-thinking-high` | Opus 4.8 High ✅ |
-> | Zuko | `gemini-3.1-pro` | Gemini 3.1 Pro ✅ |
->
-> §1 is fully green: per-agent model routing works on Cursor 3.8.23 with the correct
-> Task-tool slugs.
+**4. Project hooks need a full restart, not a reload.**
+`.cursor/hooks.json` registers only after a full **Cmd+Q + relaunch** (a window reload is
+not enough) in a **trusted** workspace. Reloading the window leaves stale/no hooks.
 
-Quick dispatch prompt (run in a fresh Cursor chat):
+**5. `.cursor/` is gitignored → fresh clones and cloud agents get no hooks.**
+Hooks are per-machine via the installer by design. If cloud/fresh-clone agents must be
+guarded, un-ignore and commit `.cursor/hooks*` with `--chmod=+x`.
+
+**6. Hooks/auto-review are best-effort, not a security boundary.**
+They cut footguns and approval spam; they don't replace real sandboxing.
+
+---
+
+## 2-minute validation
+
+Run this after installing a new Cursor version or a new branch of this repo.
+
+### Model routing (the critical test)
+
+Paste into a fresh Cursor chat:
 
 ```text
 You are Team Avatar. Dispatch @toph to list the files in this repo, @sokka to
 outline a trivial plan, and @zuko to describe an icon. Do no work yourself.
 ```
 
-**Decision rules:**
-- ✅ All match → custom aliases still route. Proceed; the README claim holds.
-- ⚠️ Composer agents downgrade to `composer-1` or a generic Composer → frontmatter
-  routing is being ignored. Note it and move heavy agents to the **picker-default**
-  model instead of relying on the alias.
-- ❌ Non-Cursor models (Opus/Gemini) are refused or swapped for Composer → subagent
-  model choice is locked in your build. **This is the finding that decides the next
-  version's architecture** — record it and stop before the feature work.
+For each subagent, read the **model badge** on its tab / run metadata and compare to the
+[slug table](#validated-task-tool-model-slugs):
 
-Open questions — status after the 3.8.23 runs:
-- [x] Root cause of the Composer downgrade = **invalid slugs**, not a subagent lockdown.
-      Cursor falls back to `composer-2.5-fast` when a `model:` slug is unrecognized.
-- [x] Correct slugs identified and applied (see table above).
-- [x] `gemini-3.1-pro` is valid and routes correctly for Zuko (`gemini-3.5-flash` did not).
-- [x] **Re-run confirmed:** with the corrected slugs all 8 route correctly — Composer pool
-      → Composer 2.5 Fast, Sokka/Iroh → Opus 4.8 High, Zuko → Gemini 3.1 Pro. §1 green.
+- ✅ All match their configured model → routing holds.
+- ⚠️ A Composer agent runs but a non-Composer agent (Opus/Gemini) silently runs Composer →
+  **wrong slug** (gotcha #1). Fix the slug; do not assume a lockdown.
+- ❌ A non-Cursor model is *refused* → that model is plan/admin/Max-Mode restricted on your
+  account. Switch that agent to an available slug.
 
----
+### Orchestration smoke tests
 
-## 2. Orchestration smoke tests
-
-Confirm the harness behaves, independent of models.
-
-- [ ] Root thread refuses to do work directly and delegates via `Task` (orchestrator rule active)
-- [ ] `/plan <something ambiguous>` → Sokka asks a clarifying question before planning
-- [ ] `/search <topic>` → Toph runs and returns findings (read-only)
+- [ ] Root thread refuses to work directly and delegates via `Task`
+- [ ] `/plan <ambiguous>` → Sokka asks a clarifying question before planning
+- [ ] `/search <topic>` → Toph returns read-only findings
 - [ ] `/build` after a plan → Aang/Appa implement and self-verify (lint/test)
 - [ ] `/fix <bug>` → Katara makes a minimal change
 - [ ] `/image <request>` → Zuko generates an asset into `assets/`
-- [ ] `/cactus-juice <multi-part task>` → multiple workers spawn in parallel
-- [ ] Hooks fire: `post-edit-lint.sh` runs after an edit; `pre-commit-check.sh` blocks a commit containing `as any`
+- [ ] `/cactus-juice <multi-part>` → multiple workers spawn in parallel
+
+### Hooks (project-scope install only)
+
+Instrumented repro:
+
+```bash
+launchctl setenv OMC_HOOKS_DEBUG 1     # macOS: log every invocation
+bash install.sh --project --force
+# → Cmd+Q + relaunch Cursor, trust the workspace
+```
+
+In the Agent chat, have it create + `git add` + `git commit` a `.ts` file containing
+`as any`. Expect: **commit blocked** ("Command execution was blocked by a hook") and a
+`git commit` line in `.cursor/hooks/last-invocation.log`. Cleanup: `launchctl unsetenv OMC_HOOKS_DEBUG`.
+
+> **Observe mode:** set `OMC_HOOKS_OBSERVE=1` to run `guard-shell.sh` non-blocking — it logs
+> what it *would* deny without denying, so you can validate before trusting it to block.
 
 ---
 
-## 3. Cursor 3.x feature inventory (decides what to build next)
+## Validation history
 
-Confirm which new capabilities your plan actually exposes, so the next version targets
-real features. Check each and note availability.
+<details>
+<summary><strong>Cursor 3.8.23 · 2026-06-24 — Model routing (§1)</strong></summary>
 
-| Feature (Cursor 3.6–3.8) | Available on Pro? | Notes / how we'd use it |
-| ------------------------ | ----------------- | ----------------------- |
-| **Deep subagent nesting** (SDK, any depth) | ☐ | Harness currently caps depth at 2 by design — relax if useful |
-| **`/automate` skill** (plain-language automation setup) | ☐ | Could auto-wire Team Avatar workflows |
-| **Automations + triggers** (GitHub, Slack emoji) | ☐ | Event-driven dispatch |
-| **Computer use in automations** (on by default) | ☐ | Native visual self-verification — may replace external Codex loop |
-| **Auto-review** (route local tool calls through review) | ☐ | Quality gate before commit |
-| **Composer 2.5** as picker default | ☐ | Confirm it's the default fast tier |
-| **Composer 3** | ☐ | Expected later — not in picker as of June 2026 |
-| **Hooks** (`.cursor/hooks.json`, stdio JSON) | ☐ | Current hooks are shell; SDK hooks are richer |
+The first 8-agent sweep exposed that the `model:` slugs were **invalid**, so the Task tool
+rejected 7/8 and Cursor fell back to its default subagent model (Composer 2.5 Fast). It was
+never a "lockdown" — wrong slugs masquerading as one (Composer agents "passed" only because
+the fallback is also Composer).
 
-Anything checked here is a candidate for the **"adopt new Cursor features"** deliverable
-that follows this model refresh.
+| Agent | Slug tried (invalid) | What ran |
+| ----- | -------------------- | -------- |
+| Aang, Appa, Katara, Momo, Toph | `cursor-composer-2-5` | Composer 2.5 Fast (fallback) |
+| Sokka, Iroh | `claude-opus-4.8` | Composer 2.5 Fast (fallback) |
+| Zuko | `gemini-3.1-pro` ✓ | Gemini 3.1 Pro |
 
----
+**Re-run after slug fix — PASS:** all 8 dispatched, replied in character, and routed
+correctly — Composer pool → Composer 2.5 Fast, Sokka/Iroh → Opus 4.8 High, Zuko → Gemini
+3.1 Pro. Fixes applied: `cursor-composer-2-5` → `composer-2.5-fast`,
+`claude-opus-4.8` → `claude-opus-4-8-thinking-high`.
 
-## 4. Codex computer-vision validation loop
+</details>
 
-**Role:** Codex is the **external QA tester** of features the Cursor harness builds — an
-independent second tool that visually verifies the result, so the model that wrote the
-code isn't the one grading it. Cursor builds; Codex looks at the running UI and reports.
+<details>
+<summary><strong>Cursor 3.8.23 · 2026-06-25/26 — Hooks &amp; auto-review (M1)</strong></summary>
 
-### Platform reality check (verify against the Codex changelog before relying on this)
+**Run 1 (NOT-DENIED → diagnosed):** Codex drove Cursor to commit a `.ts` with `as any` and
+the commit **succeeded** — both hooks silent. Adversarial diagnosis (a research synthesis
+was overturned by its own verifier — keep the verifier):
 
-- **macOS:** Computer Use launched Apr 16 2026; can run in the **background** (briefly
-  unlocks the display during active turns). Best target for an unattended loop.
-- **Windows:** support reportedly added ~May 29 2026, but the agent **takes over the
-  active desktop** — you can't use the machine while it runs.
-- **Linux:** Computer Use **not yet supported**. Use **browser use** against a local dev
-  server as the fallback.
-- **Recommended model:** `gpt-5.5` (computer-use capable).
+1. `beforeShellExecution` **fails open** — a hook that errors → allow. So "both silent ⇒
+   never registered" was a false inference.
+2. **macOS GUI PATH bug** — Cursor.app lacks `/opt/homebrew/bin`, so `python3` could be
+   absent → guard parsed an empty command → allowed.
+3. **cwd mismatch** — the guard ran the check without `cd`-ing to the payload `cwd`, so
+   `git diff --cached` saw an empty staged set → allowed.
+4. **Registration** — project hooks need a full quit + relaunch and a trusted workspace.
 
-### Setup
+**Hardening applied (re-tested ✓):** PATH-robust parsing (`jq` → absolute `python3` →
+`perl`); `cd` into payload `cwd` before git checks; parse-failure returns **`ask`** not
+silent-allow; `OMC_HOOKS_DEBUG=1` invocation log; `"failClosed": true`.
 
-- [ ] Install Codex CLI/app and sign in (or set an API key for headless runs)
-- [ ] Confirm Computer Use is available on your OS (note: `macOS` / `Windows` / `Linux→browser-only`)
-- [ ] Decide the surface to test: a desktop app window (Computer Use) **or** a local web
-      preview (browser use)
+**Run 2 — PASS ✅:** after hardening + project-scope-only install + full Cmd+Q restart, the
+agent's `as any` commit was **BLOCKED** and `last-invocation.log` recorded the `git commit`,
+proving the guard fired and the deny was honored.
 
-### Loop
+**All three layers PASS (2026-06-26):**
+- [x] `beforeShellExecution` guard — `as any` commit blocked; guard fired.
+- [x] `afterFileEdit` lint — agent edit logged an `edit` line → `post-edit-lint.sh` fired.
+- [x] `permissions.json` auto-review — `git status` auto-ran while `cat ~/.ssh/config` was
+      held for review (matches `block_instructions`).
 
-1. Cursor (Team Avatar) builds or changes a UI feature on this branch.
-2. Run Codex against the running app with a verification prompt, e.g.:
-   ```text
-   Open the app at http://localhost:3000 (or the running window). Verify:
-   <acceptance criteria>. Take a screenshot of each step. If anything fails,
-   describe exactly what you see vs. what was expected.
-   ```
-3. Codex screenshots, clicks/types, and reports pass/fail with visual evidence.
-4. Feed failures back to Cursor (e.g. via `/fix`) and repeat until green.
+**Known follow-ups:** Cursor shows its generic "blocked by a hook" text, not our
+`userMessage` (cosmetic); unattended `codex exec` auto-denies the computer-use elicitation
+(needs interactive Codex / pre-granted Automation); `.cursor/` gitignore means cloud agents
+get no hooks (document or commit with `--chmod=+x`).
 
-- [ ] One full Cursor-build → Codex-verify → Cursor-fix cycle completed on a sample feature
-- [ ] Screenshots captured as artifacts
-- [ ] Decide: is the **native** Cursor 3.8 computer-use automation (§3) good enough to
-      replace this external loop, or is the independent-tool check worth keeping?
+</details>
 
----
+<details>
+<summary><strong>External QA loop (Codex computer-use) — platform notes</strong></summary>
 
-## Results summary
+Codex acts as an **independent** visual QA tester (the model that wrote the code isn't the
+one grading it): Cursor builds, Codex looks at the running UI and reports pass/fail with
+screenshots, failures feed back via `/fix`.
 
-First run recorded below; re-run and append as the roster shifts.
+Platform reality (verify against the Codex changelog before relying on it):
+- **macOS** — Computer Use (Apr 2026); can run in the background. Best for an unattended loop.
+- **Windows** — added ~May 2026, but takes over the active desktop.
+- **Linux** — Computer Use not supported; use **browser use** against a local dev server.
+- Recommended model: `gpt-5.5` (computer-use capable).
 
-- Cursor version tested: `3.8.23 (Universal)` — 2026-06-24
-- Custom model aliases route correctly? **yes, with the correct slugs** — the earlier
-  "downgrade to Composer" was invalid slugs falling back, not a subagent lockdown
-- Root cause found: `cursor-composer-2-5` and `claude-opus-4.8` are not valid Task slugs;
-  Cursor falls back to `composer-2.5-fast`. Valid slugs now applied (see §1 table)
-- Correct slugs: `composer-2.5-fast` (pool) · `claude-opus-4-8-thinking-high` (Sokka/Iroh) · `gemini-3.1-pro` (Zuko)
-- Codex Computer Use platform used: `macOS (Codex.app 26.616.81150, gpt-5.5); needed Screen Recording + Accessibility + per-app Allow`
-- Features from §3 confirmed available: `(pending)`
-- §1 verdict: **PASS (confirmed)** — all 8 agents route to configured models on 3.8.23
-- **Recommended next step:** `open PR -> main; then §3 Cursor 3.6-3.8 feature inventory for the version after`
+Open question: is Cursor 3.8's **native** computer-use automation good enough to replace the
+external loop, or is the independent-tool check worth keeping?
 
----
+**Full E2E runbook:** [`docs/E2E-TEST.md`](docs/E2E-TEST.md) is a paste-into-Codex driver that
+drives the Cursor agent window through all 15 checks (model routing + hook enforcement +
+auto-review) and fills in a pass/fail table. Run it attended.
 
-## M1 (v0.4) — Hooks & Auto-review validation
-
-### Run 1 (2026-06-25, Cursor 3.8.23, via Codex) — NOT-DENIED → fixed
-
-Codex drove Cursor's agent to commit a `.ts` file containing `as any`. **The commit
-succeeded (`b077d4b`)** — no "Blocked by oh-my-cursor", no approval prompt, and the only
-lint seen was Cursor's built-in ReadLints (not our `post-edit-lint.sh`). Both hooks were
-silent. Our scripts were proven correct in isolation, so this is an **integration/robustness
-failure**, surfaced exactly as observe-first validation intends.
-
-Adversarial diagnosis (a research synthesis was *overturned* by its own verifier — keep the
-verifier):
-1. **`beforeShellExecution` fails OPEN by default.** A hook that fires but errors → Cursor
-   allows. So "both silent ⇒ never registered" was a false inference.
-2. **macOS GUI PATH bug (real):** Cursor.app doesn't inherit the shell's `/opt/homebrew/bin`,
-   so `python3` could be absent on the hook's PATH → guard parsed an empty command →
-   silently allowed even when fired.
-3. **cwd mismatch (real):** the guard ran `pre-commit-check.sh` without `cd`-ing to the
-   payload `cwd`, so `git diff --cached` could see an empty staged set → allow.
-4. **Registration:** project hooks may need a full **quit + relaunch** (not just Reload
-   Window) and a **trusted workspace** to register on 3.8.x.
-
-### Hardening applied this branch (re-tested locally ✓)
-- PATH-robust JSON parsing: `jq` → `python3` at absolute paths (`/opt/homebrew`, `/usr/bin`,
-  …) → `/usr/bin/perl`. Verified denies `rm -rf /` and commit-`as any` with PATH=`/usr/bin:/bin`.
-- `cd` into the payload `cwd` before git checks (verified: detects staged `as any` in a
-  separate worktree).
-- Parse-failure now returns **`ask`** (surface), not silent allow.
-- `OMC_HOOKS_DEBUG=1` → appends each invocation to `.cursor/hooks/last-invocation.log`.
-- `"failClosed": true` on the `beforeShellExecution` entry so a script error **denies**.
-
-### Run 2 (2026-06-26, Cursor 3.8.23) — PASS ✅
-
-After: (a) hardening the scripts, (b) removing the stale user-scope hooks (project scope
-only), and (c) a **full Cmd+Q restart** (not just reload), the Cursor agent was asked to
-create `omc-hooktest.ts` (`as any`), `git add`, then `git commit`:
-- **The commit was BLOCKED** — Cursor returned *"Command execution was blocked by a hook"*
-  and **no "hook test" commit landed** (branch HEAD stayed at the prior commit).
-- `last-invocation.log` (via `OMC_HOOKS_DEBUG=1`) recorded **every** shell command including
-  the `git commit` — proving `guard-shell.sh` fired on `beforeShellExecution` and the deny
-  was honored.
-
-So `beforeShellExecution` enforcement works on 3.8.23 with: project-scope install + valid
-slugs of the config + a **full restart**. The earlier NOT-DENIED was the fail-open bug, now fixed.
-
-How to reproduce (instrumented): `launchctl setenv OMC_HOOKS_DEBUG 1` → `bash install.sh
---project --force` → **Cmd+Q + relaunch** → in the Agent chat have it create+add+commit an
-`as any` `.ts` via the terminal → expect the commit blocked + a `git commit` line in
-`.cursor/hooks/last-invocation.log`. Cleanup: `launchctl unsetenv OMC_HOOKS_DEBUG`.
-
-### M1 status: all three layers PASS ✅ (2026-06-26, Cursor 3.8.23)
-- [x] **`beforeShellExecution` guard** — commit of `as any` blocked; guard fired (Run 2).
-- [x] **`afterFileEdit` lint hook** — agent edit-tool write of `scratch-edit-test.ts` logged an
-      `edit` line → `post-edit-lint.sh` fired.
-- [x] **`permissions.json` auto-review** — with Run Mode = Auto-review, `git status` auto-ran
-      (no prompt) while `cat ~/.ssh/config` was **held for review** (matches `block_instructions`).
-      Clean separation: guard blocks destructive/anti-pattern; auto-review holds broader risk.
-
-### Cosmetic / follow-ups (non-blocking)
-- [ ] Cursor showed its **generic** "blocked by a hook" text, not our `userMessage`
-      ("Blocked by oh-my-cursor: …"). Confirm where our message surfaces (agent narration) — cosmetic.
-- [ ] Driving this unattended via `codex exec` is **not possible** (auto-denies the computer-use
-      elicitation). Automated Codex→Cursor QA needs the Codex app / interactive `codex`, or
-      pre-granted Automation. Folds into M3.
-
-### Known follow-ups before v0.4 release
-- [ ] **`install.ps1` parity** — mirror `hooks.json` / `permissions.json` install on Windows.
-- [ ] **`.cursor/` is gitignored** → committed hooks aren't shared, so **cloud/fresh-clone
-      agents get NO hooks**. By design for the per-machine installer; document it (or un-ignore
-      + commit `.cursor/hooks*` with `--chmod=+x` if cloud agents must be supported).
-- [x] User-scope path resolution: **resolved** — hook config is now project-scope only
-      (installer skips `hooks.json`/`permissions.json` at user scope; relative command paths
-      only resolve in a project workspace). Confirmed on 3.8.23 that BOTH user & project
-      hooks register in the Hooks panel, so Run 1's failure was fail-open, not registration.
-- [ ] If `subagentStart` exists in your build, add an allowlist/depth-cap enforcement hook.
+</details>

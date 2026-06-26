@@ -15,27 +15,22 @@
   <strong>TEAM AVATAR</strong>
 </div>
 
-Multi-agent philosophy for Cursor subagents. Nothing but config files.<br>
+**An Avatar-themed AI dev team for Cursor.** 8 specialist agents, real per-model routing,<br>
+and hooks that block bad commits — pure config files, no runtime, no wrapper CLI.<br>
 _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
-
-**NOW USING UNDOCUMENTED FEATURES OF CURSOR!**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/tmcfarlane/oh-my-cursor)](https://github.com/tmcfarlane/oh-my-cursor/stargazers)
+[![Validated on Cursor 3.8.23](https://img.shields.io/badge/validated-Cursor%203.8.23-22c55e.svg)](VALIDATION.md)
 <br>
 
 </div>
 
-> **June 26, 2026 — v0.4.0: Enforcement + Automation.** Team Avatar's hard constraints are now *enforced*, not just promised — validated live on **Cursor 3.8.23**:
->
-> - **Hooks enforce** — [`.cursor/hooks.json`](#hooks-cursor-agent-loop) blocks destructive commands and `as any`/`@ts-ignore` commits via `beforeShellExecution`, with `failClosed`. Validated: an agent's bad commit is **blocked**.
-> - **Auto-review policy** — a tuned [`permissions.json`](#auto-review-policy-permissionsjson) auto-runs safe calls and holds destructive/credential ones (~84% fewer prompts).
-> - **Automations** — ready-to-paste [`/automate` recipes](automations/README.md): PR review comment → Katara, `design` label → Zuko, Slack emoji → routed dispatch.
-> - **Windows parity** — `install.ps1` installs the hooks/auto-review config too.
->
-> _(Model routing from v0.3.0 stays: `composer-2.5-fast` pool · `claude-opus-4-8-thinking-high` Sokka/Iroh · `gemini-3.1-pro` Zuko — see [`VALIDATION.md`](VALIDATION.md).)_
->
-> Want to contribute too? [Contributions welcome!](CONTRIBUTING.md)
+> **v0.4.0 — Enforcement + Automation** (June 26, 2026, validated live on Cursor 3.8.23):
+> [hooks](#hooks-cursor-agent-loop) that **block** an agent's destructive commands and
+> `as any`/`@ts-ignore` commits · an [auto-review policy](#auto-review-policy-permissionsjson)
+> that holds risky calls (~84% fewer prompts) · paste-in [`/automate` recipes](automations/README.md) ·
+> Windows parity. See the [validated reference](VALIDATION.md) · [contributions welcome](CONTRIBUTING.md).
 
 ## Quick Start (One Command)
 
@@ -55,7 +50,7 @@ irm https://raw.githubusercontent.com/tmcfarlane/oh-my-cursor/main/install.ps1 |
 
 **8 agent manifests, 8 slash commands, hooks, and one orchestration rule** — themed around Avatar: The Last Airbender. No external runtime, no wrapper CLI — just Cursor's built-in `Task` subagents and Markdown config files.
 
-> Uses Cursor's `model:` field for [per-agent model routing](#per-agent-model-routing). Requires exact, valid Task-tool slugs — undocumented and version-dependent.
+> Each agent routes to its own model via Cursor's `model:` field ([per-agent routing](#per-agent-model-routing)). The catch: an invalid slug **silently downgrades** instead of erroring — so every slug here is verified against a real build ([VALIDATION.md](VALIDATION.md)).
 
 ## Contents
 
@@ -307,7 +302,7 @@ git clone https://github.com/tmcfarlane/oh-my-cursor.git && cd oh-my-cursor
   <img src="screenshots/guy-spills-it.png" alt="Cursor per-agent model routing in agent frontmatter">
 </p>
 
-Cursor’s `model:` field in agent frontmatter routes each agent to a specific model. It must be an **exact, valid Cursor Task-tool slug** — it does **not** accept arbitrary alias strings:
+Cursor’s `model:` field in agent frontmatter routes each agent to a specific model ([Cursor docs](https://cursor.com/docs/subagents)). It must be an **exact, valid Cursor Task-tool slug** — it does **not** accept arbitrary alias strings:
 
 ```yaml
 ---
@@ -325,7 +320,7 @@ model: gemini-3.1-pro # multimodal tasks
 
 **Valid slugs (Cursor 3.8.x, verified June 2026):** `composer-2.5-fast`, `claude-opus-4-8-thinking-high`, `gemini-3.1-pro`, `claude-4.6-opus-high-thinking`, `claude-4.6-sonnet-medium-thinking`, `claude-fable-5-thinking-high`, `gpt-5.3-codex-high-fast`, `gpt-5.5-medium`, `kimi-k2.5`.
 
-> **Undocumented & version-dependent — model slugs change often.** Re-verify against your Cursor build before relying on routing; the [`VALIDATION.md`](VALIDATION.md) sweep makes this a 2-minute check.
+> **Slugs change between Cursor versions, and the docs don't list the gotcha.** Re-verify against your build before relying on routing — the [VALIDATION.md](VALIDATION.md) sweep makes it a 2-minute check.
 
 ## Slash Commands
 
@@ -444,6 +439,11 @@ Mode is enabled in **Cursor Settings → Agents → Approvals & Execution**.
 > Hooks and auto-review are **best-effort**, not a security boundary — they reduce footguns
 > and approval spam, but don't replace real sandboxing.
 
+> **Validate the whole stack in one pass.** [`docs/E2E-TEST.md`](docs/E2E-TEST.md) is a
+> Codex-driven runbook (15 checks: model routing + hook enforcement + auto-review) you run
+> attended — paste its Driver Prompt into Codex with Computer Use and it fills in a pass/fail
+> table against your live Cursor app.
+
 ## Automations (event-driven dispatch)
 
 Fire Team Avatar agents from real-world events using **Cursor Automations** (3.8+):
@@ -465,7 +465,8 @@ Or use slash commands: `/plan add OAuth support with JWT tokens` then `/build ba
 
 19 bundled skills vendored from the community. Each is a `SKILL.md` directory that Cursor auto-discovers and presents to agents as domain knowledge. Bundled in-repo for security (no fetching third-party files at install time) and efficiency (single file copy). Installed by default; use `--no-skills` to skip.
 
-### Bundled skills
+<details>
+<summary><strong>Bundled skills (19)</strong></summary>
 
 | Skill                          | Source                            | Agents             | What it provides                                                             |
 | ------------------------------ | --------------------------------- | ------------------ | ---------------------------------------------------------------------------- |
@@ -489,6 +490,8 @@ Or use slash commands: `/plan add OAuth support with JWT tokens` then `/build ba
 | vercel-composition-patterns    | vercel-labs/agent-skills          | Appa               | React composition patterns that scale                                        |
 | vercel-react-best-practices    | vercel-labs/agent-skills          | Aang, Appa, Momo   | React and Next.js performance optimization from Vercel Engineering           |
 | web-design-guidelines          | vercel-labs/agent-skills          | Zuko               | Web Interface Guidelines compliance for UI review                            |
+
+</details>
 
 **Custom skills:** Create a `SKILL.md` directory under `.cursor/skills/` (project) or `~/.cursor/skills/` (user). Cursor auto-discovers it.
 
