@@ -249,21 +249,36 @@ verifier):
 - `OMC_HOOKS_DEBUG=1` → appends each invocation to `.cursor/hooks/last-invocation.log`.
 - `"failClosed": true` on the `beforeShellExecution` entry so a script error **denies**.
 
-### Run 2 — instrumented retest (do this)
-1. Reinstall this branch (project scope): `bash install.sh --project --force`.
-2. Make the debug var visible to the GUI app: `launchctl setenv OMC_HOOKS_DEBUG 1`.
-3. **Fully quit Cursor (Cmd+Q) and relaunch** — open the repo as a FOLDER. (Reload Window is
-   not enough to register project hooks.)
-4. Settings/Customize → **Hooks**: confirm **"Configured Hooks (2)"**, no "Invalid hooks.json"
-   banner. If untrusted, run "Workspaces: Manage Workspace Trust" → trust → restart again.
-   Watch Output → **Hooks** channel for "Project hooks disabled (experiment flag not enabled)".
-5. Re-run the Codex test (consent now granted). Have the agent commit a `.ts` with `as any`.
-6. Interpret:
-   - `last-invocation.log` appears **and** commit blocked → hooks fire + enforce ✅
-   - log appears, commit still succeeds → fired but logic gap (investigate)
-   - log never appears → genuinely not invoked → pursue Workspace Trust / 3.8 experiment flag
-     / mirror to `~/.cursor/hooks.json` / upgrade to Cursor 3.9+ (reworked hook management)
-7. After confirming, `launchctl unsetenv OMC_HOOKS_DEBUG` (debug log is opt-in, off by default).
+### Run 2 (2026-06-26, Cursor 3.8.23) — PASS ✅
+
+After: (a) hardening the scripts, (b) removing the stale user-scope hooks (project scope
+only), and (c) a **full Cmd+Q restart** (not just reload), the Cursor agent was asked to
+create `omc-hooktest.ts` (`as any`), `git add`, then `git commit`:
+- **The commit was BLOCKED** — Cursor returned *"Command execution was blocked by a hook"*
+  and **no "hook test" commit landed** (branch HEAD stayed at the prior commit).
+- `last-invocation.log` (via `OMC_HOOKS_DEBUG=1`) recorded **every** shell command including
+  the `git commit` — proving `guard-shell.sh` fired on `beforeShellExecution` and the deny
+  was honored.
+
+So `beforeShellExecution` enforcement works on 3.8.23 with: project-scope install + valid
+slugs of the config + a **full restart**. The earlier NOT-DENIED was the fail-open bug, now fixed.
+
+How to reproduce (instrumented): `launchctl setenv OMC_HOOKS_DEBUG 1` → `bash install.sh
+--project --force` → **Cmd+Q + relaunch** → in the Agent chat have it create+add+commit an
+`as any` `.ts` via the terminal → expect the commit blocked + a `git commit` line in
+`.cursor/hooks/last-invocation.log`. Cleanup: `launchctl unsetenv OMC_HOOKS_DEBUG`.
+
+### Still open in M1
+- [ ] **`afterFileEdit` (lint hook) not yet confirmed firing** — Run 2's file was written via a
+      shell redirect (`printf > file`), which goes through `beforeShellExecution`, not the edit
+      tool. Re-test by having the agent edit a file with Cursor's **edit tool** and confirm
+      `post-edit-lint.sh` runs (an `edit` line in the debug log).
+- [ ] Cursor showed its **generic** "blocked by a hook" text, not our `userMessage`
+      ("Blocked by oh-my-cursor: …"). Confirm where/whether our message surfaces (agent
+      narration vs terminal) — cosmetic, not blocking.
+- [ ] Driving this unattended via `codex exec` is **not possible** (auto-denies the computer-use
+      elicitation). Automated Codex→Cursor QA needs the Codex app / interactive `codex`, or
+      pre-granted Automation. Folds into M3.
 
 ### Auto-review policy
 - [ ] Enable a Run Mode (Settings → Agents → Approvals & Execution); confirm lints/tests/builds
