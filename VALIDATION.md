@@ -268,21 +268,20 @@ How to reproduce (instrumented): `launchctl setenv OMC_HOOKS_DEBUG 1` → `bash 
 `as any` `.ts` via the terminal → expect the commit blocked + a `git commit` line in
 `.cursor/hooks/last-invocation.log`. Cleanup: `launchctl unsetenv OMC_HOOKS_DEBUG`.
 
-### Still open in M1
-- [ ] **`afterFileEdit` (lint hook) not yet confirmed firing** — Run 2's file was written via a
-      shell redirect (`printf > file`), which goes through `beforeShellExecution`, not the edit
-      tool. Re-test by having the agent edit a file with Cursor's **edit tool** and confirm
-      `post-edit-lint.sh` runs (an `edit` line in the debug log).
+### M1 status: all three layers PASS ✅ (2026-06-26, Cursor 3.8.23)
+- [x] **`beforeShellExecution` guard** — commit of `as any` blocked; guard fired (Run 2).
+- [x] **`afterFileEdit` lint hook** — agent edit-tool write of `scratch-edit-test.ts` logged an
+      `edit` line → `post-edit-lint.sh` fired.
+- [x] **`permissions.json` auto-review** — with Run Mode = Auto-review, `git status` auto-ran
+      (no prompt) while `cat ~/.ssh/config` was **held for review** (matches `block_instructions`).
+      Clean separation: guard blocks destructive/anti-pattern; auto-review holds broader risk.
+
+### Cosmetic / follow-ups (non-blocking)
 - [ ] Cursor showed its **generic** "blocked by a hook" text, not our `userMessage`
-      ("Blocked by oh-my-cursor: …"). Confirm where/whether our message surfaces (agent
-      narration vs terminal) — cosmetic, not blocking.
+      ("Blocked by oh-my-cursor: …"). Confirm where our message surfaces (agent narration) — cosmetic.
 - [ ] Driving this unattended via `codex exec` is **not possible** (auto-denies the computer-use
       elicitation). Automated Codex→Cursor QA needs the Codex app / interactive `codex`, or
       pre-granted Automation. Folds into M3.
-
-### Auto-review policy
-- [ ] Enable a Run Mode (Settings → Agents → Approvals & Execution); confirm lints/tests/builds
-      auto-run while destructive/credential/network calls are held.
 
 ### Known follow-ups before v0.4 release
 - [ ] **`install.ps1` parity** — mirror `hooks.json` / `permissions.json` install on Windows.
