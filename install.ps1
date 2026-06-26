@@ -84,13 +84,14 @@ $ErrorActionPreference = 'Stop'
 # Constants
 # ---------------------------------------------------------------------------
 
-$VERSION = '0.3.0'
+$VERSION = '0.4.0'
 $CURSOR_MODE_LABEL = 'Team Avatar (Cursor 3.4+)'
 
 $AGENT_FILES = @('aang.md', 'sokka.md', 'katara.md', 'zuko.md', 'toph.md', 'appa.md', 'momo.md', 'iroh.md')
 $PROTOCOL_FILES = @('protocols/team-avatar.md')
 $COMMAND_FILES = @('plan.md', 'build.md', 'search.md', 'fix.md', 'tasks.md', 'scout.md', 'cactus-juice.md', 'doc.md', 'image.md')
-$HOOK_FILES = @('post-edit-lint.sh', 'pre-commit-check.sh')
+$HOOK_FILES = @('post-edit-lint.sh', 'pre-commit-check.sh', 'guard-shell.sh')
+$CONFIG_FILES = @('hooks.json', 'permissions.json')
 $RULE_FILE = 'orchestrator.mdc'
 $RULE_FILE_DISABLED = 'orchestrator.mdc.disabled'
 $SKILL_DIRS = @(
@@ -272,6 +273,13 @@ function Copy-SourcesFromLocalRepo {
             }
         }
 
+        foreach ($file in $CONFIG_FILES) {
+            $configSrc = Join-Path $scriptDir $file
+            if (Test-Path $configSrc) {
+                Copy-Item $configSrc (Join-Path $OutDir $file) -Force
+            }
+        }
+
         $skillsSrcDir = Join-Path $scriptDir 'skills'
         if (Test-Path $skillsSrcDir) {
             Copy-Item $skillsSrcDir (Join-Path $OutDir 'skills') -Recurse -Force
@@ -315,6 +323,10 @@ function Get-SourcesFromGitHub {
         foreach ($file in $HOOK_FILES) {
             $url = "${SourceBaseUrl}/hooks/${file}"
             Invoke-WebRequest -Uri $url -OutFile (Join-Path $hooksOutDir $file) -UseBasicParsing
+        }
+
+        foreach ($file in $CONFIG_FILES) {
+            Invoke-WebRequest -Uri "${SourceBaseUrl}/${file}" -OutFile (Join-Path $OutDir $file) -UseBasicParsing
         }
 
         # Download skills via MANIFEST
@@ -523,6 +535,13 @@ function Install-ToDir {
     Install-FileSet -SrcDir $WorkDir -DestDir $agentsDir -Label 'protocols' -Files $PROTOCOL_FILES -IsForce $IsForce -IsDryRun $IsDryRun
     Install-FileSet -SrcDir (Join-Path $WorkDir 'commands') -DestDir $commandsDir -Label 'commands' -Files $COMMAND_FILES -IsForce $IsForce -IsDryRun $IsDryRun
     Install-FileSet -SrcDir (Join-Path $WorkDir 'hooks') -DestDir $hooksDir -Label 'hooks' -Files $HOOK_FILES -IsForce $IsForce -IsDryRun $IsDryRun
+
+    # Hook config (hooks.json / permissions.json) is PROJECT-scoped only: its hook command
+    # paths are relative to the workspace root, so user-scope (~/.cursor) would not resolve
+    # across other projects. Install it only for a project-scope cursor install.
+    if ($Scope -eq 'project' -and (Split-Path $TargetDir -Leaf) -eq '.cursor') {
+        Install-FileSet -SrcDir $WorkDir -DestDir $TargetDir -Label 'config' -Files $CONFIG_FILES -IsForce $IsForce -IsDryRun $IsDryRun
+    }
 
     # Install rule file
     Write-Host "Installing rules to ${rulesDir}" -ForegroundColor White
@@ -759,6 +778,20 @@ function Uninstall-Agents {
 
     foreach ($file in $HOOK_FILES) {
         $target = Join-Path $Dirs.HooksDir $file
+        if (Test-Path $target) {
+            if ($IsDryRun) {
+                Write-Host "  [remove] ${file}" -ForegroundColor Red
+            }
+            else {
+                Remove-Item $target -Force
+                Write-Host "  [removed] ${file}" -ForegroundColor Red
+            }
+            $removed++
+        }
+    }
+
+    foreach ($file in $CONFIG_FILES) {
+        $target = Join-Path $Dirs.CursorDir $file
         if (Test-Path $target) {
             if ($IsDryRun) {
                 Write-Host "  [remove] ${file}" -ForegroundColor Red
