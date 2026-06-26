@@ -3,7 +3,13 @@
 All notable changes to oh-my-cursor are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses [SemVer](https://semver.org/).
 
+> **Validated against Cursor 3.8.23** (Universal) — every release is verified on a real
+> Cursor build before tagging. See [`VALIDATION.md`](VALIDATION.md) for the per-version
+> compatibility matrix and the 2-minute re-validation check.
+
 ## [0.4.0] — 2026-06-26
+
+**Validated against:** Cursor 3.8.23 ([reference](VALIDATION.md))
 
 Enforcement + automation. Hooks and an auto-review policy turn the orchestrator's hard
 constraints into enforced behavior; automation recipes wire Team Avatar to real-world events.
@@ -31,6 +37,8 @@ Validated live on **Cursor 3.8.23**.
   prompts carry their own guardrails.
 
 ## [0.3.0] — 2026-06-24
+
+**Validated against:** Cursor 3.8.23 ([reference](VALIDATION.md))
 
 Validated model refresh for the current Cursor roster, verified live on **Cursor 3.8.23**.
 
@@ -61,5 +69,6 @@ Validated model refresh for the current Cursor roster, verified live on **Cursor
 - Removed `is_background` from Toph for reliable output handoff.
 - 8 agents, 9 slash commands, orchestrator rule, hooks, and bundled skills.
 
+[0.4.0]: https://github.com/tmcfarlane/oh-my-cursor/releases/tag/v0.4.0
 [0.3.0]: https://github.com/tmcfarlane/oh-my-cursor/releases/tag/v0.3.0
 [0.2.0]: https://github.com/tmcfarlane/oh-my-cursor/releases/tag/v0.2.0
