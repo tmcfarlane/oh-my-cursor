@@ -1,0 +1,17 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Read-only inspection is fine: git status/diff/log/show, ls, cat, grep/rg, find, and reading files anywhere in the workspace.",
+      "Linters, type checkers, formatters, and test runners are fine (eslint, tsc, ruff, flake8, mypy, pytest, cargo clippy/test, go vet/test, golangci-lint).",
+      "Project builds and dependency installs scoped to the workspace are fine (npm/pnpm/yarn install and build, pip install into a venv, cargo build, go build).",
+      "Creating and writing files inside the workspace is fine."
+    ],
+    "block_instructions": [
+      "Hold any destructive filesystem command for review: rm -rf, bulk deletes, or anything that could remove files outside the immediate task.",
+      "Hold git history-rewriting or remote-mutating commands: force pushes, hard resets of shared branches, branch/tag deletion, and any push to main/master.",
+      "Hold anything that touches credentials or machine config: SSH config, shell rc files, ~/.aws, ~/.config, environment secrets, or keychain.",
+      "Hold network calls that send data outward (curl/wget POST/PUT, uploads) or pipe a remote script into a shell.",
+      "Hold package publishing or deploys: npm publish, cargo publish, gh release, and production deploy commands."
+    ]
+  }
+}

@@ -31,6 +31,11 @@
   ],
   "hooks": [
     "hooks/post-edit-lint.sh",
-    "hooks/pre-commit-check.sh"
+    "hooks/pre-commit-check.sh",
+    "hooks/guard-shell.sh"
+  ],
+  "config": [
+    "hooks.json",
+    "permissions.json"
   ]
 }

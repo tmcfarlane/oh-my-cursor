@@ -215,3 +215,81 @@ First run recorded below; re-run and append as the roster shifts.
 - Features from §3 confirmed available: `(pending)`
 - §1 verdict: **PASS (confirmed)** — all 8 agents route to configured models on 3.8.23
 - **Recommended next step:** `open PR -> main; then §3 Cursor 3.6-3.8 feature inventory for the version after`
+
+---
+
+## M1 (v0.4) — Hooks & Auto-review validation
+
+### Run 1 (2026-06-25, Cursor 3.8.23, via Codex) — NOT-DENIED → fixed
+
+Codex drove Cursor's agent to commit a `.ts` file containing `as any`. **The commit
+succeeded (`b077d4b`)** — no "Blocked by oh-my-cursor", no approval prompt, and the only
+lint seen was Cursor's built-in ReadLints (not our `post-edit-lint.sh`). Both hooks were
+silent. Our scripts were proven correct in isolation, so this is an **integration/robustness
+failure**, surfaced exactly as observe-first validation intends.
+
+Adversarial diagnosis (a research synthesis was *overturned* by its own verifier — keep the
+verifier):
+1. **`beforeShellExecution` fails OPEN by default.** A hook that fires but errors → Cursor
+   allows. So "both silent ⇒ never registered" was a false inference.
+2. **macOS GUI PATH bug (real):** Cursor.app doesn't inherit the shell's `/opt/homebrew/bin`,
+   so `python3` could be absent on the hook's PATH → guard parsed an empty command →
+   silently allowed even when fired.
+3. **cwd mismatch (real):** the guard ran `pre-commit-check.sh` without `cd`-ing to the
+   payload `cwd`, so `git diff --cached` could see an empty staged set → allow.
+4. **Registration:** project hooks may need a full **quit + relaunch** (not just Reload
+   Window) and a **trusted workspace** to register on 3.8.x.
+
+### Hardening applied this branch (re-tested locally ✓)
+- PATH-robust JSON parsing: `jq` → `python3` at absolute paths (`/opt/homebrew`, `/usr/bin`,
+  …) → `/usr/bin/perl`. Verified denies `rm -rf /` and commit-`as any` with PATH=`/usr/bin:/bin`.
+- `cd` into the payload `cwd` before git checks (verified: detects staged `as any` in a
+  separate worktree).
+- Parse-failure now returns **`ask`** (surface), not silent allow.
+- `OMC_HOOKS_DEBUG=1` → appends each invocation to `.cursor/hooks/last-invocation.log`.
+- `"failClosed": true` on the `beforeShellExecution` entry so a script error **denies**.
+
+### Run 2 (2026-06-26, Cursor 3.8.23) — PASS ✅
+
+After: (a) hardening the scripts, (b) removing the stale user-scope hooks (project scope
+only), and (c) a **full Cmd+Q restart** (not just reload), the Cursor agent was asked to
+create `omc-hooktest.ts` (`as any`), `git add`, then `git commit`:
+- **The commit was BLOCKED** — Cursor returned *"Command execution was blocked by a hook"*
+  and **no "hook test" commit landed** (branch HEAD stayed at the prior commit).
+- `last-invocation.log` (via `OMC_HOOKS_DEBUG=1`) recorded **every** shell command including
+  the `git commit` — proving `guard-shell.sh` fired on `beforeShellExecution` and the deny
+  was honored.
+
+So `beforeShellExecution` enforcement works on 3.8.23 with: project-scope install + valid
+slugs of the config + a **full restart**. The earlier NOT-DENIED was the fail-open bug, now fixed.
+
+How to reproduce (instrumented): `launchctl setenv OMC_HOOKS_DEBUG 1` → `bash install.sh
+--project --force` → **Cmd+Q + relaunch** → in the Agent chat have it create+add+commit an
+`as any` `.ts` via the terminal → expect the commit blocked + a `git commit` line in
+`.cursor/hooks/last-invocation.log`. Cleanup: `launchctl unsetenv OMC_HOOKS_DEBUG`.
+
+### M1 status: all three layers PASS ✅ (2026-06-26, Cursor 3.8.23)
+- [x] **`beforeShellExecution` guard** — commit of `as any` blocked; guard fired (Run 2).
+- [x] **`afterFileEdit` lint hook** — agent edit-tool write of `scratch-edit-test.ts` logged an
+      `edit` line → `post-edit-lint.sh` fired.
+- [x] **`permissions.json` auto-review** — with Run Mode = Auto-review, `git status` auto-ran
+      (no prompt) while `cat ~/.ssh/config` was **held for review** (matches `block_instructions`).
+      Clean separation: guard blocks destructive/anti-pattern; auto-review holds broader risk.
+
+### Cosmetic / follow-ups (non-blocking)
+- [ ] Cursor showed its **generic** "blocked by a hook" text, not our `userMessage`
+      ("Blocked by oh-my-cursor: …"). Confirm where our message surfaces (agent narration) — cosmetic.
+- [ ] Driving this unattended via `codex exec` is **not possible** (auto-denies the computer-use
+      elicitation). Automated Codex→Cursor QA needs the Codex app / interactive `codex`, or
+      pre-granted Automation. Folds into M3.
+
+### Known follow-ups before v0.4 release
+- [ ] **`install.ps1` parity** — mirror `hooks.json` / `permissions.json` install on Windows.
+- [ ] **`.cursor/` is gitignored** → committed hooks aren't shared, so **cloud/fresh-clone
+      agents get NO hooks**. By design for the per-machine installer; document it (or un-ignore
+      + commit `.cursor/hooks*` with `--chmod=+x` if cloud agents must be supported).
+- [x] User-scope path resolution: **resolved** — hook config is now project-scope only
+      (installer skips `hooks.json`/`permissions.json` at user scope; relative command paths
+      only resolve in a project workspace). Confirmed on 3.8.23 that BOTH user & project
+      hooks register in the Hooks panel, so Run 1's failure was fail-open, not registration.
+- [ ] If `subagentStart` exists in your build, add an allowlist/depth-cap enforcement hook.

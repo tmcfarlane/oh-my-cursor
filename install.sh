@@ -9,7 +9,8 @@ CURSOR_MODE_LABEL="Team Avatar (Cursor 3.4+)"
 AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md iroh.md)
 PROTOCOL_FILES=(protocols/team-avatar.md)
 COMMAND_FILES=(plan.md build.md search.md fix.md tasks.md scout.md cactus-juice.md doc.md image.md)
-HOOK_FILES=(post-edit-lint.sh pre-commit-check.sh)
+HOOK_FILES=(post-edit-lint.sh pre-commit-check.sh guard-shell.sh)
+CONFIG_FILES=(hooks.json permissions.json)
 RULE_FILE="orchestrator.mdc"
 SKILL_DIRS=(
   architect
@@ -272,6 +273,12 @@ copy_sources_from_local_repo() {
     cp -r "${script_dir}/skills" "${out_dir}/skills" || return 1
   fi
 
+  for file in "${CONFIG_FILES[@]}"; do
+    if [ -f "${script_dir}/${file}" ]; then
+      cp "${script_dir}/${file}" "${out_dir}/${file}" || return 1
+    fi
+  done
+
   return 0
 }
 
@@ -310,6 +317,10 @@ download_sources_from_github() {
   for file in "${HOOK_FILES[@]}"; do
     url="${base}/hooks/${file}"
     curl -fsSL "$url" -o "${out_dir}/hooks/${file}" || return 1
+  done
+
+  for file in "${CONFIG_FILES[@]}"; do
+    curl -fsSL "${base}/${file}" -o "${out_dir}/${file}" || return 1
   done
 
   local manifest_url="${base}/skills/MANIFEST"
@@ -488,6 +499,12 @@ install_to_dir() {
   install_file_set "$WORK_DIR" "$agents_dir" "protocols" "${PROTOCOL_FILES[@]}"
   install_file_set "${WORK_DIR}/commands" "$commands_dir" "commands" "${COMMAND_FILES[@]}"
   install_file_set "${WORK_DIR}/hooks" "$hooks_dir" "hooks" "${HOOK_FILES[@]}"
+  # Hook config (hooks.json / permissions.json) is PROJECT-scoped only: its hook command
+  # paths are relative to the workspace root, so user-scope (~/.cursor) hooks would not
+  # resolve across other projects. Install it only for a project-scope cursor install.
+  if [ "$SCOPE" = "project" ] && [ "$cursor_dir" = "$CURSOR_DIR" ]; then
+    install_file_set "$WORK_DIR" "$cursor_dir" "config" "${CONFIG_FILES[@]}"
+  fi
 
   # Install rule file
   log "Installing rules to ${BOLD}${rules_dir}${RESET}"
@@ -645,6 +662,19 @@ uninstall_agents() {
 
   for file in "${HOOK_FILES[@]}"; do
     target="${HOOKS_DIR}/${file}"
+    if [ -f "$target" ]; then
+      if [ "$DRY_RUN" = true ]; then
+        log "  ${RED}[remove]${RESET} ${file}"
+      else
+        rm -f "$target"
+        log "  ${RED}[removed]${RESET} ${file}"
+      fi
+      removed=$((removed + 1))
+    fi
+  done
+
+  for file in "${CONFIG_FILES[@]}"; do
+    target="${CURSOR_DIR}/${file}"
     if [ -f "$target" ]; then
       if [ "$DRY_RUN" = true ]; then
         log "  ${RED}[remove]${RESET} ${file}"
