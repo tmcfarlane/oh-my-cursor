@@ -26,11 +26,14 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 </div>
 
-> **June 24, 2026 — v0.3.0: Verified on Cursor 3.8.** Per-agent model routing is now validated live against **Cursor 3.8.23** using the correct Task-tool model slugs:
+> **June 26, 2026 — v0.4.0: Enforcement + Automation.** Team Avatar's hard constraints are now *enforced*, not just promised — validated live on **Cursor 3.8.23**:
 >
-> - **Model refresh** — default pool on `composer-2.5-fast`, Sokka & Iroh on `claude-opus-4-8-thinking-high`, Zuko on `gemini-3.1-pro`.
-> - **Slug fix** — Cursor's Task tool silently falls back to Composer when a `model:` slug is unrecognized; every agent now uses a **verified** slug that actually routes (the old `cursor-composer-2-5` / `claude-opus-4.8` shorthands did not).
-> - **Validation harness** — new [`VALIDATION.md`](VALIDATION.md) documents the checks and a **Codex computer-vision loop** that drives the Cursor agent window to confirm routing end-to-end.
+> - **Hooks enforce** — [`.cursor/hooks.json`](#hooks-cursor-agent-loop) blocks destructive commands and `as any`/`@ts-ignore` commits via `beforeShellExecution`, with `failClosed`. Validated: an agent's bad commit is **blocked**.
+> - **Auto-review policy** — a tuned [`permissions.json`](#auto-review-policy-permissionsjson) auto-runs safe calls and holds destructive/credential ones (~84% fewer prompts).
+> - **Automations** — ready-to-paste [`/automate` recipes](automations/README.md): PR review comment → Katara, `design` label → Zuko, Slack emoji → routed dispatch.
+> - **Windows parity** — `install.ps1` installs the hooks/auto-review config too.
+>
+> _(Model routing from v0.3.0 stays: `composer-2.5-fast` pool · `claude-opus-4-8-thinking-high` Sokka/Iroh · `gemini-3.1-pro` Zuko — see [`VALIDATION.md`](VALIDATION.md).)_
 >
 > Want to contribute too? [Contributions welcome!](CONTRIBUTING.md)
 
