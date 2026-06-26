@@ -441,6 +441,14 @@ Mode is enabled in **Cursor Settings → Agents → Approvals & Execution**.
 > Hooks and auto-review are **best-effort**, not a security boundary — they reduce footguns
 > and approval spam, but don't replace real sandboxing.
 
+## Automations (event-driven dispatch)
+
+Fire Team Avatar agents from real-world events using **Cursor Automations** (3.8+):
+PR review comment → **Katara** fixes it; issue labeled `design` → **Zuko** mocks it up;
+Slack 🔧/🎨/🔍 reaction → routed dispatch. Cursor automations are **cloud-only** (no
+committable config file yet), so these ship as **ready-to-paste `/automate` recipes**, not
+installable config. See **[`automations/`](automations/README.md)**.
+
 ## Prompting Tips
 
 ```text

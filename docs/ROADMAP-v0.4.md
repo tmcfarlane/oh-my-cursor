@@ -70,9 +70,13 @@ its "HARD CONSTRAINTS" actually enforceable:
 1. **M1 — Enforcement core (P0+P1).** `.cursor/hooks.json` (observe-only first, then promote
    the agent-allowlist / destructive-shell / post-edit-lint hooks to blocking) + a tuned
    `permissions.json` auto-review policy. Validate on Pro, then enable blocking.
-2. **M2 — Automation recipes (P2).** Ship 2–3 Team Avatar automations (PR review comment →
-   Katara; design label → Zuko; Slack 🔥 → routed dispatch) + `/automate` docs. Validate
-   triggers against the user's plan.
+2. **M2 — Automation recipes (P2).** ✅ Delivered in `automations/`. **Finding:** Cursor
+   automations are **cloud-only** — no committable config format exists (June 2026), and a
+   trigger selects a **model**, not a `@subagent`. So M2 ships **self-contained `/automate`
+   recipe prompts + docs**, not config files: PR review comment → Katara, issue `design`
+   label (via webhook) → Zuko, Slack emoji → routed dispatch. Cloud runs also won't have the
+   gitignored `.cursor` hooks, so each recipe's prompt carries its own guardrails. Validate
+   the triggers against the user's plan when setting them up.
 3. **M3 — Native computer-use QA (P3, exploratory).** Wire an automation that self-verifies
    with computer use; compare against the Codex loop and decide whether to keep both.
 4. **Release v0.4.0** once M1+M2 pass validation (M3 can trail as a point release).
