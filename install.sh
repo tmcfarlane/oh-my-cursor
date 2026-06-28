@@ -490,7 +490,7 @@ migrate_legacy_agents() {
 # pre-commit hook catches anti-pattern commits regardless of how the commit is made.
 install_git_precommit_hook() {
   local git_dir hook
-  git_dir="$(git rev-parse --git-dir 2>/dev/null)" || { log "  [skip] git pre-commit hook (not a git repo)"; return 0; }
+  git_dir="$(git rev-parse --absolute-git-dir 2>/dev/null)" || { log "  [skip] git pre-commit hook (not a git repo)"; return 0; }
   hook="${git_dir}/hooks/pre-commit"
   if [ -f "$hook" ] && ! grep -q "oh-my-cursor" "$hook" 2>/dev/null; then
     log "  [skip] git pre-commit hook (existing non-OMC hook at ${hook})"; return 0
@@ -715,7 +715,7 @@ uninstall_agents() {
   done
 
   # Remove our git pre-commit hook (only if it's ours)
-  git_pc_dir="$(git rev-parse --git-dir 2>/dev/null)"
+  git_pc_dir="$(git rev-parse --absolute-git-dir 2>/dev/null)"
   if [ -n "$git_pc_dir" ] && [ -f "${git_pc_dir}/hooks/pre-commit" ] && grep -q "oh-my-cursor" "${git_pc_dir}/hooks/pre-commit" 2>/dev/null; then
     if [ "$DRY_RUN" = true ]; then
       log "  ${RED}[remove]${RESET} git pre-commit hook"
