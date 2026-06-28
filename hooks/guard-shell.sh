@@ -66,6 +66,17 @@ decide() {
   printf '{"continue": false, "permission": "deny", "userMessage": "Blocked by oh-my-cursor: %s", "agentMessage": "Denied by policy: %s. Adjust .cursor/hooks/guard-shell.sh or set OMC_HOOKS_OBSERVE=1 to override."}\n' "$reason" "$reason"
   exit 0
 }
+# Surface for human approval (deterministic "hold for review"). Used where the auto-review
+# classifier is unreliable, e.g. reading credential/secret files.
+hold() {
+  local reason="$1"
+  if [ "${OMC_HOOKS_OBSERVE:-}" = "1" ]; then
+    printf '{"continue": true, "permission": "allow", "agentMessage": "[observe] would hold for review: %s"}\n' "$reason"
+    exit 0
+  fi
+  printf '{"continue": true, "permission": "ask", "userMessage": "Held by oh-my-cursor for review: %s", "agentMessage": "Held for review: %s. Approve only if this credential/secret access is intended."}\n' "$reason" "$reason"
+  exit 0
+}
 
 # Received a payload but couldn't parse the command -> surface instead of silently allowing.
 if [ -n "$INPUT" ] && { [ "$PARSE_RC" -ne 0 ] || { [ -z "$COMMAND" ] && printf '%s' "$INPUT" | grep -q '"command"'; }; }; then
@@ -95,6 +106,14 @@ case "$COMMAND" in
       fi
     fi
     ;;
+esac
+
+# --- Credential / secret access guard (hold for review) ---
+# The permissions.json auto-review classifier is best-effort and let `cat ~/.ssh/config`
+# through during E2E test C2, so enforce a deterministic hold here regardless of the classifier.
+case "$COMMAND" in
+  *"/.ssh/"*|*"/.aws/"*|*"/.gnupg/"*|*"id_rsa"*|*"id_dsa"*|*"id_ecdsa"*|*"id_ed25519"*|*".pem"*|*".netrc"*|*".pgpass"*|*"/.kube/config"*|*"kubeconfig"*|*"/.docker/config.json"*|*"/.config/gcloud/"*|*".aws/credentials"*)
+    hold "command accesses a credential/secret file" ;;
 esac
 
 allow

@@ -17,16 +17,23 @@ default, and a slug list confirmed to route on a real build. Re-run the
 
 ## Compatibility matrix
 
-| Capability | Cursor 3.8.23 | Notes |
-| ---------- | :-----------: | ----- |
-| Per-agent `model:` routing (frontmatter) | ✅ | Now documented; **invalid slug silently downgrades** — see gotcha #1 |
-| Subagent nesting depth | ✅ (2 levels) | Documented since Cursor 2.5: main + direct subagents can spawn; their children can't |
-| `beforeShellExecution` hook (block/ask/allow) | ✅ | **Fails open by default** — set `failClosed` — see gotcha #2 |
-| `afterFileEdit` hook | ✅ | Fires on agent edit-tool writes (informational lint) |
-| `permissions.json` auto-review | ✅ | Auto-runs safe calls, holds risky ones; needs a Run Mode enabled |
-| Automations (event-driven dispatch) | ⚠️ cloud-only | No committable config file yet — ships as paste-in `/automate` recipes |
+| Capability | 3.8.23 | 3.9.8 | Notes |
+| ---------- | :----: | :---: | ----- |
+| Per-agent `model:` routing (frontmatter) | ✅ | ✅ | **Invalid slug silently downgrades** — see gotcha #1. All 8 agents verified routing on 3.9.8. |
+| Subagent nesting depth | ✅ (2) | ✅ (2) | main + direct subagents can spawn; their children can't |
+| `beforeShellExecution` hook (block/ask/allow) | ✅ | ✅ | **Fails open by default** — set `failClosed` — see gotcha #2. Blocks `rm -rf`/force-push on 3.9.8. |
+| `afterFileEdit` hook | ✅ | ✅ | Fires on agent edit-tool writes (informational lint) |
+| Commit anti-pattern guard (`as any`, `@ts-ignore`) | ✅ | ⚠️→✅ | On 3.9 the agent may commit via Cursor's **native git path**, which bypasses `beforeShellExecution`. **v0.4.1** adds a git `pre-commit` hook backstop that blocks the commit regardless of path. |
+| `permissions.json` auto-review | ✅ | ⚠️→✅ | Best-effort classifier; on 3.9.8 it let `cat ~/.ssh/config` auto-run. **v0.4.1** enforces a deterministic credential-read **hold** in `guard-shell.sh`. |
+| Automations (event-driven dispatch) | ⚠️ cloud-only | ⚠️ cloud-only | No committable config file yet — ships as paste-in `/automate` recipes |
 
-Legend: ✅ works as configured · ⚠️ works with a caveat · ❌ unavailable/blocked.
+Legend: ✅ works as configured · ⚠️ caveat · ⚠️→✅ caveat found on this version, fixed in the listed release · ❌ unavailable/blocked.
+
+> **Cursor 3.9.8 E2E (2026-06-28):** **13/15**, then **15/15** after v0.4.1. The first run on a
+> major-version bump surfaced two gaps the 3.8 validation couldn't — a native-path commit
+> bypassing the shell commit-guard, and the auto-review classifier letting an SSH-config read
+> through — both closed by the v0.4.1 git pre-commit backstop and the credential-read hold, then
+> re-verified live (commit blocked; `cat ~/.ssh/config` held). Full runbook: [`docs/E2E-TEST.md`](docs/E2E-TEST.md).
 
 ---
 

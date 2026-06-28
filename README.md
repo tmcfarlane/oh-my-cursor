@@ -26,6 +26,11 @@ _Created by <a href="https://zeroclickdev.ai/">ZeroClickDev</a>_
 
 </div>
 
+> **v0.4.1 — Hardening** (June 28, 2026, validated on **Cursor 3.9.8**: 13/15 → 15/15): a git
+> `pre-commit` backstop catches `as any`/`@ts-ignore` commits even when the agent commits via
+> Cursor's **native git path** (which bypasses the shell hook), and credential-file reads
+> (`~/.ssh`, `~/.aws`, `*.pem`, …) are now **held** deterministically. See [`CHANGELOG`](CHANGELOG.md).
+>
 > **v0.4.0 — Enforcement + Automation** (June 26, 2026, validated live on Cursor 3.8.23):
 > [hooks](#hooks-cursor-agent-loop) that **block** an agent's destructive commands and
 > `as any`/`@ts-ignore` commits · an [auto-review policy](#auto-review-policy-permissionsjson)

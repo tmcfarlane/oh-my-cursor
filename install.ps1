@@ -84,7 +84,7 @@ $ErrorActionPreference = 'Stop'
 # Constants
 # ---------------------------------------------------------------------------
 
-$VERSION = '0.4.0'
+$VERSION = '0.4.1'
 $CURSOR_MODE_LABEL = 'Team Avatar (Cursor 3.4+)'
 
 $AGENT_FILES = @('aang.md', 'sokka.md', 'katara.md', 'zuko.md', 'toph.md', 'appa.md', 'momo.md', 'iroh.md')
@@ -516,6 +516,32 @@ function Remove-LegacyAgents {
 # Install to a specific tool directory (cursor, claude, or codex)
 # ---------------------------------------------------------------------------
 
+function Install-GitPreCommitHook {
+    param([bool]$IsDryRun)
+    # Defense-in-depth: the beforeShellExecution guard only sees shell `git commit`; Cursor's
+    # agent can also commit via its native git path (observed on Cursor 3.9), bypassing it.
+    # A real git pre-commit hook catches anti-pattern commits regardless of how they are made.
+    $gitDir = (& git rev-parse --git-dir 2>$null)
+    if (-not $gitDir) { Write-Host '  [skip] git pre-commit hook (not a git repo)'; return }
+    $hook = Join-Path $gitDir 'hooks/pre-commit'
+    if ((Test-Path $hook) -and -not (Select-String -Path $hook -Pattern 'oh-my-cursor' -Quiet)) {
+        Write-Host '  [skip] git pre-commit hook (existing non-OMC hook)'; return
+    }
+    if ($IsDryRun) { Write-Host "  [new] git pre-commit hook ($hook)" -ForegroundColor Green; return }
+    New-Item -ItemType Directory -Path (Split-Path $hook -Parent) -Force | Out-Null
+    $body = @'
+#!/usr/bin/env bash
+# oh-my-cursor defense-in-depth: catch anti-pattern commits regardless of HOW the commit is made
+# (shell, git CLI, or Cursor's native git path). The beforeShellExecution guard only sees shell
+# `git commit`; this git-native hook covers commits that bypass the shell.
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+exec "$root/.cursor/hooks/pre-commit-check.sh"
+'@
+    # LF line endings so the hook runs under Git-for-Windows bash / WSL
+    [IO.File]::WriteAllText($hook, ($body -replace "`r`n", "`n"))
+    Write-Host "  [installed] git pre-commit hook ($hook)" -ForegroundColor Green
+}
+
 function Install-ToDir {
     param(
         [string]$TargetDir,
@@ -541,6 +567,7 @@ function Install-ToDir {
     # across other projects. Install it only for a project-scope cursor install.
     if ($Scope -eq 'project' -and (Split-Path $TargetDir -Leaf) -eq '.cursor') {
         Install-FileSet -SrcDir $WorkDir -DestDir $TargetDir -Label 'config' -Files $CONFIG_FILES -IsForce $IsForce -IsDryRun $IsDryRun
+        Install-GitPreCommitHook -IsDryRun $IsDryRun
     }
 
     # Install rule file
@@ -799,6 +826,22 @@ function Uninstall-Agents {
             else {
                 Remove-Item $target -Force
                 Write-Host "  [removed] ${file}" -ForegroundColor Red
+            }
+            $removed++
+        }
+    }
+
+    # Remove our git pre-commit hook (only if it's ours)
+    $gitDir = (& git rev-parse --git-dir 2>$null)
+    if ($gitDir) {
+        $gitPc = Join-Path $gitDir 'hooks/pre-commit'
+        if ((Test-Path $gitPc) -and (Select-String -Path $gitPc -Pattern 'oh-my-cursor' -Quiet)) {
+            if ($IsDryRun) {
+                Write-Host '  [remove] git pre-commit hook' -ForegroundColor Red
+            }
+            else {
+                Remove-Item $gitPc -Force
+                Write-Host '  [removed] git pre-commit hook' -ForegroundColor Red
             }
             $removed++
         }
