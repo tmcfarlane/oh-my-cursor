@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "team-avatar",
+  "name": "Team Avatar",
+  "version": "0.5.0",
+  "description": "An Avatar-themed 8-agent dev team for Cursor: orchestrator rule, slash commands, enforcement hooks, and tiered per-agent model routing.",
+  "author": "ZeroClickDev",
+  "license": "MIT",
+  "homepage": "https://github.com/tmcfarlane/oh-my-cursor",
+
+  "category": "team",
+  "tags": ["orchestration", "multi-agent", "atla", "full-team", "hooks", "enforcement"],
+  "theme": {
+    "title": "Avatar: The Last Airbender",
+    "fan": true
+  },
+  "capabilities": ["orchestrator", "multi-agent", "hook-enforcement", "auto-review"],
+
+  "extends": null,
+  "requires": {
+    "cursor": ">=3.4",
+    "packs": []
+  },
+
+  "sourceRoot": "../..",
+
+  "models": {
+    "default": "composer-2.5-fast",
+    "overrides": {
+      "sokka": "claude-opus-4-8-thinking-high",
+      "iroh": "claude-opus-4-8-thinking-high",
+      "zuko": "gemini-3.1-pro"
+    }
+  },
+
+  "contents": {
+    "agents": ["agents/*.md", "agents/protocols/*.md"],
+    "rules": ["rules/orchestrator.mdc"],
+    "commands": ["commands/*.md"],
+    "hooks": ["hooks/*.sh"],
+    "skills": ["skills/*/SKILL.md"],
+    "config": ["hooks.json", "permissions.json"]
+  },
+
+  "scopes": ["user", "project"],
+  "tools": ["cursor", "claude", "codex"],
+
+  "permissions": {
+    "shellHooks": true,
+    "gitHooks": true,
+    "network": false,
+    "writes": ["${cursorDir}/**", "${gitDir}/hooks/pre-commit"]
+  },
+
+  "activation": {
+    "requiresAlwaysAllow": true,
+    "requiresRestart": true,
+    "steps": [
+      "Open rules/orchestrator.mdc in Cursor and click \"Always Allow\" to activate the orchestrator rule.",
+      "Fully restart Cursor (Cmd+Q) — a window reload is not enough to register project hooks.",
+      "Ensure the workspace is trusted."
+    ]
+  },
+
+  "uninstall": {
+    "extraPaths": ["${gitDir}/hooks/pre-commit"]
+  }
+}

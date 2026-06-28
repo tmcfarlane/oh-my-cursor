@@ -1,0 +1,42 @@
+name: validate-packs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packs/**"
+      - "registry/**"
+      - "packages/schema/**"
+      - "scripts/validate-packs.mjs"
+      - "agents/**"
+      - "rules/**"
+      - "commands/**"
+      - "hooks/**"
+      - "hooks.json"
+      - "permissions.json"
+      - ".github/workflows/validate-packs.yml"
+  pull_request:
+    paths:
+      - "packs/**"
+      - "registry/**"
+      - "packages/schema/**"
+      - "scripts/validate-packs.mjs"
+      - "agents/**"
+      - "rules/**"
+      - "commands/**"
+      - "hooks/**"
+      - "hooks.json"
+      - "permissions.json"
+      - ".github/workflows/validate-packs.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Zero-dependency validator — no install step needed.
+      - name: Validate pack manifests, contents, and model slugs
+        run: node scripts/validate-packs.mjs

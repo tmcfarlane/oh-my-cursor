@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "name": "oh-my-cursor official registry",
+  "packs": [
+    {
+      "id": "team-avatar",
+      "path": "packs/team-avatar",
+      "version": "0.5.0",
+      "category": "team",
+      "tags": ["orchestration", "multi-agent", "atla", "full-team"],
+      "summary": "Avatar-themed 8-agent dev team with orchestrator + enforcement hooks.",
+      "validatedCursor": "3.9.8",
+      "fan": true
+    }
+  ]
+}
