@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-VERSION="0.4.1"
+VERSION="0.4.2"
 CURSOR_MODE_LABEL="Team Avatar (Cursor 3.4+)"
 
 AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md iroh.md)
