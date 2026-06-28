@@ -7,6 +7,28 @@ All notable changes to oh-my-cursor are documented here. Format follows
 > Cursor build before tagging. See [`VALIDATION.md`](VALIDATION.md) for the per-version
 > compatibility matrix and the 2-minute re-validation check.
 
+## [0.4.1] — 2026-06-28
+
+**Validated against:** Cursor 3.9.8 ([reference](VALIDATION.md))
+
+Hardening from the first end-to-end run on **Cursor 3.9.8** (13/15 → 15/15 after these fixes).
+A major-version bump surfaced two gaps the earlier 3.8 validation couldn't: the agent can commit
+through Cursor's **native git path** (bypassing the `beforeShellExecution` commit guard), and the
+auto-review classifier let a credential read run unprompted.
+
+### Added
+- **Git `pre-commit` hook backstop** — `install.sh`/`install.ps1` (project scope) install a real
+  git `pre-commit` hook running `pre-commit-check.sh`, so anti-pattern commits (`as any`,
+  `@ts-ignore`, empty catches) are blocked **regardless of how the commit is made** — shell, git
+  CLI, or Cursor's native git path. `beforeShellExecution` only sees shell commits.
+- **Deterministic credential-read hold** — `guard-shell.sh` now holds (asks approval) on reads of
+  credential/secret files (`~/.ssh/*`, `~/.aws/*`, `*.pem`, `id_rsa`, `.netrc`, kubeconfig, …)
+  instead of trusting the best-effort auto-review classifier.
+
+### Notes
+- Existing non-OMC `.git/hooks/pre-commit` hooks are left untouched (install skips them).
+- Re-verified live on 3.9.8: the `as any` commit is blocked and `cat ~/.ssh/config` is held.
+
 ## [0.4.0] — 2026-06-26
 
 **Validated against:** Cursor 3.8.23 ([reference](VALIDATION.md))

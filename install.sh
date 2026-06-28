@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-VERSION="0.4.0"
+VERSION="0.4.1"
 CURSOR_MODE_LABEL="Team Avatar (Cursor 3.4+)"
 
 AGENT_FILES=(aang.md sokka.md katara.md zuko.md toph.md appa.md momo.md iroh.md)
@@ -483,6 +483,33 @@ migrate_legacy_agents() {
 }
 
 # ---------------------------------------------------------------------------
+# Install a git-native pre-commit hook (defense-in-depth backstop)
+# ---------------------------------------------------------------------------
+# The beforeShellExecution guard only sees shell `git commit`; Cursor's agent can also commit
+# through its native git path, which bypasses that hook (observed on Cursor 3.9). A real git
+# pre-commit hook catches anti-pattern commits regardless of how the commit is made.
+install_git_precommit_hook() {
+  local git_dir hook
+  git_dir="$(git rev-parse --git-dir 2>/dev/null)" || { log "  [skip] git pre-commit hook (not a git repo)"; return 0; }
+  hook="${git_dir}/hooks/pre-commit"
+  if [ -f "$hook" ] && ! grep -q "oh-my-cursor" "$hook" 2>/dev/null; then
+    log "  [skip] git pre-commit hook (existing non-OMC hook at ${hook})"; return 0
+  fi
+  if [ "$DRY_RUN" = true ]; then log "  ${GREEN}[new]${RESET} git pre-commit hook (${hook})"; return 0; fi
+  mkdir -p "$(dirname "$hook")"
+  cat > "$hook" <<'HOOK'
+#!/usr/bin/env bash
+# oh-my-cursor defense-in-depth: catch anti-pattern commits regardless of HOW the commit is made
+# (shell, git CLI, or Cursor's native git path). The beforeShellExecution guard only sees shell
+# `git commit`; this git-native hook covers commits that bypass the shell.
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+exec "$root/.cursor/hooks/pre-commit-check.sh"
+HOOK
+  chmod +x "$hook"
+  log "  ${GREEN}[installed]${RESET} git pre-commit hook (${hook})"
+}
+
+# ---------------------------------------------------------------------------
 # Install to a specific tool directory (cursor, claude, or codex)
 # ---------------------------------------------------------------------------
 
@@ -504,6 +531,7 @@ install_to_dir() {
   # resolve across other projects. Install it only for a project-scope cursor install.
   if [ "$SCOPE" = "project" ] && [ "$cursor_dir" = "$CURSOR_DIR" ]; then
     install_file_set "$WORK_DIR" "$cursor_dir" "config" "${CONFIG_FILES[@]}"
+    install_git_precommit_hook
   fi
 
   # Install rule file
@@ -685,6 +713,18 @@ uninstall_agents() {
       removed=$((removed + 1))
     fi
   done
+
+  # Remove our git pre-commit hook (only if it's ours)
+  git_pc_dir="$(git rev-parse --git-dir 2>/dev/null)"
+  if [ -n "$git_pc_dir" ] && [ -f "${git_pc_dir}/hooks/pre-commit" ] && grep -q "oh-my-cursor" "${git_pc_dir}/hooks/pre-commit" 2>/dev/null; then
+    if [ "$DRY_RUN" = true ]; then
+      log "  ${RED}[remove]${RESET} git pre-commit hook"
+    else
+      rm -f "${git_pc_dir}/hooks/pre-commit"
+      log "  ${RED}[removed]${RESET} git pre-commit hook"
+    fi
+    removed=$((removed + 1))
+  fi
 
   log ""
   log "Removing rules from ${BOLD}${RULES_DIR}${RESET}"
