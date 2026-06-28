@@ -521,9 +521,9 @@ function Install-GitPreCommitHook {
     # Defense-in-depth: the beforeShellExecution guard only sees shell `git commit`; Cursor's
     # agent can also commit via its native git path (observed on Cursor 3.9), bypassing it.
     # A real git pre-commit hook catches anti-pattern commits regardless of how they are made.
-    $gitDir = (& git rev-parse --git-dir 2>$null)
+    $gitDir = (& git rev-parse --absolute-git-dir 2>$null)
     if (-not $gitDir) { Write-Host '  [skip] git pre-commit hook (not a git repo)'; return }
-    $hook = Join-Path $gitDir 'hooks/pre-commit'
+    $hook = Join-Path (Join-Path $gitDir 'hooks') 'pre-commit'
     if ((Test-Path $hook) -and -not (Select-String -Path $hook -Pattern 'oh-my-cursor' -Quiet)) {
         Write-Host '  [skip] git pre-commit hook (existing non-OMC hook)'; return
     }
@@ -832,9 +832,9 @@ function Uninstall-Agents {
     }
 
     # Remove our git pre-commit hook (only if it's ours)
-    $gitDir = (& git rev-parse --git-dir 2>$null)
+    $gitDir = (& git rev-parse --absolute-git-dir 2>$null)
     if ($gitDir) {
-        $gitPc = Join-Path $gitDir 'hooks/pre-commit'
+        $gitPc = Join-Path (Join-Path $gitDir 'hooks') 'pre-commit'
         if ((Test-Path $gitPc) -and (Select-String -Path $gitPc -Pattern 'oh-my-cursor' -Quiet)) {
             if ($IsDryRun) {
                 Write-Host '  [remove] git pre-commit hook' -ForegroundColor Red
