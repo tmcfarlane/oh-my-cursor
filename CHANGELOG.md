@@ -3,9 +3,22 @@
 All notable changes to oh-my-cursor are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses [SemVer](https://semver.org/).
 
-> **Validated against Cursor 3.8.23** (Universal) — every release is verified on a real
+> **Validated against Cursor 3.9.8** (latest) — every release is verified on a real
 > Cursor build before tagging. See [`VALIDATION.md`](VALIDATION.md) for the per-version
 > compatibility matrix and the 2-minute re-validation check.
+
+## [0.4.2] — 2026-06-28
+
+**Validated against:** Cursor 3.9.8 ([reference](VALIDATION.md))
+
+### Fixed
+- **`install.ps1` git pre-commit hook could write to the wrong directory.** The v0.4.1 installer
+  detected the hook path with PowerShell cmdlets (location-aware) but wrote it via
+  `[IO.File]::WriteAllText`, which resolves relative paths against .NET's `CurrentDirectory` —
+  not PowerShell's location. When those diverged, the hook landed in the wrong place. Now resolves
+  an absolute git dir (`git rev-parse --absolute-git-dir`) so the write is cwd-independent;
+  mirrored in `install.sh` for parity. Verified on **PowerShell 7.6.3** (install / idempotent
+  re-install / skip-existing-non-OMC / dry-run / LF-only endings).
 
 ## [0.4.1] — 2026-06-28
 
