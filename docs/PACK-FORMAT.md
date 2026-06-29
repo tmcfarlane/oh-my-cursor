@@ -109,4 +109,40 @@ node scripts/generate-manifests.mjs --check   # CI drift gate
 
 CI fails if either committed file drifts from the generator output, so `pack.json` stays the
 sole source of truth. (`install.sh`/`install.ps1` still carry their own file arrays — those are
-retired in Phase 2 when the installer reads the manifest directly.)
+retired once the installer bootstrap reads the manifest directly.)
+
+## Installer engine & `omc` CLI (Phase 2)
+
+`@oh-my-cursor/core` (`packages/core/`) is the manifest-driven install engine — the same logic
+the shell installer hardcodes, but driven entirely from `pack.json`:
+
+```
+loadPack → planInstall → applyInstall → (lockfile) → uninstallPack
+```
+
+- **plan** resolves `contents` globs + `skills` to destination files for each tool, applies the
+  scope/tool rules (`config` and the git pre-commit hook are project+cursor only; `skills` are
+  cursor-only), and diffs against the filesystem (+ prior lockfile) → `new`/`update`/`unchanged`/
+  `userModified`.
+- **apply** copies files, `chmod +x`es shell hooks, backs up user-modified files to `*.omc-bak`,
+  installs the git hook, and records everything in a **lockfile** at
+  `<cursorDir>/.oh-my-cursor/lock.json`.
+- **uninstall** reads the lockfile and removes exactly what was written (+ our git hook), pruning
+  now-empty directories — leaving no trace.
+
+The `omc` CLI (`packages/cli/omc.mjs`) wraps it:
+
+```bash
+node packages/cli/omc.mjs list
+node packages/cli/omc.mjs info team-avatar
+node packages/cli/omc.mjs plan team-avatar --scope project --repo .   # preview diff
+node packages/cli/omc.mjs install team-avatar [--scope] [--tools cursor,claude,codex] [--dry-run]
+node packages/cli/omc.mjs status
+node packages/cli/omc.mjs uninstall team-avatar
+```
+
+**Parity gate:** `packages/core/test/install.test.mjs` proves an engine install produces a
+byte-identical tree to `install.sh` (user scope), plus uninstall-purity, user-edit backup, and
+project-scope config/git-hook coverage. Runs in CI on `node --test` (zero dependencies). The
+shell installers remain the public `curl | bash` path until a compiled CLI binary ships; the
+engine is verified to match them.

@@ -6,11 +6,12 @@ on:
     paths:
       - "packs/**"
       - "registry/**"
-      - "packages/schema/**"
+      - "packages/**"
       - "scripts/validate-packs.mjs"
       - "scripts/generate-manifests.mjs"
       - "plugin.json"
       - "skills.json"
+      - "install.sh"
       - "agents/**"
       - "rules/**"
       - "commands/**"
@@ -22,11 +23,12 @@ on:
     paths:
       - "packs/**"
       - "registry/**"
-      - "packages/schema/**"
+      - "packages/**"
       - "scripts/validate-packs.mjs"
       - "scripts/generate-manifests.mjs"
       - "plugin.json"
       - "skills.json"
+      - "install.sh"
       - "agents/**"
       - "rules/**"
       - "commands/**"
@@ -48,3 +50,14 @@ jobs:
         run: node scripts/validate-packs.mjs
       - name: Check generated manifests are up to date
         run: node scripts/generate-manifests.mjs --check
+
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Engine tests include parity against install.sh (needs bash, present on ubuntu).
+      - name: Test installer engine (@oh-my-cursor/core)
+        run: node --test packages/core/test/install.test.mjs
