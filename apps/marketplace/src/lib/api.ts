@@ -11,8 +11,10 @@ import type {
   Scope,
 } from "./types";
 
+import { API_BASE } from "./tauri";
+
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
   });

@@ -9,9 +9,14 @@
     "start": "node bridge/server.mjs & vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "build:sidecar": "node scripts/build-sidecar.mjs",
+    "tauri": "tauri",
+    "tauri:dev": "npm run build:sidecar && tauri dev",
+    "tauri:build": "npm run build:sidecar && tauri build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
     "lucide-react": "^0.470.0",
     "motion": "^11.15.0",
     "react": "^19.0.0",
@@ -20,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
+    "@tauri-apps/cli": "^2.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",

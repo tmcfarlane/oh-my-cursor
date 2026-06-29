@@ -4,7 +4,7 @@
 // only. In the eventual Tauri build this is replaced by Rust `invoke` commands calling the
 // same engine — the frontend's data contract stays identical.
 import { createServer } from "node:http";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -21,12 +21,39 @@ import {
   primaryCursorDir,
 } from "../../../packages/core/src/index.mjs";
 
-const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../../..");
+// OMC_ROOT lets a packaged build (e.g. the Tauri bundle, or a compiled sidecar binary) point
+// at bundled pack data, since import.meta.url is meaningless once compiled into a binary.
+const REPO_ROOT = process.env.OMC_ROOT
+  ? resolve(process.env.OMC_ROOT)
+  : resolve(fileURLToPath(import.meta.url), "../../../..");
 const REGISTRY = join(REPO_ROOT, "registry", "registry.json");
 const PORT = Number(process.env.OMC_BRIDGE_PORT || 8787);
 const HOME = homedir();
 
+// This bridge performs real filesystem installs, so only the local frontends may reach it.
+// A loopback bind is NOT a browser-origin boundary: wildcard CORS would let any website the
+// user visits drive installs/uninstalls cross-origin. Reflect only known origins; validate Host
+// (defense against DNS-rebinding).
+const ALLOWED_ORIGINS = new Set([
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "tauri://localhost",
+  "http://tauri.localhost",
+  "https://tauri.localhost",
+]);
+const ALLOWED_HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`]);
+
+const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
+
+function requireRepo(scope, repo) {
+  if (scope !== "project") return;
+  if (!repo || !existsSync(repo) || !statSync(repo).isDirectory()) {
+    throw badRequest("repo must be an existing directory for project scope");
+  }
+}
+
 function buildPlan({ id, scope = "user", tools = ["cursor"], repo = process.cwd() }) {
+  requireRepo(scope, repo);
   const { pack, sourceRoot } = loadPack(packDirFromRegistry(REGISTRY, REPO_ROOT, id));
   const dir = primaryCursorDir(scope, { home: HOME, repo });
   const lock = readLock(lockPath(dir));
@@ -83,8 +110,12 @@ const routes = {
     return { result, plan: wirePlan(plan), lockfile: lockPath(plan.primaryCursorDir) };
   },
 
-  "POST /api/uninstall": ({ body }) =>
-    uninstallPack({ packId: body.id, scope: body.scope || "user", home: HOME, repo: body.repo || process.cwd(), dryRun: !!body.dryRun }),
+  "POST /api/uninstall": ({ body }) => {
+    const scope = body.scope || "user";
+    const repo = body.repo || process.cwd();
+    requireRepo(scope, repo);
+    return uninstallPack({ packId: body.id, scope, home: HOME, repo, dryRun: !!body.dryRun });
+  },
 
   "GET /api/status": ({ query }) => {
     const scope = query.get("scope") || "user";
@@ -116,10 +147,31 @@ function matchRoute(method, pathname) {
 
 const server = createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
+  const origin = req.headers.origin;
+
+  // DNS-rebinding guard: only answer requests addressed to our own loopback host.
+  if (req.headers.host && !ALLOWED_HOSTS.has(req.headers.host)) {
+    res.writeHead(403, { "Content-Type": "application/json" });
+    return res.end(JSON.stringify({ error: "forbidden host" }));
+  }
+
+  // CORS: reflect only known local frontends — never wildcard. Requests with no Origin
+  // (the vite proxy, server-side curl) are allowed; cross-origin from anywhere else is denied.
+  const originOk = !origin || ALLOWED_ORIGINS.has(origin);
+  if (origin && originOk) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  if (req.method === "OPTIONS") {
+    res.writeHead(originOk ? 204 : 403);
+    return res.end();
+  }
+  if (!originOk) {
+    res.writeHead(403, { "Content-Type": "application/json" });
+    return res.end(JSON.stringify({ error: "forbidden origin" }));
+  }
 
   const route = matchRoute(req.method, url.pathname);
   if (!route) { res.writeHead(404, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ error: "not found" })); }
@@ -128,16 +180,26 @@ const server = createServer((req, res) => {
   req.on("data", (c) => (raw += c));
   req.on("end", () => {
     let body = {};
-    try { body = raw ? JSON.parse(raw) : {}; } catch { /* ignore */ }
+    try { body = raw ? JSON.parse(raw) : {}; } catch { /* non-JSON body → treat as empty */ }
     try {
       const out = route.handler({ params: route.params, query: url.searchParams, body });
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(out));
     } catch (e) {
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: e.message }));
+      // Client (validation) errors return their message; everything else is opaque so we don't
+      // leak absolute paths / internal engine details to the caller.
+      const status = e.status === 400 ? 400 : 500;
+      if (status === 500) console.error("omc bridge error:", e);
+      res.writeHead(status, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: status === 400 ? e.message : "internal error" }));
     }
   });
+});
+
+// Fail loudly if the port is taken (e.g. a leftover sidecar) instead of looking "started".
+server.on("error", (e) => {
+  console.error(`omc bridge: cannot listen on 127.0.0.1:${PORT} — ${e.message}`);
+  process.exit(1);
 });
 
 server.listen(PORT, "127.0.0.1", () => {

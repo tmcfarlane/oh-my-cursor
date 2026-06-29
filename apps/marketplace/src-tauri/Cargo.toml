@@ -1,0 +1,17 @@
+[package]
+name = "omc-marketplace"
+version = "0.1.0"
+description = "The Behavior Catalog — oh-my-cursor marketplace"
+authors = ["ZeroClickDev"]
+edition = "2021"
+
+[lib]
+name = "omc_marketplace_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
