@@ -7,32 +7,33 @@
   "license": "MIT",
   "agents": [
     "agents/aang.md",
-    "agents/sokka.md",
-    "agents/katara.md",
-    "agents/zuko.md",
-    "agents/toph.md",
     "agents/appa.md",
+    "agents/iroh.md",
+    "agents/katara.md",
     "agents/momo.md",
-    "agents/protocols/team-avatar.md"
+    "agents/protocols/team-avatar.md",
+    "agents/sokka.md",
+    "agents/toph.md",
+    "agents/zuko.md"
   ],
   "rules": [
     "rules/orchestrator.mdc"
   ],
   "commands": [
-    "commands/plan.md",
     "commands/build.md",
-    "commands/search.md",
-    "commands/fix.md",
-    "commands/tasks.md",
-    "commands/scout.md",
     "commands/cactus-juice.md",
     "commands/doc.md",
-    "commands/image.md"
+    "commands/fix.md",
+    "commands/image.md",
+    "commands/plan.md",
+    "commands/scout.md",
+    "commands/search.md",
+    "commands/tasks.md"
   ],
   "hooks": [
+    "hooks/guard-shell.sh",
     "hooks/post-edit-lint.sh",
-    "hooks/pre-commit-check.sh",
-    "hooks/guard-shell.sh"
+    "hooks/pre-commit-check.sh"
   ],
   "config": [
     "hooks.json",

@@ -8,6 +8,9 @@ on:
       - "registry/**"
       - "packages/schema/**"
       - "scripts/validate-packs.mjs"
+      - "scripts/generate-manifests.mjs"
+      - "plugin.json"
+      - "skills.json"
       - "agents/**"
       - "rules/**"
       - "commands/**"
@@ -21,6 +24,9 @@ on:
       - "registry/**"
       - "packages/schema/**"
       - "scripts/validate-packs.mjs"
+      - "scripts/generate-manifests.mjs"
+      - "plugin.json"
+      - "skills.json"
       - "agents/**"
       - "rules/**"
       - "commands/**"
@@ -37,6 +43,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      # Zero-dependency validator — no install step needed.
+      # Zero-dependency scripts — no install step needed.
       - name: Validate pack manifests, contents, and model slugs
         run: node scripts/validate-packs.mjs
+      - name: Check generated manifests are up to date
+        run: node scripts/generate-manifests.mjs --check

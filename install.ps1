@@ -97,6 +97,7 @@ $RULE_FILE_DISABLED = 'orchestrator.mdc.disabled'
 $SKILL_DIRS = @(
     'architect'
     'codebase-search'
+    'crafting-effective-readmes'
     'create-an-asset'
     'cursor-image-generation'
     'debugging'

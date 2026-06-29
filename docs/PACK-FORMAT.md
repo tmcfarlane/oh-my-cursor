@@ -44,7 +44,8 @@ Validated against [`packages/schema/pack.schema.json`](../packages/schema/pack.s
 | `requires` | | `{ cursor: ">=3.4", packs: [] }` environment/peer gates. |
 | `sourceRoot` | | Root that `contents` globs resolve against, relative to the pack dir. Defaults to `.`. Transitional packs may use `../..` (repo root) until files are relocated. |
 | `models` | | `{ default, overrides }` — **every slug is validated** against `valid-slugs.json`. |
-| `contents` | ✓ | Globs (relative to `sourceRoot`) → Cursor config groups (`agents`/`rules`/`commands`/`hooks`/`skills`/`config`/`assets`). Each present group must match ≥1 file. |
+| `contents` | ✓ | Globs (relative to `sourceRoot`) → Cursor config groups (`agents`/`rules`/`commands`/`hooks`/`config`/`assets`). Each present group must match ≥1 file. |
+| `skills` | | Bundled skills with provenance: `{ name, source, agents }`. Source of truth for `skills.json`; each `name` maps to `skills/<name>/SKILL.md`. |
 | `scopes` | | `user` and/or `project`. |
 | `tools` | | Mirror targets: `cursor`/`claude`/`codex`. |
 | `permissions` | | Declarative trust surface: `shellHooks`/`gitHooks`/`network`/`writes`. Shown before apply. |
@@ -91,3 +92,21 @@ Zero-dependency (plain `node` ≥ 22). It enforces, and CI gates on:
 
 A pack cannot enter the registry without passing. Wire your editor to
 `pack.schema.json` / `registry.schema.json` for inline authoring help.
+
+## Generated manifests (single source of truth)
+
+`plugin.json` and `skills.json` are **generated from `pack.json`** — they are not hand-edited:
+
+```bash
+node scripts/generate-manifests.mjs          # regenerate after changing pack.json
+node scripts/generate-manifests.mjs --check   # CI drift gate
+```
+
+- `plugin.json` file arrays (`agents`/`rules`/`commands`/`hooks`/`config`) are derived from the
+  pack's `contents` globs. Project scalars (`name`/`version`/`description`/…) are preserved.
+- `skills.json` is derived from the pack's `skills` provenance list. `bundled`/`updated` are
+  preserved.
+
+CI fails if either committed file drifts from the generator output, so `pack.json` stays the
+sole source of truth. (`install.sh`/`install.ps1` still carry their own file arrays — those are
+retired in Phase 2 when the installer reads the manifest directly.)

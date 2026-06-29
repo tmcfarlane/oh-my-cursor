@@ -85,9 +85,23 @@
         "rules": { "type": "array", "items": { "type": "string" } },
         "commands": { "type": "array", "items": { "type": "string" } },
         "hooks": { "type": "array", "items": { "type": "string" } },
-        "skills": { "type": "array", "items": { "type": "string" } },
         "config": { "type": "array", "items": { "type": "string" } },
         "assets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "skills": {
+      "type": "array",
+      "description": "Bundled skills this pack ships, with provenance. Source of truth for skills.json. Each name maps to a skills/<name>/SKILL.md directory under sourceRoot.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "source"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "source": { "type": "string", "description": "Upstream provenance, e.g. 'vercel-labs/agent-skills'." },
+          "agents": { "type": "array", "items": { "type": "string" } }
+        }
       }
     },
 

@@ -20,6 +20,7 @@ const ROOT = resolve(fileURLToPath(import.meta.url), "../..");
 const SCHEMA_DIR = join(ROOT, "packages", "schema");
 
 const errors = [];
+const warnings = [];
 const fail = (msg) => errors.push(msg);
 
 function readJson(path) {
@@ -214,6 +215,25 @@ for (const packDir of packDirs) {
     }
   }
 
+  // skills provenance: each declared skill needs a SKILL.md; warn on orphan dirs on disk
+  if (Array.isArray(pack.skills)) {
+    const declared = new Set();
+    for (const sk of pack.skills) {
+      declared.add(sk.name);
+      if (!existsSync(join(sourceRoot, "skills", sk.name, "SKILL.md"))) {
+        fail(`${id}: skill "${sk.name}" has no skills/${sk.name}/SKILL.md under ${pack.sourceRoot || "."}`);
+      }
+    }
+    const skillsDir = join(sourceRoot, "skills");
+    if (existsSync(skillsDir)) {
+      for (const d of readdirSync(skillsDir, { withFileTypes: true })) {
+        if (d.isDirectory() && existsSync(join(skillsDir, d.name, "SKILL.md")) && !declared.has(d.name)) {
+          warnings.push(`${id}: skills/${d.name}/ exists on disk but is not declared in pack.skills (it won't be installed)`);
+        }
+      }
+    }
+  }
+
   validated++;
 }
 
@@ -224,4 +244,5 @@ if (errors.length) {
   process.exit(1);
 }
 
+for (const w of warnings) console.warn(`  ⚠ ${w}`);
 console.log(`✓ validated ${validated} pack(s) and registry — all manifests, contents, and model slugs OK`);
