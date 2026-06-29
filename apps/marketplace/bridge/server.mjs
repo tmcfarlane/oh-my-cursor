@@ -43,6 +43,22 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 const ALLOWED_HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`]);
 
+// Allow no-Origin (vite proxy / server-side), the dev origins, and the Tauri webview — matched
+// by SCHEME (tauri://… on macOS/Linux) or the tauri.localhost host (Windows) so it is robust to
+// the exact origin string. Real http(s) websites (evil.com) are denied.
+function originAllowed(origin) {
+  if (!origin) return true;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  try {
+    const u = new URL(origin);
+    if (u.protocol === "tauri:") return true;
+    if (u.hostname === "tauri.localhost") return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
 
 function requireRepo(scope, repo) {
@@ -155,9 +171,8 @@ const server = createServer((req, res) => {
     return res.end(JSON.stringify({ error: "forbidden host" }));
   }
 
-  // CORS: reflect only known local frontends — never wildcard. Requests with no Origin
-  // (the vite proxy, server-side curl) are allowed; cross-origin from anywhere else is denied.
-  const originOk = !origin || ALLOWED_ORIGINS.has(origin);
+  // CORS: reflect only known local frontends — never wildcard.
+  const originOk = originAllowed(origin);
   if (origin && originOk) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");

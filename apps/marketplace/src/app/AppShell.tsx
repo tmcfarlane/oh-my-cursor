@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Masthead } from "../components/Masthead";
 import { useInstallTarget } from "./InstallTargetContext";
@@ -33,6 +34,24 @@ export function AppShell() {
   const installedCount = status.data?.installs.length ?? 0;
   const offline = !!health.error;
 
+  // Self-heal the startup race: while the engine is unreachable (e.g. the desktop sidecar is
+  // still coming up), retry; once it answers, remount the routed screens so they refetch.
+  const [readyKey, setReadyKey] = useState(0);
+  const wasOffline = useRef(false);
+  useEffect(() => {
+    if (health.error) {
+      wasOffline.current = true;
+      const t = setTimeout(() => health.reload(), 1500);
+      return () => clearTimeout(t);
+    }
+    if (!health.loading && wasOffline.current) {
+      wasOffline.current = false;
+      setReadyKey((k) => k + 1);
+      status.reload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [health.error, health.loading]);
+
   return (
     <div className="paper-grain relative min-h-screen">
       <a
@@ -49,7 +68,7 @@ export function AppShell() {
           role="alert"
           className="border-b border-[var(--omc-danger)] bg-[var(--omc-danger)]/10 px-8 py-2 text-center font-mono text-[0.72rem] text-[var(--omc-danger)]"
         >
-          Engine bridge offline — run <code className="font-bold">npm run bridge</code> in apps/marketplace, then reload.
+          Connecting to the local engine… <span className="opacity-70">(web: run <code className="font-bold">npm run bridge</code>; desktop starts it automatically)</span>
         </div>
       )}
 
@@ -83,7 +102,9 @@ export function AppShell() {
       </div>
 
       <main id="main" className="relative z-10 mx-auto max-w-[1400px] px-8 py-10">
-        <Outlet />
+        <div key={readyKey}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );
