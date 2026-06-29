@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tmcfarlane/oh-my-cursor/packages/schema/registry.schema.json",
+  "title": "oh-my-cursor pack registry index",
+  "description": "Index of installable behavior packs. The repo itself is the default registry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "packs"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "name": { "type": "string" },
+    "packs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "version", "category"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "path": {
+            "type": "string",
+            "description": "Local path, git URL, or (future) remote tarball locating the pack."
+          },
+          "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+].+)?$" },
+          "category": { "type": "string", "enum": ["team", "role", "harness", "theme"] },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "summary": { "type": "string" },
+          "validatedCursor": { "type": "string" },
+          "fan": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

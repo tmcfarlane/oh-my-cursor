@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "id": "team-avatar",
+  "name": "Team Avatar",
+  "version": "0.5.0",
+  "description": "An Avatar-themed 8-agent dev team for Cursor: orchestrator rule, slash commands, enforcement hooks, and tiered per-agent model routing.",
+  "author": "ZeroClickDev",
+  "license": "MIT",
+  "homepage": "https://github.com/tmcfarlane/oh-my-cursor",
+
+  "category": "team",
+  "tags": ["orchestration", "multi-agent", "atla", "full-team", "hooks", "enforcement"],
+  "theme": {
+    "title": "Avatar: The Last Airbender",
+    "fan": true
+  },
+  "capabilities": ["orchestrator", "multi-agent", "hook-enforcement", "auto-review"],
+
+  "extends": null,
+  "requires": {
+    "cursor": ">=3.4",
+    "packs": []
+  },
+
+  "sourceRoot": "../..",
+
+  "models": {
+    "default": "composer-2.5-fast",
+    "overrides": {
+      "sokka": "claude-opus-4-8-thinking-high",
+      "iroh": "claude-opus-4-8-thinking-high",
+      "zuko": "gemini-3.1-pro"
+    }
+  },
+
+  "contents": {
+    "agents": ["agents/*.md", "agents/protocols/*.md"],
+    "rules": ["rules/orchestrator.mdc"],
+    "commands": ["commands/*.md"],
+    "hooks": ["hooks/*.sh"],
+    "config": ["hooks.json", "permissions.json"]
+  },
+
+  "skills": [
+    { "name": "architect", "source": "thebushidocollective/han", "agents": ["Sokka"] },
+    { "name": "codebase-search", "source": "supercent-io/skills-template", "agents": ["Toph"] },
+    { "name": "crafting-effective-readmes", "source": "community", "agents": ["Iroh"] },
+    { "name": "create-an-asset", "source": "anthropics/knowledge-work-plugins", "agents": ["Zuko"] },
+    { "name": "cursor-image-generation", "source": "tmcfarlane/oh-my-cursor", "agents": ["Zuko"] },
+    { "name": "debugging", "source": "oimiragieo/agent-studio", "agents": ["Katara"] },
+    { "name": "design-patterns-implementation", "source": "aj-geddes/useful-ai-prompts", "agents": ["Aang"] },
+    { "name": "docs-write", "source": "metabase/metabase", "agents": ["Iroh"] },
+    { "name": "documentation-engineer", "source": "charon-fan/agent-playbook", "agents": ["Iroh"] },
+    { "name": "documentation-writing", "source": "rysweet/amplihack", "agents": ["Iroh"] },
+    { "name": "exploring-codebases", "source": "community", "agents": ["Toph"] },
+    { "name": "frontend-builder", "source": "daffy0208/ai-dev-standards", "agents": ["Appa"] },
+    { "name": "implementing-figma-designs", "source": "onekeyhq/app-monorepo", "agents": ["Zuko"] },
+    { "name": "mgrep-code-search", "source": "intellectronica/agent-skills", "agents": ["Toph"] },
+    { "name": "planning", "source": "thebushidocollective/han", "agents": ["Sokka"] },
+    { "name": "refactoring", "source": "eyadsibai/ltk", "agents": ["Katara", "Momo"] },
+    { "name": "refactoring-patterns", "source": "wondelai/skills", "agents": ["Aang", "Katara", "Momo"] },
+    { "name": "technical-roadmap-planning", "source": "aj-geddes/useful-ai-prompts", "agents": ["Sokka"] },
+    { "name": "vercel-composition-patterns", "source": "vercel-labs/agent-skills", "agents": ["Appa"] },
+    { "name": "vercel-react-best-practices", "source": "vercel-labs/agent-skills", "agents": ["Aang", "Appa", "Momo"] },
+    { "name": "web-design-guidelines", "source": "vercel-labs/agent-skills", "agents": ["Zuko"] }
+  ],
+
+  "scopes": ["user", "project"],
+  "tools": ["cursor", "claude", "codex"],
+
+  "permissions": {
+    "shellHooks": true,
+    "gitHooks": true,
+    "network": false,
+    "writes": ["${cursorDir}/**", "${gitDir}/hooks/pre-commit"]
+  },
+
+  "activation": {
+    "requiresAlwaysAllow": true,
+    "requiresRestart": true,
+    "steps": [
+      "Open rules/orchestrator.mdc in Cursor and click \"Always Allow\" to activate the orchestrator rule.",
+      "Fully restart Cursor (Cmd+Q) — a window reload is not enough to register project hooks.",
+      "Ensure the workspace is trusted."
+    ]
+  },
+
+  "uninstall": {
+    "extraPaths": ["${gitDir}/hooks/pre-commit"]
+  }
+}

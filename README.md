@@ -468,10 +468,10 @@ Or use slash commands: `/plan add OAuth support with JWT tokens` then `/build ba
 
 ## Skills
 
-19 bundled skills vendored from the community. Each is a `SKILL.md` directory that Cursor auto-discovers and presents to agents as domain knowledge. Bundled in-repo for security (no fetching third-party files at install time) and efficiency (single file copy). Installed by default; use `--no-skills` to skip.
+20 bundled skills vendored from the community. Each is a `SKILL.md` directory that Cursor auto-discovers and presents to agents as domain knowledge. Bundled in-repo for security (no fetching third-party files at install time) and efficiency (single file copy). Installed by default; use `--no-skills` to skip.
 
 <details>
-<summary><strong>Bundled skills (19)</strong></summary>
+<summary><strong>Bundled skills (20)</strong></summary>
 
 | Skill                          | Source                            | Agents             | What it provides                                                             |
 | ------------------------------ | --------------------------------- | ------------------ | ---------------------------------------------------------------------------- |

@@ -5,102 +5,154 @@
     {
       "name": "architect",
       "source": "thebushidocollective/han",
-      "agents": ["Sokka"]
+      "agents": [
+        "Sokka"
+      ]
     },
     {
       "name": "codebase-search",
       "source": "supercent-io/skills-template",
-      "agents": ["Toph"]
+      "agents": [
+        "Toph"
+      ]
+    },
+    {
+      "name": "crafting-effective-readmes",
+      "source": "community",
+      "agents": [
+        "Iroh"
+      ]
     },
     {
       "name": "create-an-asset",
       "source": "anthropics/knowledge-work-plugins",
-      "agents": ["Zuko"]
+      "agents": [
+        "Zuko"
+      ]
     },
     {
       "name": "cursor-image-generation",
       "source": "tmcfarlane/oh-my-cursor",
-      "agents": ["Zuko"]
+      "agents": [
+        "Zuko"
+      ]
     },
     {
       "name": "debugging",
       "source": "oimiragieo/agent-studio",
-      "agents": ["Katara"]
+      "agents": [
+        "Katara"
+      ]
     },
     {
       "name": "design-patterns-implementation",
       "source": "aj-geddes/useful-ai-prompts",
-      "agents": ["Aang"]
+      "agents": [
+        "Aang"
+      ]
     },
     {
       "name": "docs-write",
       "source": "metabase/metabase",
-      "agents": ["Iroh"]
+      "agents": [
+        "Iroh"
+      ]
     },
     {
       "name": "documentation-engineer",
       "source": "charon-fan/agent-playbook",
-      "agents": ["Iroh"]
+      "agents": [
+        "Iroh"
+      ]
     },
     {
       "name": "documentation-writing",
       "source": "rysweet/amplihack",
-      "agents": ["Iroh"]
+      "agents": [
+        "Iroh"
+      ]
     },
     {
       "name": "exploring-codebases",
       "source": "community",
-      "agents": ["Toph"]
+      "agents": [
+        "Toph"
+      ]
     },
     {
       "name": "frontend-builder",
       "source": "daffy0208/ai-dev-standards",
-      "agents": ["Appa"]
+      "agents": [
+        "Appa"
+      ]
     },
     {
       "name": "implementing-figma-designs",
       "source": "onekeyhq/app-monorepo",
-      "agents": ["Zuko"]
+      "agents": [
+        "Zuko"
+      ]
     },
     {
       "name": "mgrep-code-search",
       "source": "intellectronica/agent-skills",
-      "agents": ["Toph"]
+      "agents": [
+        "Toph"
+      ]
     },
     {
       "name": "planning",
       "source": "thebushidocollective/han",
-      "agents": ["Sokka"]
+      "agents": [
+        "Sokka"
+      ]
     },
     {
       "name": "refactoring",
       "source": "eyadsibai/ltk",
-      "agents": ["Katara", "Momo"]
+      "agents": [
+        "Katara",
+        "Momo"
+      ]
     },
     {
       "name": "refactoring-patterns",
       "source": "wondelai/skills",
-      "agents": ["Aang", "Katara", "Momo"]
+      "agents": [
+        "Aang",
+        "Katara",
+        "Momo"
+      ]
     },
     {
       "name": "technical-roadmap-planning",
       "source": "aj-geddes/useful-ai-prompts",
-      "agents": ["Sokka"]
+      "agents": [
+        "Sokka"
+      ]
     },
     {
       "name": "vercel-composition-patterns",
       "source": "vercel-labs/agent-skills",
-      "agents": ["Appa"]
+      "agents": [
+        "Appa"
+      ]
     },
     {
       "name": "vercel-react-best-practices",
       "source": "vercel-labs/agent-skills",
-      "agents": ["Aang", "Appa", "Momo"]
+      "agents": [
+        "Aang",
+        "Appa",
+        "Momo"
+      ]
     },
     {
       "name": "web-design-guidelines",
       "source": "vercel-labs/agent-skills",
-      "agents": ["Zuko"]
+      "agents": [
+        "Zuko"
+      ]
     }
   ]
 }

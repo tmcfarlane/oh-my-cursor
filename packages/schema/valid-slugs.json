@@ -1,0 +1,22 @@
+{
+  "$comment": "Authoritative Cursor Task-tool model slugs. An invalid/stale slug does NOT error — it silently downgrades to composer-2.5-fast (see VALIDATION.md gotcha #1). This list is the machine-checkable source of truth for pack model routing. Re-verify after every Cursor update.",
+  "validatedCursor": "3.9.8",
+  "lastValidated": "2026-06-26",
+  "special": ["inherit"],
+  "valid": [
+    "composer-2.5-fast",
+    "claude-opus-4-8-thinking-high",
+    "gemini-3.1-pro",
+    "claude-4.6-opus-high-thinking",
+    "claude-4.6-sonnet-medium-thinking",
+    "claude-fable-5-thinking-high",
+    "gpt-5.3-codex-high-fast",
+    "gpt-5.5-medium",
+    "kimi-k2.5"
+  ],
+  "knownInvalid": {
+    "cursor-composer-2-5": "composer-2.5-fast",
+    "claude-opus-4.8": "claude-opus-4-8-thinking-high",
+    "gemini-3.5-flash": "gemini-3.1-pro"
+  }
+}

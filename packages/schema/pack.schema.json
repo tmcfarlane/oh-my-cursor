@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tmcfarlane/oh-my-cursor/packages/schema/pack.schema.json",
+  "title": "oh-my-cursor behavior pack manifest",
+  "description": "Manifest describing one installable Cursor behavior pack. See docs/PACK-FORMAT.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "version", "description", "category", "contents"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Unique kebab-case registry key."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+].+)?$",
+      "description": "Semantic version."
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "author": { "type": "string" },
+    "license": { "type": "string" },
+    "homepage": { "type": "string", "format": "uri" },
+
+    "category": { "type": "string", "enum": ["team", "role", "harness", "theme"] },
+    "tags": { "type": "array", "items": { "type": "string" } },
+
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional persona/skin overlay metadata. Capability is decoupled from theme.",
+      "properties": {
+        "title": { "type": "string" },
+        "fan": {
+          "type": "boolean",
+          "description": "True when the theme uses third-party/fan IP. Surfaces a badge and routes the pack to the community registry."
+        },
+        "assets": { "type": "string", "description": "Path (relative to sourceRoot) holding theme assets." }
+      }
+    },
+
+    "capabilities": { "type": "array", "items": { "type": "string" } },
+
+    "extends": {
+      "type": ["string", "null"],
+      "description": "Base pack id this pack composes on top of."
+    },
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cursor": { "type": "string", "description": "Semver range, e.g. '>=3.4'." },
+        "packs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "sourceRoot": {
+      "type": "string",
+      "description": "Root that `contents` globs resolve against, relative to the pack directory. Defaults to '.'. Transitional packs may point at the repo root (e.g. '../..') until their files are relocated under the pack directory.",
+      "default": "."
+    },
+
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Declared model routing. Every slug is validated against packages/schema/valid-slugs.json.",
+      "properties": {
+        "default": { "type": "string" },
+        "overrides": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "contents": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Globs (relative to sourceRoot) mapping pack files to Cursor config locations. Each present group must resolve to at least one file.",
+      "minProperties": 1,
+      "properties": {
+        "agents": { "type": "array", "items": { "type": "string" } },
+        "rules": { "type": "array", "items": { "type": "string" } },
+        "commands": { "type": "array", "items": { "type": "string" } },
+        "hooks": { "type": "array", "items": { "type": "string" } },
+        "config": { "type": "array", "items": { "type": "string" } },
+        "assets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "skills": {
+      "type": "array",
+      "description": "Bundled skills this pack ships, with provenance. Source of truth for skills.json. Each name maps to a skills/<name>/SKILL.md directory under sourceRoot.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "source"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "source": { "type": "string", "description": "Upstream provenance, e.g. 'vercel-labs/agent-skills'." },
+          "agents": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "scopes": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["user", "project"] },
+      "minItems": 1
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["cursor", "claude", "codex"] }
+    },
+
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Declarative trust surface, rendered before apply.",
+      "properties": {
+        "shellHooks": { "type": "boolean" },
+        "gitHooks": { "type": "boolean" },
+        "network": { "type": "boolean" },
+        "writes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "scripts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional lifecycle scripts. Default-off; the engine shows the source and requires explicit confirmation before running.",
+      "properties": {
+        "postInstall": { "type": "string" },
+        "validate": { "type": "string" },
+        "preUninstall": { "type": "string" }
+      }
+    },
+
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Manual post-install steps Cursor requires that the installer cannot bypass.",
+      "properties": {
+        "requiresAlwaysAllow": { "type": "boolean" },
+        "requiresRestart": { "type": "boolean" },
+        "steps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "uninstall": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "extraPaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Paths created outside the managed content set (e.g. .git/hooks/pre-commit) that uninstall must also remove."
+        }
+      }
+    }
+  }
+}
