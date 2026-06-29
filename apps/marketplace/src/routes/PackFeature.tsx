@@ -10,11 +10,14 @@ import DramatisPersonae from "./DramatisPersonae";
 import type { PackDetail } from "../lib/types";
 
 /** Section overline + hairline rule, shared editorial primitive for this spread. */
-function SectionHead({ kicker, title }: { kicker: string; title: string }) {
+function SectionHead({ kicker, title, id }: { kicker: string; title: string; id?: string }) {
   return (
     <header className="mb-4">
       <p className="omc-kicker">{kicker}</p>
-      <h2 className="mt-1 font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.01em] text-[var(--omc-text)]">
+      <h2
+        id={id}
+        className="mt-1 font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.01em] text-[var(--omc-text)]"
+      >
         {title}
       </h2>
     </header>
@@ -87,14 +90,14 @@ function Feature({ pack }: { pack: PackDetail }) {
         {/* Main column */}
         <div className="flex flex-col gap-12">
           <section aria-labelledby="cast-head">
-            <SectionHead kicker="Dramatis Personae" title="The cast" />
-            <div id="cast-head">
+            <SectionHead kicker="Dramatis Personae" title="The cast" id="cast-head" />
+            <div>
               <DramatisPersonae pack={pack} />
             </div>
           </section>
 
           <section aria-labelledby="skills-head">
-            <SectionHead kicker="Provenance" title={pluralize(skills.length, "skill")} />
+            <SectionHead kicker="Provenance" title={pluralize(skills.length, "skill")} id="skills-head" />
             {skills.length === 0 ? (
               <p className="font-body text-[0.85rem] italic text-[var(--omc-muted)]">
                 This pack ships no skills.
@@ -117,7 +120,7 @@ function Feature({ pack }: { pack: PackDetail }) {
           </section>
 
           <section aria-labelledby="manifest-head">
-            <SectionHead kicker="Contents Manifest" title={pluralize(contentEntries.length, "content group")} />
+            <SectionHead kicker="Contents Manifest" title={pluralize(contentEntries.length, "content group")} id="manifest-head" />
             {contentEntries.length === 0 ? (
               <p className="font-body text-[0.85rem] italic text-[var(--omc-muted)]">
                 No contents declared in this manifest.

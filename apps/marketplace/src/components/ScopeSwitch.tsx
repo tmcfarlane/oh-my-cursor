@@ -80,7 +80,7 @@ export function ScopeSwitch({ value, onChange, variant = "bar" }: Props) {
         })}
       </div>
       <p className="font-mono text-[0.68rem] leading-snug text-[var(--omc-muted)]">
-        <span aria-hidden="true" className="text-accent">
+        <span aria-hidden="true" className="text-[var(--omc-rule)]">
           ›{" "}
         </span>
         {current.truth}

@@ -5,13 +5,15 @@ interface Props {
 }
 
 /**
- * Wax-mark imprint keyed to a theme's `fan` flag.
- * fan=false → "VERIFIED IMPRINT" (teal). fan=true → "COMMUNITY ZINE · PARODY"
- * (warning) plus an optional transformative-use disclaimer line.
+ * Wax-mark imprint keyed to a theme's `fan` flag. This reflects IP provenance only —
+ * NOT a cryptographic verification (the engine exposes no signature field), so it never
+ * claims "verified".
+ * fan=false → "FIRST-PARTY" (teal). fan=true → "COMMUNITY ZINE · PARODY" (warning) plus
+ * an optional transformative-use disclaimer line.
  */
 export function FanImprint({ fan, title, showDisclaimer = false }: Props) {
   const color = fan ? "var(--omc-warning)" : "var(--omc-accent-ink)";
-  const verdict = fan ? "Community Zine · Parody" : "Verified Imprint";
+  const verdict = fan ? "Community Zine · Parody" : "First-Party";
   const label = fan ? "Imprint" : "Provenance";
   const subject = title?.trim() || "This pack";
 

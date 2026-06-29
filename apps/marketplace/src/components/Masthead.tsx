@@ -30,7 +30,7 @@ export function Masthead({ installedCount }: { installedCount: number }) {
             >
               {l.label}
               {l.label === "Library" && installedCount > 0 && (
-                <span className="ml-1.5 font-display text-[var(--omc-accent)]" aria-label={`${installedCount} installed`}>
+                <span className="ml-1.5 font-mono text-[0.78rem] text-[var(--omc-muted)]" aria-label={`${installedCount} installed`}>
                   {installedCount}
                 </span>
               )}

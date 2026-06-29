@@ -210,7 +210,7 @@ export default function GalleyProof() {
                   Trust surface unavailable — {pack.error}
                 </p>
               )}
-              {pack.data && <TrustStamps permissions={pack.data.permissions} compact />}
+              {pack.data && <TrustStamps permissions={pack.data.permissions} />}
             </div>
           </section>
 

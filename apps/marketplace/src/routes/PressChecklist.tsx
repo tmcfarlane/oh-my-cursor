@@ -92,7 +92,7 @@ export default function PressChecklist() {
         role="note"
         className="mt-6 flex items-start gap-2 font-body text-[0.92rem] leading-relaxed text-[var(--omc-muted)]"
       >
-        <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--omc-teal)]" />
+        <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--omc-accent-ink)]" />
         <span>
           The installer guides and verifies these, but Cursor cannot let it click
           Always-Allow or restart for you. A human hand finishes the press.

@@ -148,7 +148,7 @@ function ContentsRail({
         <FilterCheck
           checked={filters.verified}
           onChange={(next) => setFilters({ ...filters, verified: next })}
-          label="Verified"
+          label="First-party"
         />
         <FilterCheck
           checked={filters.community}
@@ -190,7 +190,7 @@ function PackTile({ pack, folio }: { pack: PackSummary; folio: number }) {
           {pluralize(pack.skillCount, "skill")} · v{pack.version}
         </span>
         <span className="pt-3 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-[var(--omc-accent-ink)] group-hover:text-[var(--omc-accent)]">
-          {fan ? "Community" : "Verified"} →
+          {fan ? "Community" : "First-party"} →
         </span>
       </div>
     </Link>
