@@ -1,0 +1,49 @@
+/* The Behavior Catalog — letterpress ink-on-paper design tokens. */
+:root {
+  /* paper & ink */
+  --omc-bg: #f2ede3;
+  --omc-surface: #fbf8f1;
+  --omc-surface-sunken: #ede6d8;
+  --omc-text: #1a1613;
+  --omc-muted: #6b6356;
+  --omc-border: #d8cfbe;
+  --omc-rule: #cfc4b0;
+
+  /* spot color (single printing plate) + secondary ink */
+  --omc-accent: #da3a1c; /* vermillion: CTA, active, wax seal ONLY */
+  --omc-accent-ink: #234e52; /* deep teal secondary ink */
+  --omc-success: #2f6b4a;
+  --omc-warning: #b5761f;
+  --omc-danger: #8a1f18;
+
+  /* four diff statuses */
+  --omc-status-new: var(--omc-success);
+  --omc-status-update: var(--omc-warning);
+  --omc-status-unchanged: var(--omc-muted);
+  --omc-status-usermod: var(--omc-danger);
+
+  /* type */
+  --omc-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --omc-font-body: "Hanken Grotesk", system-ui, sans-serif;
+  --omc-font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  --omc-text-hero: clamp(2.75rem, 6vw, 5rem);
+  --omc-text-h2: 2rem;
+  --omc-kicker-tracking: 0.12em;
+  --omc-leading-body: 1.6;
+
+  /* shape & letterpress depth */
+  --omc-radius: 2px;
+  --omc-radius-stamp: 3px;
+  --omc-shadow-1: 0 1px 0 rgba(26, 22, 19, 0.04), 0 2px 6px rgba(26, 22, 19, 0.06);
+  --omc-shadow-lift: 0 2px 0 rgba(26, 22, 19, 0.05), 0 8px 20px rgba(26, 22, 19, 0.1);
+  --omc-grain-opacity: 0.03;
+
+  /* a11y: always-visible focus ring on paper */
+  --omc-focus-ring: 0 0 0 2px var(--omc-bg), 0 0 0 4px var(--omc-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --omc-grain-opacity: 0;
+  }
+}
