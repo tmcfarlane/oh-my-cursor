@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+/* Map the design tokens into Tailwind v4 so utilities resolve them:
+   bg-paper, text-ink, text-muted, border-rule, text-accent, font-display, font-mono, … */
+@theme {
+  --color-paper: #f2ede3;
+  --color-surface: #fbf8f1;
+  --color-sunken: #ede6d8;
+  --color-ink: #1a1613;
+  --color-muted: #6b6356;
+  --color-rule: #cfc4b0;
+  --color-edge: #d8cfbe;
+  --color-accent: #da3a1c;
+  --color-teal: #234e52;
+  --color-success: #2f6b4a;
+  --color-warning: #b5761f;
+  --color-danger: #8a1f18;
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--omc-bg);
+  color: var(--omc-text);
+  font-family: var(--omc-font-body);
+  line-height: var(--omc-leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Static paper grain — never animated; opacity → 0 under prefers-reduced-motion (tokens.css). */
+.paper-grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--omc-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Editorial primitives shared across the catalog. */
+.omc-kicker {
+  font-family: var(--omc-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: var(--omc-kicker-tracking);
+  text-transform: uppercase;
+  color: var(--omc-muted);
+}
+.omc-kicker::before {
+  content: "—";
+  color: var(--omc-accent);
+  margin-right: 0.5ch;
+}
+
+.omc-rule {
+  border: none;
+  border-top: 1px solid var(--omc-rule);
+}
+
+.omc-focusable:focus-visible {
+  outline: none;
+  box-shadow: var(--omc-focus-ring);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

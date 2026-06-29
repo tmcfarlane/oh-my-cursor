@@ -7,9 +7,9 @@
 <div style="font-size: 0.85em; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; margin: 4px 0;">presents</div>
 
 <p align="center">
-  <a href="https://github.com/tmcfarlane/oh-my-cursor">
-    <img src="screenshots/teamavatar.png" alt="oh-my-cursor: Team Avatar Agent Orchestration" width="560">
-  </a>
+  <video src="https://github.com/tmcfarlane/oh-my-cursor/raw/main/screenshots/promo/team-avatar-promo.mp4" width="720" autoplay loop muted playsinline></video>
+  <br>
+  <sub><a href="screenshots/promo/team-avatar-promo.mp4">▶&nbsp;Watch the promo (MP4)</a></sub>
 </p>
 <div style="font-size: 2.5em; font-weight: 700; letter-spacing: 0.12em;">
   <strong>TEAM AVATAR</strong>

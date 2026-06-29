@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oh-my-cursor — Team Avatar promo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  html,body { margin:0; height:100%; background:#06080c; }
+  body { display:grid; place-items:center; font-family: ui-sans-serif, system-ui, sans-serif; }
+  #stage { width: min(96vw, 1280px); aspect-ratio: 16/9; box-shadow: 0 30px 120px rgba(255,138,61,.12); border-radius:14px; overflow:hidden; }
+  #lottie { width:100%; height:100%; }
+  #bar { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:10px; align-items:center; color:#9aa3b2; font-size:13px; background:#11151c; padding:8px 14px; border-radius:999px; border:1px solid #232b38; }
+  button { background:#222b38; color:#e7ddca; border:0; border-radius:8px; padding:6px 12px; cursor:pointer; }
+  #frame { width:120px; }
+</style>
+</head>
+<body>
+  <div id="stage"><div id="lottie"></div></div>
+  <div id="bar">
+    <button id="play">⏯</button>
+    <input id="frame" type="range" min="0" max="459" value="0" />
+    <span id="lbl">0</span>
+  </div>
+<script>
+  const anim = lottie.loadAnimation({
+    container: document.getElementById('lottie'),
+    renderer: 'svg', loop: true, autoplay: true,
+    path: 'team-avatar-promo.json',
+  });
+  window.anim = anim;
+  const fr = document.getElementById('frame'), lbl = document.getElementById('lbl');
+  anim.addEventListener('DOMLoaded', () => { fr.max = Math.round(anim.totalFrames) - 1; });
+  anim.addEventListener('enterFrame', () => { fr.value = Math.round(anim.currentFrame); lbl.textContent = fr.value; });
+  fr.addEventListener('input', () => { anim.goToAndStop(+fr.value, true); lbl.textContent = fr.value; });
+  document.getElementById('play').onclick = () => anim.isPaused ? anim.play() : anim.pause();
+  window.seek = (f) => { anim.goToAndStop(f, true); };
+</script>
+</body>
+</html>
