@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { GROUP_LABEL, pluralize } from "../lib/format";
 import { TrustStamps } from "../components/TrustStamps";
 import { FanImprint } from "../components/FanImprint";
+import { QuickInstall } from "../components/QuickInstall";
 import DramatisPersonae from "./DramatisPersonae";
 import type { PackDetail } from "../lib/types";
 
@@ -180,18 +181,7 @@ function Feature({ pack }: { pack: PackDetail }) {
 
           <FanImprint fan={!!pack.theme?.fan} title={pack.theme?.title ?? pack.name} showDisclaimer />
 
-          <div className="omc-rule pt-6">
-            <Link
-              to={`/pack/${encodeURIComponent(pack.id)}/install`}
-              className="omc-focusable inline-flex w-full items-center justify-center gap-2 rounded-[var(--omc-radius)] bg-[var(--omc-accent)] px-5 py-3 font-body text-[0.95rem] font-semibold text-[var(--omc-surface)] transition-transform motion-safe:hover:-translate-y-0.5"
-              style={{ boxShadow: "var(--omc-shadow-1)" }}
-            >
-              Configure install <span aria-hidden="true">→</span>
-            </Link>
-            <p className="mt-2 text-center font-mono text-[0.64rem] text-[var(--omc-muted)]">
-              Nothing is written until you install.
-            </p>
-          </div>
+          <QuickInstall packId={pack.id} />
         </aside>
       </div>
     </motion.article>
