@@ -2,9 +2,10 @@ import type { GitPreCommit, Scope, Tool } from "../lib/types";
 
 /**
  * Renders plan.gitPreCommit honestly — never implies the hook is always applied.
- * - null            → a muted "no git hook for this target"
- * - willInstall      → a caution stamp: "<path> · WILL WRITE"
- * - !willInstall     → muted line echoing the literal skip reason
+ * - null         → muted "no git hook for this target"
+ * - willInstall  → flat amber warning line: "<path> · will write"
+ * - !willInstall → muted line echoing the literal skip reason
+ * No stamp border, no tilt — reads like a terminal status line.
  */
 export function GitVerdictStamp({
   gitPreCommit,
@@ -19,7 +20,7 @@ export function GitVerdictStamp({
   if (!gitPreCommit) {
     return (
       <p className="font-mono text-[0.72rem] text-[var(--omc-muted)]">
-        <span aria-hidden="true" className="mr-1.5 text-[var(--omc-rule)]">
+        <span aria-hidden="true" className="mr-1.5 text-[var(--omc-border)]">
           ·
         </span>
         no git hook for this target
@@ -29,20 +30,23 @@ export function GitVerdictStamp({
 
   const path = gitPreCommit.path || ".git/hooks/pre-commit";
 
-  // The hook WILL be written — caution stamp, the one honest warning here.
+  // The hook WILL be written — flat amber warning line.
   if (gitPreCommit.willInstall) {
     return (
-      <div
-        className="inline-flex flex-col items-start rounded-[var(--omc-radius-stamp)] border-2 px-2.5 py-1.5"
-        style={{ borderColor: "var(--omc-warning)", color: "var(--omc-warning)", transform: "rotate(-1deg)" }}
-        role="img"
+      <p
+        className="break-all font-mono text-[0.78rem] text-[var(--omc-warning)]"
+        role="status"
         aria-label={`Git pre-commit hook ${path} will write on ${scope} scope for ${tools.join(", ") || "selected tools"}`}
       >
-        <span className="font-mono text-[0.78rem] font-bold tracking-[0.04em] leading-tight break-all">{path}</span>
-        <span className="mt-0.5 font-mono text-[0.58rem] font-bold uppercase tracking-[0.16em] opacity-90">
-          Will Write
+        <span aria-hidden="true" className="mr-1.5 opacity-60">
+          !
         </span>
-      </div>
+        <span className="font-bold">{path}</span>
+        <span aria-hidden="true" className="mx-1.5 opacity-40">
+          ·
+        </span>
+        <span className="text-[0.7rem] uppercase tracking-[0.08em]">will write</span>
+      </p>
     );
   }
 
@@ -50,13 +54,17 @@ export function GitVerdictStamp({
   const reason = gitPreCommit.reason ?? "skipped";
   return (
     <p
-      className="font-mono text-[0.72rem] text-[var(--omc-muted)] break-words"
+      className="break-words font-mono text-[0.72rem] text-[var(--omc-muted)]"
       aria-label={`Git hook skipped: ${reason}`}
     >
-      <span aria-hidden="true" className="mr-1.5 text-[var(--omc-rule)]">
+      <span aria-hidden="true" className="mr-1.5 text-[var(--omc-border)]">
         ·
       </span>
-      git hook skipped <span className="opacity-60">·</span> {reason}
+      git hook skipped
+      <span aria-hidden="true" className="mx-1.5 opacity-40">
+        ·
+      </span>
+      {reason}
     </p>
   );
 }

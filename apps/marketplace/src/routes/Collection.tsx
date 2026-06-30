@@ -160,61 +160,58 @@ function ContentsRail({
   );
 }
 
-/** Editorial tile for a non-cover pack — oversized folio numeral + hairline rule. */
+/** Dense dark card for a non-cover pack. */
 function PackTile({ pack, folio }: { pack: PackSummary; folio: number }) {
   const fan = isFan(pack);
+  const p = pack.permissions;
   return (
     <Link
       to={`/pack/${encodeURIComponent(pack.id)}`}
-      className="omc-focusable group relative flex flex-col overflow-hidden rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] p-5 shadow-[var(--omc-shadow-1)] transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-[var(--omc-shadow-lift)]"
+      className="omc-focusable group flex flex-col gap-3 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] p-4 transition-[transform,border-color,box-shadow] duration-[140ms] ease-out hover:-translate-y-px hover:border-[var(--omc-accent-ink)] hover:shadow-[var(--omc-shadow-1)]"
     >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-2 -top-4 select-none font-display text-[5rem] font-semibold leading-none text-[var(--omc-rule)] opacity-50 tabular"
-      >
-        {String(folio).padStart(2, "0")}
-      </span>
-
       <CategoryKicker category={pack.category} folio={folio} fan={fan} />
 
-      <h3 className="mt-2 max-w-[18ch] font-display text-[1.6rem] font-semibold leading-[1.02] tracking-[-0.01em] text-[var(--omc-text)] group-hover:text-[var(--omc-accent-ink)]">
+      <h3 className="font-display text-[1.05rem] font-semibold leading-snug tracking-[-0.01em] text-[var(--omc-text)] group-hover:text-[var(--omc-accent)]">
         {pack.name}
       </h3>
 
-      <p className="mt-2 line-clamp-3 max-w-[42ch] font-body text-[0.9rem] leading-snug text-[var(--omc-muted)]">
+      <p className="line-clamp-1 font-body text-[0.82rem] text-[var(--omc-muted)]">
         {pack.description}
       </p>
 
-      <div className="mt-auto flex items-center justify-between gap-3 pt-4 omc-rule">
-        <span className="pt-3 font-mono text-[0.72rem] tabular text-[var(--omc-muted)]">
-          {pluralize(pack.skillCount, "skill")} · v{pack.version}
+      <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 font-mono text-[0.65rem] tabular text-[var(--omc-muted)]">
+        <span className={p.shellHooks ? "text-[var(--omc-warning)]" : ""}>
+          shell {p.shellHooks ? "●" : "○"}
         </span>
-        <span className="pt-3 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-[var(--omc-accent-ink)] group-hover:text-[var(--omc-accent)]">
-          {fan ? "Community" : "First-party"} →
+        <span className={p.gitHooks ? "text-[var(--omc-warning)]" : ""}>
+          git {p.gitHooks ? "●" : "○"}
         </span>
+        <span className={!p.network ? "text-[var(--omc-success)]" : ""}>
+          net {p.network ? "●" : "○"}
+        </span>
+        <span aria-hidden="true" className="mx-1">·</span>
+        <span>{pluralize(pack.skillCount, "skill")}</span>
+        <span aria-hidden="true">·</span>
+        <span>v{pack.version}</span>
+        <span aria-hidden="true" className="mx-1">·</span>
+        <span>{fan ? "community" : "first-party"}</span>
       </div>
     </Link>
   );
 }
 
-/** Ghosted placeholder so a sparse registry still reads as a designed spread. */
+/** Ghosted placeholder for packs not yet in the registry. */
 function ComingTile({ folio }: { folio: number }) {
   return (
     <div
       aria-hidden="true"
-      className="relative flex min-h-[12rem] flex-col overflow-hidden rounded-[var(--omc-radius)] border border-dashed border-[var(--omc-rule)] bg-[var(--omc-surface)]/40 p-5"
+      className="flex min-h-[10rem] flex-col gap-2 rounded-[var(--omc-radius)] border border-dashed border-[var(--omc-rule)] bg-[var(--omc-surface)]/30 p-4"
     >
-      <span className="pointer-events-none absolute -right-2 -top-4 select-none font-display text-[5rem] font-semibold leading-none text-[var(--omc-rule)] opacity-25 tabular">
-        {String(folio).padStart(2, "0")}
-      </span>
-      <p className="font-mono text-[0.66rem] uppercase tracking-[0.16em] text-[var(--omc-muted)] opacity-70">
-        No. {String(folio).padStart(2, "0")} · forthcoming
+      <p className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[var(--omc-status-unchanged)] tabular">
+        {String(folio).padStart(2, "0")} · coming soon
       </p>
-      <h3 className="mt-2 font-display text-[1.4rem] font-semibold italic leading-tight text-[var(--omc-muted)] opacity-60">
-        Coming edition
-      </h3>
-      <p className="mt-auto pt-4 font-body text-[0.82rem] text-[var(--omc-muted)] opacity-60">
-        A new behavior pack is being typeset.
+      <p className="font-mono text-[0.75rem] text-[var(--omc-muted)]">
+        More packs incoming.
       </p>
     </div>
   );
@@ -235,7 +232,7 @@ export default function Collection() {
   if (loading) {
     return (
       <p className="font-mono text-[0.85rem] text-[var(--omc-muted)]" role="status">
-        Setting the catalog…
+        Loading catalog…
       </p>
     );
   }
@@ -243,8 +240,7 @@ export default function Collection() {
   if (error) {
     return (
       <div role="alert" className="max-w-prose">
-        <p className="omc-kicker">Press failure</p>
-        <h1 className="mt-2 font-display text-[2rem] font-semibold leading-tight text-[var(--omc-text)]">
+        <h1 className="font-display text-[2rem] font-semibold leading-tight text-[var(--omc-text)]">
           The catalog wouldn't load
         </h1>
         <p className="mt-3 font-mono text-[0.82rem] text-[var(--omc-danger)]">{error}</p>
@@ -253,7 +249,7 @@ export default function Collection() {
           onClick={reload}
           className="omc-focusable mt-5 inline-flex items-center gap-2 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-4 py-2 font-body text-[0.9rem] font-semibold text-[var(--omc-text)] shadow-[var(--omc-shadow-1)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
         >
-          Re-run the press
+          Retry
         </button>
       </div>
     );
@@ -262,12 +258,11 @@ export default function Collection() {
   if (allPacks.length === 0) {
     return (
       <div className="max-w-prose">
-        <p className="omc-kicker">Empty edition</p>
-        <h1 className="mt-2 font-display text-[2rem] font-semibold leading-tight text-[var(--omc-text)]">
+        <h1 className="font-display text-[2rem] font-semibold leading-tight text-[var(--omc-text)]">
           No behavior packs in the registry yet
         </h1>
         <p className="mt-3 font-body text-[0.95rem] text-[var(--omc-muted)]">
-          When packs are published they'll appear here as the cover story.
+          When packs are published they'll appear here.
         </p>
       </div>
     );
@@ -285,14 +280,12 @@ export default function Collection() {
 
       <div className="min-w-0">
         {cover ? (
-          <motion.article {...coverMotion} className="max-w-3xl" aria-label={`Cover story: ${cover.name}`}>
-            <CategoryKicker category={cover.category} folio={1} fan={isFan(cover)} />
-
-            <h1 className="mt-2 font-display font-semibold leading-[0.92] tracking-[-0.02em] text-[var(--omc-text)]" style={{ fontSize: "var(--omc-text-hero)" }}>
+          <motion.article {...coverMotion} className="max-w-3xl" aria-label={`Featured: ${cover.name}`}>
+            <h1 className="font-display font-semibold leading-[0.92] tracking-[-0.02em] text-[var(--omc-text)]" style={{ fontSize: "var(--omc-text-hero)" }}>
               {cover.name}
             </h1>
 
-            <p className="mt-5 max-w-2xl font-display text-[1.3rem] italic leading-snug text-[var(--omc-muted)]">
+            <p className="mt-5 max-w-2xl font-body text-[0.9rem] leading-relaxed text-[var(--omc-muted)]">
               {cover.description}
             </p>
 
@@ -306,7 +299,7 @@ export default function Collection() {
                 to={`/pack/${encodeURIComponent(cover.id)}`}
                 className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] bg-[var(--omc-accent)] px-5 py-2.5 font-body text-[0.95rem] font-semibold text-[var(--omc-bg)] shadow-[var(--omc-shadow-1)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
               >
-                Read the feature
+                View pack
                 <span aria-hidden="true">→</span>
               </Link>
               <span className="font-mono text-[0.8rem] tabular text-[var(--omc-muted)]">
@@ -318,10 +311,10 @@ export default function Collection() {
           <div className="max-w-prose">
             <p className="omc-kicker">No matches</p>
             <h1 className="mt-2 font-display text-[1.9rem] font-semibold leading-tight text-[var(--omc-text)]">
-              Nothing in this edition fits those filters
+              No packs match these filters
             </h1>
             <p className="mt-3 font-body text-[0.95rem] text-[var(--omc-muted)]">
-              Loosen the contents-rail to bring packs back onto the page.
+              Adjust the filters to show results.
             </p>
             <button
               type="button"
@@ -336,7 +329,7 @@ export default function Collection() {
         {(rest.length > 0 || cover) && (
           <>
             <hr className="omc-rule my-10" />
-            <h2 className="sr-only">More editions</h2>
+            <h2 className="sr-only">More packs</h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {rest.map((p, i) => (
                 <PackTile key={p.id} pack={p} folio={i + 2} />

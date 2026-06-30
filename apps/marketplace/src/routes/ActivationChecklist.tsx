@@ -16,12 +16,12 @@ function isAllowStep(s: string): boolean {
   return /always[-\s]?allow/i.test(s);
 }
 
-/** A physical keycap glyph, letterpressed onto paper. */
+/** A keyboard shortcut hint — dark keycap with hairline border, mono label. */
 function Keycap({ children }: { children: React.ReactNode }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-flex min-w-[2.6rem] items-center justify-center rounded-[var(--omc-radius-stamp)] border-2 border-[var(--omc-border)] bg-[var(--omc-surface)] px-3 py-2 font-mono text-[1.35rem] font-bold leading-none text-[var(--omc-text)]"
+      className="inline-flex min-w-[2.6rem] items-center justify-center rounded-[var(--omc-radius-stamp)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-3 py-2 font-mono text-[1.35rem] font-bold leading-none text-[var(--omc-text)]"
       style={{ boxShadow: "var(--omc-shadow-1)" }}
     >
       {children}
@@ -29,7 +29,7 @@ function Keycap({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function PressChecklist() {
+export default function ActivationChecklist() {
   const { id = "" } = useParams();
   const location = useLocation();
   const receipt =
@@ -52,13 +52,13 @@ export default function PressChecklist() {
         <Stepper current="press" />
       </div>
 
-      <span className="omc-kicker">Activation · Final Press</span>
+      <span className="omc-kicker">Activation · Checklist</span>
       <h1 className="mt-2 font-display text-[2.6rem] font-semibold leading-[0.98] tracking-[-0.02em] text-[var(--omc-text)]">
         Tick the last few by hand
       </h1>
       <p className="mt-3 max-w-2xl font-body text-[1.02rem] leading-relaxed text-[var(--omc-muted)]">
-        The files are on paper. These remaining steps live inside Cursor itself —
-        so you get to press them.
+        The files are written. These steps live inside Cursor itself —
+        you'll handle them by hand.
       </p>
 
       {/* Receipt line — only when we arrived fresh from an install. */}
@@ -95,7 +95,7 @@ export default function PressChecklist() {
         <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--omc-accent-ink)]" />
         <span>
           The installer guides and verifies these, but Cursor cannot let it click
-          Always-Allow or restart for you. A human hand finishes the press.
+          Always-Allow or restart for you. These steps require manual action.
         </span>
       </p>
 
@@ -128,7 +128,7 @@ export default function PressChecklist() {
       {!loading && !error && steps.length > 0 && (
         <>
           <div className="omc-rule mt-8 mb-4 flex items-baseline justify-between">
-            <span className="omc-kicker">By Your Hand</span>
+            <span className="omc-kicker">Manual Steps</span>
             <span className="font-mono text-[0.7rem] text-[var(--omc-muted)] tabular">
               {tickedCount}/{steps.length} ticked
             </span>
@@ -155,10 +155,7 @@ export default function PressChecklist() {
                     />
                     <span
                       aria-hidden="true"
-                      className="mt-0.5 font-display text-[1.4rem] font-semibold leading-none tabular"
-                      style={{
-                        color: isChecked ? "var(--omc-muted)" : "var(--omc-text)",
-                      }}
+                      className="mt-1 font-mono text-[0.72rem] leading-none tabular text-[var(--omc-muted)]"
                     >
                       {folio}
                     </span>

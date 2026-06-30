@@ -9,11 +9,11 @@ import { useInstallTarget } from "../app/InstallTargetContext";
 import type { InstalledPack, PlanRequest, Scope, UninstallResult } from "../lib/types";
 
 /**
- * Library — manage installed editions (route "/library").
+ * Library — manage installed packs (route "/library").
  *
  * LOCKFILE-DRIVEN: this reads the engine's status (api.status), NOT the registry. What you see
- * here is exactly what the lockfile records was written for the current edition (scope + repo).
- * The edition switch lives in the AppShell bar; this screen only reads it.
+ * here is exactly what the lockfile records was written for the current scope + repo.
+ * The scope switch lives in the AppShell bar; this screen only reads it.
  */
 export default function Library() {
   const { scope, repo } = useInstallTarget();
@@ -29,14 +29,14 @@ export default function Library() {
     <section className="max-w-4xl">
       <p className="omc-kicker tabular">Library · {scope}</p>
       <h1 className="mt-2 font-display text-[var(--omc-text-h2)] font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--omc-text)]">
-        Installed Editions
+        Installed Packs
       </h1>
       <p className="mt-2 font-mono text-[0.74rem] text-[var(--omc-muted)]">
-        Pressed into{" "}
+        Target{" "}
         <span className="text-[var(--omc-text)]">
           {scope === "user" ? "~/.cursor" : `${target}/.cursor`}
         </span>{" "}
-        · read from the lockfile
+        · from lockfile
       </p>
 
       <div className="mt-8">
@@ -58,11 +58,11 @@ export default function Library() {
 
         {!loading && !error && installs.length === 0 && (
           <div className="omc-rule pt-8 text-center">
-            <p className="font-display text-[1.4rem] italic leading-snug text-[var(--omc-muted)]">
-              An empty shelf.
+            <p className="font-display text-[1.4rem] leading-snug text-[var(--omc-muted)]">
+              No packs installed.
             </p>
             <p className="mt-2 font-mono text-[0.78rem] text-[var(--omc-muted)]">
-              No packs installed (scope={scope}).
+              Nothing recorded for scope={scope}.
             </p>
             <Link
               to="/"
@@ -75,11 +75,10 @@ export default function Library() {
 
         {!loading && !error && installs.length > 0 && (
           <ol className="space-y-px">
-            {installs.map((pack, i) => (
+            {installs.map((pack) => (
               <InstallRow
                 key={`${pack.packId}@${pack.version}`}
                 pack={pack}
-                folio={i + 1}
                 scope={scope}
                 repo={target}
                 onEjected={reload}
@@ -92,16 +91,14 @@ export default function Library() {
   );
 }
 
-/** One installed edition: header line, expandable file manifest, and a guarded EJECT control. */
+/** One installed pack: header line, expandable file manifest, and a guarded EJECT control. */
 function InstallRow({
   pack,
-  folio,
   scope,
   repo,
   onEjected,
 }: {
   pack: InstalledPack;
-  folio: number;
   scope: Scope;
   repo: string;
   onEjected: () => void;
@@ -148,15 +145,8 @@ function InstallRow({
   const fileCount = pack.files.length;
 
   return (
-    <li className="border border-[var(--omc-border)] bg-[var(--omc-surface)] px-5 py-4" style={{ boxShadow: "var(--omc-shadow-1)" }}>
-      <div className="flex items-start gap-4">
-        <span
-          aria-hidden="true"
-          className="select-none font-display text-[2.25rem] font-semibold leading-none text-[var(--omc-rule)] tabular"
-        >
-          {String(folio).padStart(2, "0")}
-        </span>
-
+    <li className="rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-5 py-4" style={{ boxShadow: "var(--omc-shadow-1)" }}>
+      <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-[1.2rem] font-semibold leading-tight tracking-[-0.01em] text-[var(--omc-text)]">
             {pack.packId}
@@ -204,7 +194,7 @@ function InstallRow({
           {pluralize(fileCount, "file")}
           {pack.extraPaths.length > 0 && ` + ${pluralize(pack.extraPaths.length, "extra path")}`}
         </summary>
-        <div className="mt-2 border-l-2 border-[var(--omc-rule)] pl-3">
+        <div className="mt-2 border-l border-[var(--omc-border)] pl-3">
           <ul className="space-y-0.5">
             {pack.files.map((f) => (
               <li key={f.path} className="flex items-baseline gap-2 leading-tight tabular">
@@ -242,11 +232,11 @@ function InstallRow({
         <div
           role="alertdialog"
           aria-label={`Confirm eject of ${pack.packId}`}
-          className="mt-3 rounded-[var(--omc-radius-stamp)] border-2 border-[var(--omc-danger)] bg-[var(--omc-danger)]/6 px-4 py-3"
+          className="mt-3 rounded-[var(--omc-radius-stamp)] border border-[var(--omc-danger)] bg-[var(--omc-danger)]/6 px-4 py-3"
         >
           {confirm.notFound ? (
             <p className="font-mono text-[0.76rem] text-[var(--omc-muted)]">
-              Nothing to remove — not recorded in the lockfile for this edition.
+              Nothing to remove — not recorded in the lockfile for this scope.
             </p>
           ) : (
             <p className="font-mono text-[0.78rem] text-[var(--omc-text)]">

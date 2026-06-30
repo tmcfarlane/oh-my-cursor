@@ -3,9 +3,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { useAsync } from "../lib/useAsync";
 import { api } from "../lib/api";
 import { GROUP_LABEL, pluralize } from "../lib/format";
-import { CategoryKicker } from "../components/CategoryKicker";
 import { TrustStamps } from "../components/TrustStamps";
 import { FanImprint } from "../components/FanImprint";
+import { QuickInstall } from "../components/QuickInstall";
 import DramatisPersonae from "./DramatisPersonae";
 import type { PackDetail } from "../lib/types";
 
@@ -69,37 +69,44 @@ function Feature({ pack }: { pack: PackDetail }) {
         </Link>
       </div>
 
-      {/* Title block */}
-      <CategoryKicker category={pack.category} fan={!!pack.theme?.fan} />
-      <h1 className="mt-2 font-display text-[var(--omc-text-hero)] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--omc-text)]">
-        {pack.name}
-      </h1>
+      {/* Title block + primary CTA, anchored top-right so Install is in view the moment the page opens */}
+      <div className="grid grid-cols-1 items-start gap-x-12 gap-y-7 lg:grid-cols-[1fr_300px]">
+        <div>
+          <h1 className="font-display text-[var(--omc-text-hero)] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--omc-text)]">
+            {pack.name}
+          </h1>
 
-      <p className="mt-5 max-w-2xl font-display text-[1.4rem] italic leading-snug text-[var(--omc-muted)] first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:not-italic first-letter:text-[3.4rem] first-letter:font-semibold first-letter:leading-[0.66] first-letter:text-[var(--omc-accent-ink)]">
-        {pack.description}
-      </p>
+          <p className="mt-5 max-w-2xl font-body text-[0.9rem] leading-relaxed text-[var(--omc-muted)]">
+            {pack.description}
+          </p>
 
-      {pack.requires?.cursor && (
-        <p className="mt-5 font-mono text-[0.8rem] text-[var(--omc-text)]">
-          {formatCursorRequirement(pack.requires.cursor)}
-        </p>
-      )}
+          {pack.requires?.cursor && (
+            <p className="mt-5 font-mono text-[0.8rem] text-[var(--omc-text)]">
+              {formatCursorRequirement(pack.requires.cursor)}
+            </p>
+          )}
+        </div>
+
+        <div className="lg:border-l lg:border-[var(--omc-rule)] lg:pl-10 lg:pt-2">
+          <QuickInstall packId={pack.id} divider={false} />
+        </div>
+      </div>
 
       {/* Two-column editorial body */}
       <div className="omc-rule mt-8 grid grid-cols-1 gap-x-12 gap-y-10 pt-8 lg:grid-cols-[1fr_300px]">
         {/* Main column */}
         <div className="flex flex-col gap-12">
           <section aria-labelledby="cast-head">
-            <SectionHead kicker="Dramatis Personae" title="The cast" id="cast-head" />
+            <SectionHead kicker="Agents" title="Agent roster" id="cast-head" />
             <div>
               <DramatisPersonae pack={pack} />
             </div>
           </section>
 
           <section aria-labelledby="skills-head">
-            <SectionHead kicker="Provenance" title={pluralize(skills.length, "skill")} id="skills-head" />
+            <SectionHead kicker="Skills" title={pluralize(skills.length, "skill")} id="skills-head" />
             {skills.length === 0 ? (
-              <p className="font-body text-[0.85rem] italic text-[var(--omc-muted)]">
+              <p className="font-body text-[0.85rem] text-[var(--omc-muted)]">
                 This pack ships no skills.
               </p>
             ) : (
@@ -107,7 +114,7 @@ function Feature({ pack }: { pack: PackDetail }) {
                 {skills.map((s) => (
                   <li
                     key={s.name}
-                    className="flex flex-col gap-0.5 border-l-2 border-[var(--omc-rule)] pl-3"
+                    className="flex flex-col gap-0.5 border-l border-[var(--omc-border)] pl-3"
                   >
                     <span className="font-mono text-[0.82rem] text-[var(--omc-text)]">{s.name}</span>
                     <span className="font-mono text-[0.68rem] text-[var(--omc-muted)] break-words">
@@ -120,9 +127,9 @@ function Feature({ pack }: { pack: PackDetail }) {
           </section>
 
           <section aria-labelledby="manifest-head">
-            <SectionHead kicker="Contents Manifest" title={pluralize(contentEntries.length, "content group")} id="manifest-head" />
+            <SectionHead kicker="Manifest" title={pluralize(contentEntries.length, "content group")} id="manifest-head" />
             {contentEntries.length === 0 ? (
-              <p className="font-body text-[0.85rem] italic text-[var(--omc-muted)]">
+              <p className="font-body text-[0.85rem] text-[var(--omc-muted)]">
                 No contents declared in this manifest.
               </p>
             ) : (
@@ -143,14 +150,14 @@ function Feature({ pack }: { pack: PackDetail }) {
                   ))}
                 </dl>
                 <p className="mt-2 font-mono text-[0.66rem] text-[var(--omc-muted)]">
-                  Declared globs — exact file counts appear in the galley proof.
+                  Declared globs — exact file counts appear in the dry-run plan.
                 </p>
               </>
             )}
           </section>
         </div>
 
-        {/* Right rail — provenance, trust, CTA */}
+        {/* Right rail — provenance and trust (the Install CTA lives in the header) */}
         <aside className="flex flex-col gap-8 lg:border-l lg:border-[var(--omc-rule)] lg:pl-10">
           <dl className="flex flex-col gap-3">
             <MetaRow label="Version">
@@ -181,19 +188,6 @@ function Feature({ pack }: { pack: PackDetail }) {
           </section>
 
           <FanImprint fan={!!pack.theme?.fan} title={pack.theme?.title ?? pack.name} showDisclaimer />
-
-          <div className="omc-rule pt-6">
-            <Link
-              to={`/pack/${encodeURIComponent(pack.id)}/install`}
-              className="omc-focusable inline-flex w-full items-center justify-center gap-2 rounded-[var(--omc-radius)] bg-[var(--omc-accent)] px-5 py-3 font-body text-[0.95rem] font-semibold text-[var(--omc-surface)] transition-transform motion-safe:hover:-translate-y-0.5"
-              style={{ boxShadow: "var(--omc-shadow-1)" }}
-            >
-              Configure install <span aria-hidden="true">→</span>
-            </Link>
-            <p className="mt-2 text-center font-mono text-[0.64rem] text-[var(--omc-muted)]">
-              Review the galley proof before pressing.
-            </p>
-          </div>
         </aside>
       </div>
     </motion.article>
@@ -209,14 +203,14 @@ export default function PackFeature() {
 
   if (loading) {
     return (
-      <p className="font-mono text-[0.85rem] text-[var(--omc-muted)]">Setting the page…</p>
+      <p className="font-mono text-[0.85rem] text-[var(--omc-muted)]">Loading…</p>
     );
   }
 
   if (error) {
     return (
       <div role="alert" className="max-w-prose">
-        <p className="omc-kicker">Press Halted</p>
+        <p className="omc-kicker">Load error</p>
         <h1 className="mt-1 font-display text-[2rem] font-semibold text-[var(--omc-text)]">
           This pack could not be loaded
         </h1>

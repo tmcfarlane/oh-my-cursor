@@ -10,7 +10,7 @@ import { CliEcho } from "../components/CliEcho";
 import { ProofRow } from "../components/ProofRow";
 import { GitVerdictStamp } from "../components/GitVerdictStamp";
 import { TrustStamps } from "../components/TrustStamps";
-import { WaxSeal } from "../components/WaxSeal";
+import { ReviewCheckbox } from "../components/ReviewCheckbox";
 import { StatusMark } from "../components/StatusMark";
 
 const GROUP_ORDER: PlanItem["group"][] = ["agents", "rules", "commands", "hooks", "config", "skills"];
@@ -22,12 +22,12 @@ const COUNT_ORDER: { status: FileStatus; key: "new" | "update" | "unchanged" | "
 ];
 
 /**
- * THE SIGNATURE SCREEN — the galley proof ("/pack/:id/install/proof").
- * A non-mutating gate: read the typeset diff, weigh the trust surface, then press the
- * wax seal to ARM the press. Deep-link safe — builds its own PlanRequest from
+ * THE SIGNATURE SCREEN — the plan review ("/pack/:id/install/proof").
+ * A non-mutating gate: read the diff, weigh the trust surface, check the
+ * review box, then install. Deep-link safe — builds its own PlanRequest from
  * useParams().id + useInstallTarget() and calls api.plan() itself.
  */
-export default function GalleyProof() {
+export default function PlanReview() {
   const { id = "" } = useParams();
   const { scope, tools, repo } = useInstallTarget();
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ export default function GalleyProof() {
   const [installing, setInstalling] = useState(false);
   const [installError, setInstallError] = useState<string | null>(null);
 
-  // Re-group plan items by tool → group, preserving the editorial group order.
+  // Re-group plan items by tool → group, preserving the canonical group order.
   const grouped = useMemo(() => {
     if (!plan.data) return [];
     const byTool = new Map<string, Map<string, PlanItem[]>>();
@@ -98,18 +98,18 @@ export default function GalleyProof() {
       <Stepper current="proof" />
 
       <header className="mt-6">
-        <span className="omc-kicker">Galley Proof · non-mutating</span>
-        <h1 className="mt-2 font-display text-[2.75rem] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--omc-text)]">
-          Read the proof
+        <span className="omc-kicker">plan · dry-run</span>
+        <h1 className="mt-2 font-display text-[1.75rem] font-semibold leading-tight tracking-[-0.02em] text-[var(--omc-text)]">
+          Review the plan
         </h1>
-        <p className="mt-3 max-w-xl font-body text-[var(--omc-muted)]">
-          Nothing is written until you approve. Inspect every line, then press the seal to arm the press.
+        <p className="mt-2 font-mono text-[0.8125rem] text-[var(--omc-muted)]">
+          Nothing is written until you install. Review every line below.
         </p>
       </header>
 
       {/* ── Loading / error states ─────────────────────────────────────── */}
       {plan.loading && (
-        <p className="mt-8 font-mono text-[0.85rem] text-[var(--omc-muted)]">Pulling the proof sheet…</p>
+        <p className="mt-8 font-mono text-[0.85rem] text-[var(--omc-muted)]">Building plan…</p>
       )}
 
       {plan.error && !plan.loading && (
@@ -117,7 +117,7 @@ export default function GalleyProof() {
           role="alert"
           className="omc-rule mt-8 bg-[var(--omc-danger)]/10 px-4 py-3 font-mono text-[0.8rem] text-[var(--omc-danger)]"
         >
-          <p className="font-bold">Could not set the proof.</p>
+          <p className="font-bold">Could not build the plan.</p>
           <p className="mt-1 break-words opacity-90">{plan.error}</p>
           <button
             type="button"
@@ -131,13 +131,14 @@ export default function GalleyProof() {
 
       {plan.data && summary && (
         <>
-          {/* ── Running head: counts + literal CLI echo ─────────────────── */}
-          <section aria-label="Proof summary" className="omc-rule mt-8 pt-5">
+          {/* ── Running head + mono diff well ───────────────────────────── */}
+          <section aria-label="Plan" className="omc-rule mt-8 pt-5">
+            {/* Counts: +N ~N ·N !N */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-[0.82rem] text-[var(--omc-text)]">
               {COUNT_ORDER.map(({ status, key }, i) => (
                 <span key={status} className="inline-flex items-center gap-1.5">
                   {i > 0 && (
-                    <span aria-hidden="true" className="mr-2.5 text-[var(--omc-rule)]">
+                    <span aria-hidden="true" className="mr-2.5 text-[var(--omc-border)]">
                       ·
                     </span>
                   )}
@@ -147,63 +148,65 @@ export default function GalleyProof() {
                 </span>
               ))}
             </div>
-            <p className="mt-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[var(--omc-muted)]">
-              {pluralize(summary.total, "file")} typeset
+            <p className="mt-1.5 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[var(--omc-muted)]">
+              {pluralize(summary.total, "file")}
             </p>
-            <div className="mt-4">
+            <div className="mt-3">
               <CliEcho request={req} verb="plan" />
+            </div>
+
+            {/* Mono diff well — reads like `git diff` / `terraform plan` */}
+            <div className="mt-4 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface-sunken)] px-4 py-4">
+              <div className="flex flex-col gap-8">
+                {grouped.map(({ tool, groups }) => (
+                  <div key={tool}>
+                    <h2 className="font-mono text-[0.74rem] font-bold uppercase tracking-[0.18em] text-[var(--omc-text)]">
+                      {tool}
+                    </h2>
+                    <div className="mt-3 flex flex-col gap-4 border-l border-[var(--omc-border)] pl-3">
+                      {groups.map(({ group, changed, unchanged }) => (
+                        <div key={group}>
+                          <h3 className="font-mono text-[0.64rem] uppercase tracking-[0.16em] text-[var(--omc-muted)]">
+                            {GROUP_LABEL[group] ?? group}
+                          </h3>
+                          {changed.length > 0 && (
+                            <ol className="mt-1.5 flex flex-col gap-1">
+                              {changed.map((item) => (
+                                <ProofRow key={`${item.tool}:${item.rel}`} item={item} />
+                              ))}
+                            </ol>
+                          )}
+                          {unchanged.length > 0 && (
+                            <details className="mt-1.5 group">
+                              <summary className="omc-focusable cursor-pointer list-none font-mono text-[0.68rem] uppercase tracking-[0.12em] text-[var(--omc-muted)] hover:text-[var(--omc-text)]">
+                                <span aria-hidden="true">▸ </span>
+                                {unchanged.length} unchanged
+                              </summary>
+                              <ol className="mt-1.5 flex flex-col gap-1">
+                                {unchanged.map((item) => (
+                                  <ProofRow key={`${item.tool}:${item.rel}`} item={item} collapsed />
+                                ))}
+                              </ol>
+                            </details>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* ── The proof: tool → group → typeset diff lines ─────────────── */}
-          <section aria-label="Galley proof" className="mt-10 flex flex-col gap-10">
-            {grouped.map(({ tool, groups }) => (
-              <div key={tool}>
-                <h2 className="font-mono text-[0.74rem] font-bold uppercase tracking-[0.18em] text-[var(--omc-accent-ink)]">
-                  {tool}
-                </h2>
-                <div className="mt-4 flex flex-col gap-6 border-l border-[var(--omc-rule)] pl-4">
-                  {groups.map(({ group, changed, unchanged }) => (
-                    <div key={group}>
-                      <h3 className="font-mono text-[0.64rem] uppercase tracking-[0.16em] text-[var(--omc-muted)]">
-                        {GROUP_LABEL[group] ?? group}
-                      </h3>
-                      {changed.length > 0 && (
-                        <ol className="mt-2 flex flex-col gap-1">
-                          {changed.map((item) => (
-                            <ProofRow key={`${item.tool}:${item.rel}`} item={item} />
-                          ))}
-                        </ol>
-                      )}
-                      {unchanged.length > 0 && (
-                        <details className="mt-2 group">
-                          <summary className="omc-focusable cursor-pointer list-none font-mono text-[0.68rem] uppercase tracking-[0.12em] text-[var(--omc-muted)] hover:text-[var(--omc-text)]">
-                            <span aria-hidden="true">▸ </span>
-                            {unchanged.length} unchanged (set as-is)
-                          </summary>
-                          <ol className="mt-2 flex flex-col gap-1">
-                            {unchanged.map((item) => (
-                              <ProofRow key={`${item.tool}:${item.rel}`} item={item} collapsed />
-                            ))}
-                          </ol>
-                        </details>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </section>
-
-          {/* ── Verdicts: git hook honesty + trust surface ───────────────── */}
-          <section aria-label="Verdicts" className="omc-rule mt-10 pt-6">
+          {/* ── Verdicts: git hook + trust surface ──────────────────────── */}
+          <section aria-label="Verdicts" className="omc-rule mt-8 pt-6">
             <span className="omc-kicker">Verdicts</span>
             <div className="mt-3">
               <GitVerdictStamp gitPreCommit={plan.data.gitPreCommit} scope={scope} tools={tools} />
             </div>
             <div className="mt-5">
               {pack.loading && (
-                <p className="font-mono text-[0.72rem] text-[var(--omc-muted)]">Reading the trust surface…</p>
+                <p className="font-mono text-[0.72rem] text-[var(--omc-muted)]">Loading trust surface…</p>
               )}
               {pack.error && !pack.loading && (
                 <p className="font-mono text-[0.72rem] text-[var(--omc-danger)]">
@@ -214,30 +217,26 @@ export default function GalleyProof() {
             </div>
           </section>
 
-          {/* ── The press: approve seal → armed CTA ──────────────────────── */}
-          <section aria-label="Approve and press" className="omc-rule mt-10 flex flex-col gap-5 pt-6">
+          {/* ── Install gate: review checkbox → armed Install button ─────── */}
+          <section aria-label="Install gate" className="omc-rule mt-8 flex flex-col gap-5 pt-6">
             {upToDate ? (
               <div
                 role="status"
-                className="inline-flex max-w-max flex-col items-start rounded-[var(--omc-radius-stamp)] border-2 px-3 py-2"
-                style={{ borderColor: "var(--omc-success)", color: "var(--omc-success)", transform: "rotate(-0.75deg)" }}
+                className="inline-flex max-w-max items-center gap-2 rounded-[var(--omc-radius-stamp)] border border-[var(--omc-success)] px-3 py-1.5"
               >
-                <span className="font-mono text-[0.58rem] uppercase tracking-[0.16em] opacity-80">No changes</span>
-                <span className="font-mono text-[0.9rem] font-bold uppercase tracking-[0.06em]">Already up to date</span>
+                <span className="font-mono text-[0.78rem] font-bold text-[var(--omc-success)]">
+                  Already up to date
+                </span>
+                <span className="font-mono text-[0.72rem] text-[var(--omc-muted)]">
+                  · no changes
+                </span>
               </div>
             ) : (
-              <div className="flex flex-wrap items-center gap-6">
-                <WaxSeal approved={approved} onApprove={() => setApproved(true)} />
-                <p className="max-w-xs font-body text-[0.85rem] text-[var(--omc-muted)]">
-                  {approved
-                    ? "Proof approved. The press is armed — send it through."
-                    : "Press the seal to approve this proof and arm the press."}
-                </p>
-              </div>
+              <ReviewCheckbox approved={approved} onApprove={() => setApproved(true)} />
             )}
 
             {installError && (
-              <p role="alert" className="font-mono text-[0.76rem] text-[var(--omc-danger)] break-words">
+              <p role="alert" className="break-words font-mono text-[0.76rem] text-[var(--omc-danger)]">
                 Install failed — {installError}
               </p>
             )}
@@ -248,10 +247,15 @@ export default function GalleyProof() {
                 onClick={sendToPress}
                 disabled={!canPress}
                 aria-disabled={!canPress}
-                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] px-5 py-2.5 font-body text-[0.92rem] font-semibold text-[var(--omc-surface)] transition-[transform,box-shadow] disabled:cursor-not-allowed disabled:opacity-40 enabled:hover:-translate-y-0.5"
-                style={{ backgroundColor: "var(--omc-accent)", boxShadow: "var(--omc-shadow-1)" }}
+                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] border px-5 py-2.5 font-mono text-[0.88rem] font-semibold transition-[transform,box-shadow] disabled:cursor-not-allowed enabled:hover:-translate-y-0.5"
+                style={{
+                  backgroundColor: canPress ? "var(--omc-accent)" : "var(--omc-surface-sunken)",
+                  borderColor: canPress ? "var(--omc-accent)" : "var(--omc-rule)",
+                  color: canPress ? "var(--omc-surface)" : "var(--omc-muted)",
+                  boxShadow: canPress ? "var(--omc-shadow-1)" : "none",
+                }}
               >
-                {installing ? "Sending to press…" : "Send to Press"}
+                {installing ? "Installing…" : "Install →"}
               </button>
               <Link
                 to={`/pack/${id}/install`}
@@ -262,7 +266,7 @@ export default function GalleyProof() {
             </div>
             {!upToDate && !approved && (
               <p className="font-mono text-[0.66rem] uppercase tracking-[0.12em] text-[var(--omc-muted)]">
-                Disarmed — approve the proof to enable
+                Check the box above to enable install
               </p>
             )}
           </section>

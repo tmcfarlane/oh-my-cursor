@@ -4,8 +4,8 @@ import { AppShell } from "./app/AppShell";
 import Collection from "./routes/Collection";
 import PackFeature from "./routes/PackFeature";
 import ConfigureInstall from "./routes/ConfigureInstall";
-import GalleyProof from "./routes/GalleyProof";
-import PressChecklist from "./routes/PressChecklist";
+import PlanReview from "./routes/PlanReview";
+import ActivationChecklist from "./routes/ActivationChecklist";
 import Library from "./routes/Library";
 
 export default function App() {
@@ -16,8 +16,8 @@ export default function App() {
           <Route index element={<Collection />} />
           <Route path="pack/:id" element={<PackFeature />} />
           <Route path="pack/:id/install" element={<ConfigureInstall />} />
-          <Route path="pack/:id/install/proof" element={<GalleyProof />} />
-          <Route path="pack/:id/activate" element={<PressChecklist />} />
+          <Route path="pack/:id/install/proof" element={<PlanReview />} />
+          <Route path="pack/:id/activate" element={<ActivationChecklist />} />
           <Route path="library" element={<Library />} />
         </Route>
       </Routes>

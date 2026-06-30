@@ -24,7 +24,11 @@ import {
   primaryCursorDir,
 } from "../core/src/index.mjs";
 
-const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../..");
+// OMC_ROOT overrides the repo root for packaged/compiled builds (import.meta.url is
+// meaningless inside a compiled binary). Falls back to the file-relative repo checkout.
+const REPO_ROOT = process.env.OMC_ROOT
+  ? resolve(process.env.OMC_ROOT)
+  : resolve(fileURLToPath(import.meta.url), "../../..");
 const REGISTRY = join(REPO_ROOT, "registry", "registry.json");
 
 function parseArgs(argv) {

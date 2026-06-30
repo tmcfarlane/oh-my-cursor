@@ -13,10 +13,10 @@ import { api } from "../lib/api";
 /**
  * Install Stop 1 — "Configure" (route /pack/:id/install).
  *
- * The composing table where the reader sets scope (edition), mirror targets, and
- * repository before pulling a proof. The global install target lives in context
+ * Configuration screen where the user sets scope, install targets, and repository
+ * before generating a dry-run plan. The global install target lives in context
  * (the AppShell carries its own bar) — this screen edits the same source of truth
- * through the larger letterpress controls, then hands off to the galley proof.
+ * through the controls here, then hands off to the plan review screen.
  */
 export default function ConfigureInstall() {
   const { id = "" } = useParams();
@@ -47,11 +47,11 @@ export default function ConfigureInstall() {
         <p className="omc-kicker tabular">Install · Stop 01 · Configure</p>
         {loading ? (
           <h1 className="mt-2 font-display text-[2.5rem] font-semibold leading-[0.98] tracking-[-0.02em] text-[var(--omc-muted)]">
-            Loading the press sheet…
+            Loading…
           </h1>
         ) : error ? (
           <h1 className="mt-2 font-display text-[2.5rem] font-semibold leading-[0.98] tracking-[-0.02em] text-ink">
-            Composing room
+            Configure install
           </h1>
         ) : (
           <h1 className="mt-2 font-display text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.02em] text-ink">
@@ -59,8 +59,9 @@ export default function ConfigureInstall() {
           </h1>
         )}
         <p className="mt-3 max-w-2xl font-body text-[1.02rem] leading-relaxed text-muted">
-          Set the edition, choose your mirror targets, and name the repository. Nothing is
-          written yet — the next stop pulls a proof you can read before the press runs.
+          Set the scope, choose install targets, and name the repository. Nothing is
+          installed yet — the next step generates a dry-run plan you can review before
+          anything writes to disk.
         </p>
       </header>
 
@@ -77,7 +78,7 @@ export default function ConfigureInstall() {
             <button
               type="button"
               onClick={reload}
-              className="omc-focusable rounded-[var(--omc-radius-stamp)] border-2 border-rule bg-surface px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase tracking-[0.1em] text-ink transition-transform duration-150 hover:-translate-y-0.5"
+              className="omc-focusable rounded-[var(--omc-radius-stamp)] border border-rule bg-surface px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase tracking-[0.1em] text-ink transition-transform duration-150 hover:-translate-y-0.5"
             >
               Retry
             </button>
@@ -91,11 +92,11 @@ export default function ConfigureInstall() {
         </div>
       ) : (
         <>
-          {/* Section 01 — Edition */}
+          {/* Section 01 — Scope */}
           <section className="flex flex-col gap-3">
             <h2 className="flex items-baseline gap-2.5 font-display text-[1.4rem] font-semibold leading-none text-ink">
               <span className="tabular font-mono text-[0.95rem] text-[var(--omc-muted)]">01</span>
-              Edition
+              Scope
             </h2>
             <ScopeSwitch variant="cards" value={scope} onChange={setScope} />
           </section>
@@ -130,8 +131,8 @@ export default function ConfigureInstall() {
               Lifecycle Scripts
             </h2>
             <label
-              className="omc-focusable flex items-start gap-3 rounded-[var(--omc-radius-stamp)] border-2 border-rule bg-surface px-4 py-3"
-              style={{ opacity: 0.85, cursor: "default" }}
+              className="omc-focusable flex items-start gap-3 rounded-[var(--omc-radius-stamp)] border border-rule bg-surface px-4 py-3"
+              style={{ cursor: "default" }}
             >
               <input
                 type="checkbox"
@@ -159,7 +160,7 @@ export default function ConfigureInstall() {
 
           {/* CLI echo — the GUI is a thin wrapper over `omc plan`. */}
           <div className="flex flex-col gap-2">
-            <span className="omc-kicker tabular">Running Head</span>
+            <span className="omc-kicker tabular">Command</span>
             <CliEcho request={request} verb="plan" />
           </div>
 
@@ -171,10 +172,9 @@ export default function ConfigureInstall() {
                 onClick={pullProof}
                 disabled={needsRepo}
                 aria-describedby={needsRepo ? "proof-hint" : undefined}
-                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius-stamp)] border-2 border-accent bg-accent px-5 py-2.5 font-body text-[0.95rem] font-semibold text-paper shadow-[var(--omc-shadow-1)] transition-transform duration-150 hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:border-rule disabled:bg-sunken disabled:text-[var(--omc-muted)] disabled:shadow-none"
-                style={{ transform: needsRepo ? undefined : "rotate(-0.4deg)" }}
+                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius-stamp)] border border-accent bg-accent px-5 py-2.5 font-body text-[0.95rem] font-semibold text-paper shadow-[var(--omc-shadow-1)] transition-transform duration-150 hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:border-rule disabled:bg-sunken disabled:text-[var(--omc-muted)] disabled:shadow-none"
               >
-                Pull the proof
+                Review the plan
                 <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
               </button>
               {needsRepo && (
@@ -184,7 +184,7 @@ export default function ConfigureInstall() {
                   className="flex items-center gap-1.5 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-[var(--omc-warning)]"
                 >
                   <span aria-hidden="true">▲</span>
-                  Name a repository to proof the Project edition
+                  Select a repository for project scope
                 </p>
               )}
             </div>
@@ -192,7 +192,7 @@ export default function ConfigureInstall() {
               to={`/pack/${id}`}
               className="omc-focusable font-mono text-[0.72rem] uppercase tracking-[0.1em] text-muted transition-colors hover:text-accent"
             >
-              ← Back to the feature
+              ← Back to pack
             </Link>
           </div>
         </>

@@ -2,11 +2,11 @@ import { AlertTriangle } from "lucide-react";
 import type { DerivedAgent } from "../lib/agents";
 
 /**
- * One roster cell in the dramatis personae. A letterpress card: portrait plate,
- * the agent's name set in Fraunces, and a machine-truthful model chip — DIM when the
- * model is inherited, LIT (teal) when this agent overrides it. An invalid Task slug
- * raises a caution flag (it would otherwise silently downgrade to composer-2.5-fast).
- * Skills are tucked under a <details> so the cell stays compact.
+ * One roster cell in the dramatis personae. Portrait plate, agent name (Geist 600),
+ * and a machine-truthful model chip — DIM when the model is inherited, LIT (teal)
+ * when this agent overrides it. An invalid Task slug raises a caution flag (it would
+ * otherwise silently downgrade to composer-2.5-fast). Skills are tucked under a
+ * <details> so the cell stays compact.
  */
 export function AgentPortrait({ agent }: { agent: DerivedAgent }) {
   const { name, portrait, model, isOverride, invalidSlug, skills } = agent;
@@ -26,7 +26,7 @@ export function AgentPortrait({ agent }: { agent: DerivedAgent }) {
 
           <div className="flex flex-wrap items-center gap-1.5">
             <span
-              className={`inline-flex items-center rounded-[var(--omc-radius)] border px-1.5 py-0.5 font-mono text-[0.66rem] tracking-[0.02em] ${
+              className={`inline-flex items-center rounded-[var(--omc-radius-stamp)] border px-1.5 py-0.5 font-mono text-[0.66rem] tracking-[0.02em] ${
                 isOverride
                   ? "border-teal text-teal bg-surface"
                   : "border-rule bg-sunken text-muted"
@@ -57,7 +57,7 @@ export function AgentPortrait({ agent }: { agent: DerivedAgent }) {
             </span>
             {skills.length} skill{skills.length === 1 ? "" : "s"}
           </summary>
-          <ul className="mt-2 flex flex-col gap-1 border-l-2 border-rule pl-2.5">
+          <ul className="mt-2 flex flex-col gap-1 border-l border-rule pl-2.5">
             {skills.map((s) => (
               <li key={s} className="font-mono text-[0.7rem] leading-tight text-ink break-words">
                 {s}
