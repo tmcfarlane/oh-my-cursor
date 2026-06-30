@@ -10,10 +10,10 @@ interface Props {
 }
 
 /**
- * Web-first repository path entry. Plain text field in Space Mono — no native
- * dialog (Tauri will swap in a real folder picker later). Recent repos surface
- * as one-tap buttons. A non-blocking warning shows when a path is required but
- * empty; typing is never gated.
+ * Repository path entry. Plain text field in mono — Tauri swaps in a real
+ * folder picker via the Browse button. Recent repos surface as one-tap chips.
+ * A non-blocking warning shows when a path is required but empty; typing is
+ * never gated.
  */
 export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
   const inputId = useId();
@@ -23,10 +23,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <label
-        htmlFor={inputId}
-        className="omc-kicker"
-      >
+      <label htmlFor={inputId} className="omc-kicker">
         Repository Path
       </label>
 
@@ -47,7 +44,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
           aria-describedby={showHint ? hintId : undefined}
           onChange={(e) => onChange(e.target.value)}
           placeholder="/path/to/your/repo"
-          className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1.5 font-mono text-[0.82rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)]"
+          className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border-strong)] bg-[var(--omc-surface-sunken)] px-2.5 py-1.5 font-mono text-[0.82rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)] transition-colors duration-150 focus:border-[var(--omc-accent-ink)] focus:outline-none"
         />
         {tauri && (
           <button
@@ -60,7 +57,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
                 /* dialog dismissed or unavailable — keep the typed value */
               }
             }}
-            className="omc-focusable shrink-0 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[var(--omc-text)] transition-colors hover:border-[var(--omc-accent-ink)] hover:text-[var(--omc-accent-ink)]"
+            className="omc-focusable shrink-0 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[var(--omc-text)] transition-colors duration-150 hover:border-[var(--omc-accent-ink)] hover:text-[var(--omc-accent-ink)]"
           >
             Browse…
           </button>
@@ -93,7 +90,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
                     onClick={() => onChange(repo)}
                     aria-pressed={active}
                     title={repo}
-                    className={`omc-focusable max-w-[22ch] truncate rounded-[var(--omc-radius)] border px-2 py-1 font-mono text-[0.72rem] transition-colors ${
+                    className={`omc-focusable max-w-[22ch] truncate rounded-[var(--omc-radius-stamp)] border px-2 py-1 font-mono text-[0.72rem] transition-colors duration-150 ${
                       active
                         ? "border-[var(--omc-text)] bg-[var(--omc-text)] text-[var(--omc-bg)]"
                         : "border-[var(--omc-border)] bg-[var(--omc-surface)] text-[var(--omc-text)] hover:border-[var(--omc-accent-ink)] hover:text-[var(--omc-accent-ink)]"

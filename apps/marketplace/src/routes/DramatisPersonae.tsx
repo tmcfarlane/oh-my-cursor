@@ -3,15 +3,15 @@ import { deriveAgents } from "../lib/agents";
 import { AgentPortrait } from "../components/AgentPortrait";
 
 /**
- * Dramatis Personae — the character-roster plate of a pack feature.
+ * Dramatis Personae — the agent roster section of a pack feature.
  *
- * Printed-catalog framing: a kicker overline, an oversized Fraunces folio numeral
- * counting the players, and a hairline rule. The cast itself is laid out as a
- * responsive grid of letterpress AgentPortrait cells.
+ * Dev-roster layout: kicker overline, heading reporting the player count, hairline
+ * rule, and a responsive grid of AgentPortrait cards (portrait, name, model slug,
+ * role). No oversized folio numerals — count lives in the heading text.
  *
  * Degrades gracefully: role/harness packs (and any pack whose skills declare no
- * agents) carry no cast, so we set a single muted "lead" card naming the pack — the
- * plate is never left blank.
+ * agents) carry no cast, so we render a single muted "lead" card naming the pack —
+ * the section is never left blank.
  *
  * Not a route screen — imported by PackFeature — but kept a default export so the
  * call site can lazy/dynamic-import it like the rest of the screens.
@@ -22,24 +22,16 @@ export default function DramatisPersonae({ pack }: { pack: PackDetail }) {
 
   return (
     <section aria-labelledby="dramatis-personae-heading" className="flex flex-col gap-4">
-      <header className="flex items-baseline gap-4">
-        <span
-          aria-hidden="true"
-          className="tabular shrink-0 font-display text-[2.75rem] leading-none text-[var(--omc-muted)]"
+      <header className="flex flex-col gap-1.5">
+        <p className="omc-kicker tabular">Dramatis Personae</p>
+        <h2
+          id="dramatis-personae-heading"
+          className="font-display text-[1.35rem] font-semibold leading-tight text-ink"
         >
-          {String(count).padStart(2, "0")}
-        </span>
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="omc-kicker tabular">Dramatis Personae</p>
-          <h2
-            id="dramatis-personae-heading"
-            className="font-display text-[1.35rem] leading-tight text-ink"
-          >
-            {count === 0
-              ? "No named cast"
-              : `${count} player${count === 1 ? "" : "s"} in this pack`}
-          </h2>
-        </div>
+          {count === 0
+            ? "No named cast"
+            : `${count} player${count === 1 ? "" : "s"} in this pack`}
+        </h2>
       </header>
 
       {count === 0 ? (

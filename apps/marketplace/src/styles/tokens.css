@@ -1,49 +1,48 @@
-/* The Behavior Catalog — letterpress ink-on-paper design tokens. */
+/* "Console" — dark, near-monochrome, terminal-native design tokens.
+   Token NAMES are stable; only values changed when we moved off the
+   letterpress skin. Accent ≈ near-white (near-monochrome): semantics carry
+   color, white is reserved for primary actions + active state. */
 :root {
-  /* paper & ink */
-  --omc-bg: #f2ede3;
-  --omc-surface: #fbf8f1;
-  --omc-surface-sunken: #ede6d8;
-  --omc-text: #1a1613;
-  --omc-muted: #6b6356;
-  --omc-border: #d8cfbe;
-  --omc-rule: #cfc4b0;
+  /* surfaces — each step = one elevation level, lighten don't shadow */
+  --omc-bg: #0b0c0e;          /* app background (near-black, faintly cool) */
+  --omc-surface: #131417;     /* panels, cards */
+  --omc-surface-sunken: #0e0f12; /* code/diff wells, inputs */
+  --omc-text: #e6e8eb;        /* primary (near-white, not pure) */
+  --omc-muted: #9ba1a9;       /* secondary */
+  --omc-border: #232529;      /* hairline default (decorative dividers) */
+  --omc-border-strong: #3a3e44; /* perceivable boundary for inputs/controls (WCAG 1.4.11 ≥3:1) */
+  --omc-rule: #1e2024;        /* large dividers, a hair darker */
 
-  /* spot color (single printing plate) + secondary ink */
-  --omc-accent: #da3a1c; /* vermillion: CTA, active, wax seal ONLY */
-  --omc-accent-ink: #234e52; /* deep teal secondary ink */
-  --omc-success: #2f6b4a;
-  --omc-warning: #b5761f;
-  --omc-danger: #8a1f18;
+  /* accent — primary actions + active state ONLY. Near-mono: ≈ white. */
+  --omc-accent: #e6e8eb;      /* solid fills read as bright-on-dark */
+  --omc-accent-hover: #f4f5f7;
+  --omc-accent-ink: #c9cdd3;  /* secondary "interactive" tone (hover borders) */
+  --omc-success: #3fb950;
+  --omc-warning: #d29922;
+  --omc-danger: #f85149;
 
-  /* four diff statuses */
-  --omc-status-new: var(--omc-success);
-  --omc-status-update: var(--omc-warning);
-  --omc-status-unchanged: var(--omc-muted);
-  --omc-status-usermod: var(--omc-danger);
+  /* four diff statuses — the signature semantics */
+  --omc-status-new: var(--omc-success);     /* + added / installed */
+  --omc-status-update: var(--omc-warning);  /* ~ update */
+  --omc-status-unchanged: #8b9298;          /* · unchanged, de-emphasized (AA: 5.84:1 on surface) */
+  --omc-status-usermod: var(--omc-danger);  /* ! user-modified → backup */
 
-  /* type */
-  --omc-font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --omc-font-body: "Hanken Grotesk", system-ui, sans-serif;
-  --omc-font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
-  --omc-text-hero: clamp(2.75rem, 6vw, 5rem);
-  --omc-text-h2: 2rem;
-  --omc-kicker-tracking: 0.12em;
+  /* type — clean grotesk + real mono, no serif */
+  --omc-font-display: "Geist", system-ui, -apple-system, sans-serif;
+  --omc-font-body: "Geist", system-ui, -apple-system, sans-serif;
+  --omc-font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", "SF Mono", monospace;
+  --omc-text-hero: clamp(2.25rem, 4vw, 3.25rem);
+  --omc-text-h2: 1.5rem;
+  --omc-kicker-tracking: 0.1em;
   --omc-leading-body: 1.6;
 
-  /* shape & letterpress depth */
-  --omc-radius: 2px;
-  --omc-radius-stamp: 3px;
-  --omc-shadow-1: 0 1px 0 rgba(26, 22, 19, 0.04), 0 2px 6px rgba(26, 22, 19, 0.06);
-  --omc-shadow-lift: 0 2px 0 rgba(26, 22, 19, 0.05), 0 8px 20px rgba(26, 22, 19, 0.1);
-  --omc-grain-opacity: 0.03;
+  /* shape & elevation (dark) */
+  --omc-radius: 8px;
+  --omc-radius-stamp: 6px;    /* chip/segment radius (name kept for refs) */
+  --omc-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --omc-shadow-lift: 0 8px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--omc-border);
+  --omc-grain-opacity: 0;     /* no paper grain in Console */
 
-  /* a11y: always-visible focus ring on paper */
+  /* a11y: always-visible focus ring on dark */
   --omc-focus-ring: 0 0 0 2px var(--omc-bg), 0 0 0 4px var(--omc-accent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --omc-grain-opacity: 0;
-  }
 }

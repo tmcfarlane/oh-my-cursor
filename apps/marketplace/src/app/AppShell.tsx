@@ -53,7 +53,7 @@ export function AppShell() {
   }, [health.error, health.loading]);
 
   return (
-    <div className="paper-grain relative min-h-screen">
+    <div className="relative min-h-screen">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-[var(--omc-text)] focus:px-3 focus:py-2 focus:font-mono focus:text-[var(--omc-bg)]"
@@ -91,7 +91,7 @@ export function AppShell() {
                 autoComplete="off"
                 onChange={(e) => setRepo(e.target.value)}
                 placeholder="/path/to/your/repo"
-                className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1 font-mono text-[0.78rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)]"
+                className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border-strong)] bg-[var(--omc-surface-sunken)] px-2.5 py-1 font-mono text-[0.78rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)] focus:border-[var(--omc-accent-ink)] focus:outline-none"
               />
             </label>
           )}

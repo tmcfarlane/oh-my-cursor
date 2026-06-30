@@ -3,13 +3,12 @@ type Stop = "configure" | "proof" | "press";
 const STOPS: { key: Stop; folio: string; label: string }[] = [
   { key: "configure", folio: "01", label: "Configure" },
   { key: "proof", folio: "02", label: "Proof" },
-  { key: "press", folio: "03", label: "Press" },
+  { key: "press", folio: "03", label: "Install" },
 ];
 
 /**
- * Letterpress 3-stop edition stepper: CONFIGURE → PROOF → PRESS.
- * Space Mono small-caps with folio numerals; the current stop is inked
- * (ink text + vermillion tick/underline), the rest are muted.
+ * 3-stop progress indicator: Configure → Proof → Install.
+ * Mono folio indices; current stop is bright, others muted.
  */
 export function Stepper({ current }: { current: Stop }) {
   return (
@@ -25,8 +24,8 @@ export function Stepper({ current }: { current: Stop }) {
                 style={{
                   color: isCurrent ? "var(--omc-text)" : "var(--omc-muted)",
                   borderBottom: isCurrent
-                    ? "2px solid var(--omc-accent)"
-                    : "2px solid transparent",
+                    ? "1px solid var(--omc-accent)"
+                    : "1px solid transparent",
                 }}
               >
                 {isCurrent && (

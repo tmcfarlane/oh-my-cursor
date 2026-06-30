@@ -1,7 +1,7 @@
 import { STATUS_MARK } from "../lib/format";
 import type { FileStatus } from "../lib/types";
 
-/** A proofreader's mark for one diff status. Distinguishable by glyph + text, never color alone. */
+/** A diff-status glyph for one change type. Distinguishable by glyph + text, never color alone. */
 export function StatusMark({ status, showLabel = false }: { status: FileStatus; showLabel?: boolean }) {
   const m = STATUS_MARK[status];
   return (

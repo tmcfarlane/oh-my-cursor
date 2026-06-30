@@ -6,8 +6,8 @@ import type { PlanRequest } from "../lib/types";
 type Verb = "plan" | "install" | "uninstall";
 
 /**
- * The literal `omc …` command as a printer's running head — a constant reminder
- * that this GUI is a thin wrapper over the real CLI.
+ * The literal `omc …` command echo — a constant reminder that this GUI
+ * is a thin wrapper over the real CLI.
  */
 export function CliEcho({ request, verb }: { request: PlanRequest; verb: Verb }) {
   const command = buildOmcCommand(request, verb);
@@ -24,7 +24,7 @@ export function CliEcho({ request, verb }: { request: PlanRequest; verb: Verb })
   }
 
   return (
-    <div className="omc-rule flex items-stretch gap-2 bg-sunken">
+    <div className="flex items-stretch gap-2 border-y border-rule bg-sunken">
       <code className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto px-3 py-2 font-mono text-[0.78rem] leading-none whitespace-nowrap text-ink tabular">
         <span aria-hidden="true" className="select-none text-muted">
           $
