@@ -69,20 +69,28 @@ function Feature({ pack }: { pack: PackDetail }) {
         </Link>
       </div>
 
-      {/* Title block */}
-      <h1 className="font-display text-[var(--omc-text-hero)] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--omc-text)]">
-        {pack.name}
-      </h1>
+      {/* Title block + primary CTA, anchored top-right so Install is in view the moment the page opens */}
+      <div className="grid grid-cols-1 items-start gap-x-12 gap-y-7 lg:grid-cols-[1fr_300px]">
+        <div>
+          <h1 className="font-display text-[var(--omc-text-hero)] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--omc-text)]">
+            {pack.name}
+          </h1>
 
-      <p className="mt-5 max-w-2xl font-body text-[0.9rem] leading-relaxed text-[var(--omc-muted)]">
-        {pack.description}
-      </p>
+          <p className="mt-5 max-w-2xl font-body text-[0.9rem] leading-relaxed text-[var(--omc-muted)]">
+            {pack.description}
+          </p>
 
-      {pack.requires?.cursor && (
-        <p className="mt-5 font-mono text-[0.8rem] text-[var(--omc-text)]">
-          {formatCursorRequirement(pack.requires.cursor)}
-        </p>
-      )}
+          {pack.requires?.cursor && (
+            <p className="mt-5 font-mono text-[0.8rem] text-[var(--omc-text)]">
+              {formatCursorRequirement(pack.requires.cursor)}
+            </p>
+          )}
+        </div>
+
+        <div className="lg:border-l lg:border-[var(--omc-rule)] lg:pl-10 lg:pt-2">
+          <QuickInstall packId={pack.id} divider={false} />
+        </div>
+      </div>
 
       {/* Two-column editorial body */}
       <div className="omc-rule mt-8 grid grid-cols-1 gap-x-12 gap-y-10 pt-8 lg:grid-cols-[1fr_300px]">
@@ -149,7 +157,7 @@ function Feature({ pack }: { pack: PackDetail }) {
           </section>
         </div>
 
-        {/* Right rail — provenance, trust, CTA */}
+        {/* Right rail — provenance and trust (the Install CTA lives in the header) */}
         <aside className="flex flex-col gap-8 lg:border-l lg:border-[var(--omc-rule)] lg:pl-10">
           <dl className="flex flex-col gap-3">
             <MetaRow label="Version">
@@ -180,8 +188,6 @@ function Feature({ pack }: { pack: PackDetail }) {
           </section>
 
           <FanImprint fan={!!pack.theme?.fan} title={pack.theme?.title ?? pack.name} showDisclaimer />
-
-          <QuickInstall packId={pack.id} />
         </aside>
       </div>
     </motion.article>

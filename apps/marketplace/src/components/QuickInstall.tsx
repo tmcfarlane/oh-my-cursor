@@ -14,7 +14,7 @@ import { useInstallTarget } from "../app/InstallTargetContext";
  * (the repo lives in the install-target bar). The install is reversible — eject
  * from the Library, and user-edited files are backed up to *.omc-bak.
  */
-export function QuickInstall({ packId }: { packId: string }) {
+export function QuickInstall({ packId, divider = true }: { packId: string; divider?: boolean }) {
   const { scope, repo, tools, rememberRepo } = useInstallTarget();
   const navigate = useNavigate();
   const [installing, setInstalling] = useState(false);
@@ -38,7 +38,7 @@ export function QuickInstall({ packId }: { packId: string }) {
   }
 
   return (
-    <div className="omc-rule pt-6">
+    <div className={divider ? "omc-rule pt-6" : undefined}>
       <button
         type="button"
         onClick={install}
