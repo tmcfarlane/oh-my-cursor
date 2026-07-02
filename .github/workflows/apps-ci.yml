@@ -1,0 +1,106 @@
+# apps-ci
+#
+# CI coverage for everything under apps/** — the marketplace web frontend and the
+# Tauri v2 desktop shell (src-tauri). The existing validate-packs workflow filters
+# apps/** out entirely, so without this workflow the desktop app and its Rust shell
+# never get built or type-checked in CI.
+#
+# Two jobs:
+#   web   — install deps, TypeScript type-check, and production Vite build.
+#   tauri — compile the Rust desktop shell (`cargo check`) on Linux with Tauri's
+#           system dependencies.
+#
+# Note on the tauri job: src-tauri's `tauri::generate_context!()` validates two
+# things at compile time that are NOT checked into git for a Linux target:
+#   1. The per-triple bridge sidecar binary (bundle.externalBin = binaries/omc-bridge;
+#      only the macOS binary is committed, and the real one is Bun-compiled by
+#      `npm run build:sidecar` at packaging time).
+#   2. The frontendDist (../dist), embedded into the binary for a non-dev build.
+# `cargo check` only needs these paths to EXIST, not to be the real artifacts, so we
+# create cheap placeholders. build.rs derives OMC_TARGET_TRIPLE from cargo's TARGET
+# automatically, so no target-triple env needs to be set by hand.
+
+name: apps-ci
+
+on:
+  push:
+    paths:
+      - "apps/**"
+      - ".github/workflows/apps-ci.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - ".github/workflows/apps-ci.yml"
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/marketplace
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/marketplace/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build
+
+  tauri:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Tauri v2 Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libgtk-3-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libxdo-dev
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/marketplace/src-tauri
+
+      - name: Create placeholder bridge sidecar
+        # generate_context!() requires binaries/omc-bridge-<target-triple> to exist
+        # (bundle.externalBin). The real sidecar is Bun-compiled at packaging time;
+        # a stub file is enough to satisfy the compile-time existence check.
+        working-directory: apps/marketplace/src-tauri
+        run: |
+          TRIPLE="$(rustc -vV | sed -n 's/host: //p')"
+          mkdir -p binaries
+          printf '#!/bin/sh\nexit 0\n' > "binaries/omc-bridge-${TRIPLE}"
+          chmod +x "binaries/omc-bridge-${TRIPLE}"
+
+      - name: Create placeholder frontend dist
+        # A non-dev `cargo check` embeds frontendDist (../dist) into the binary, so the
+        # directory must exist. The web job builds the real frontend; here a minimal
+        # placeholder is enough for the Rust shell to compile.
+        working-directory: apps/marketplace
+        run: |
+          mkdir -p dist
+          [ -f dist/index.html ] || echo '<!doctype html><title>placeholder</title>' > dist/index.html
+
+      - name: cargo check
+        working-directory: apps/marketplace/src-tauri
+        run: cargo check
