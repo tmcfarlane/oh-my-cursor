@@ -35,6 +35,17 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "externalBin": ["binaries/omc-bridge"]
+    "externalBin": ["binaries/omc-bridge"],
+    "resources": {
+      "../../../registry/": "data/registry/",
+      "../../../packs/": "data/packs/",
+      "../../../agents/": "data/agents/",
+      "../../../rules/": "data/rules/",
+      "../../../commands/": "data/commands/",
+      "../../../hooks/": "data/hooks/",
+      "../../../skills/": "data/skills/",
+      "../../../hooks.json": "data/hooks.json",
+      "../../../permissions.json": "data/permissions.json"
+    }
   }
 }
