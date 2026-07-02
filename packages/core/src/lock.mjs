@@ -1,6 +1,6 @@
 // The lockfile records every file an install wrote, so uninstall/upgrade are exact.
 // Lives at <primaryCursorDir>/.oh-my-cursor/lock.json.
-import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, renameSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { ensureDir } from "./util.mjs";
 
@@ -19,7 +19,12 @@ export function readLock(path) {
 
 export function writeLock(path, lock) {
   ensureDir(dirname(path));
-  writeFileSync(path, JSON.stringify(lock, null, 2) + "\n");
+  // Write to a temp file then rename — an atomic swap on the same filesystem, so a crash or a
+  // concurrent writer can never leave a half-written / truncated lock.json (readLock silently
+  // treats a corrupt file as empty, which would orphan every prior install).
+  const tmp = `${path}.tmp`;
+  writeFileSync(tmp, JSON.stringify(lock, null, 2) + "\n");
+  renameSync(tmp, path);
 }
 
 export function removeLockIfEmpty(path) {

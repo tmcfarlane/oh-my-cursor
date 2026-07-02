@@ -9,7 +9,7 @@
 //   - git pre-commit hook -> project scope + cursor only, and only if no foreign hook exists
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { listFiles, matchGlobs, sha256 } from "./util.mjs";
+import { listFiles, matchGlobs, sha256, assertWithin } from "./util.mjs";
 import { toolDir, primaryCursorDir } from "./paths.mjs";
 import { findInstall } from "./lock.mjs";
 
@@ -19,7 +19,12 @@ function classify(src, dest, priorSha) {
   if (!existsSync(dest)) return "new";
   const destSha = sha256(dest);
   if (destSha === sha256(src)) return "unchanged";
-  if (priorSha && destSha !== priorSha) return "userModified";
+  // dest exists and differs from what we'd install:
+  //  - no prior lock entry  -> a pre-existing file we don't own (the user's) -> back it up
+  //  - prior entry, content changed since we wrote it -> user edited our file -> back it up
+  //  - prior entry, content still matches what we wrote -> our own file, a plain upgrade
+  if (!priorSha) return "userModified";
+  if (destSha !== priorSha) return "userModified";
   return "update";
 }
 
@@ -45,6 +50,7 @@ export function planInstall({ pack, sourceRoot }, opts = {}, lock = { installs: 
       for (const rel of matched) {
         const src = join(sourceRoot, rel);
         const dest = join(dir, rel);
+        assertWithin(dir, dest, `${group}/${rel}`);
         items.push({ tool, group, rel, src, dest, status: classify(src, dest, priorByPath.get(dest)) });
       }
     }
@@ -56,6 +62,7 @@ export function planInstall({ pack, sourceRoot }, opts = {}, lock = { installs: 
           const rel = `skills/${skill.name}/${f}`;
           const src = join(sourceRoot, rel);
           const dest = join(dir, rel);
+          assertWithin(dir, dest, `skills/${skill.name}`);
           items.push({ tool, group: "skills", rel, src, dest, status: classify(src, dest, priorByPath.get(dest)) });
         }
       }
@@ -79,8 +86,10 @@ export function planInstall({ pack, sourceRoot }, opts = {}, lock = { installs: 
 }
 
 function planGitHook(pack, scope, tools, repo) {
-  const declares = (pack.uninstall?.extraPaths || []).some((p) => p.includes("pre-commit"));
-  if (!declares || scope !== "project" || !tools.includes("cursor")) return null;
+  // Gate on the DECLARED trust surface (permissions.gitHooks) — the same field the CLI and GUI
+  // render — not on a substring in uninstall.extraPaths. A pack that shows gitHooks:false must
+  // never get a project-scope pre-commit hook that runs its shell on every commit.
+  if (!pack.permissions?.gitHooks || scope !== "project" || !tools.includes("cursor")) return null;
   const path = join(repo, ".git", "hooks", "pre-commit");
   if (!existsSync(join(repo, ".git"))) return { path, willInstall: false, reason: "not a git repo" };
   if (existsSync(path) && !readFileSync(path, "utf8").includes("oh-my-cursor")) {

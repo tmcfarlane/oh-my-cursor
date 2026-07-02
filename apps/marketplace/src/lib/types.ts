@@ -96,6 +96,7 @@ export interface InstallResult {
   unchanged: number;
   backedUp: number;
   gitHook: boolean;
+  orphansRemoved?: number;
 }
 
 export interface InstallResponse {
@@ -106,6 +107,7 @@ export interface InstallResponse {
 
 export interface UninstallResult {
   removed: number;
+  keptModified?: number;
   gitHook: boolean;
   dryRun: boolean;
   notFound?: boolean;

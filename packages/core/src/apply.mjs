@@ -1,9 +1,9 @@
 // Execute an install plan: copy files, back up user-modified files, install the git
 // pre-commit hook, and record everything in the lockfile.
-import { writeFileSync, chmodSync, copyFileSync, existsSync } from "node:fs";
+import { writeFileSync, chmodSync, copyFileSync, existsSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import { copy, ensureDir, sha256 } from "./util.mjs";
-import { lockPath, readLock, writeLock } from "./lock.mjs";
+import { lockPath, readLock, writeLock, findInstall } from "./lock.mjs";
 
 const GIT_HOOK = `#!/usr/bin/env bash
 # oh-my-cursor defense-in-depth: catch anti-pattern commits regardless of HOW the commit is made
@@ -52,9 +52,30 @@ export function applyInstall(plan, { dryRun = false } = {}) {
     summary.gitHook = true;
   }
 
+  summary.orphansRemoved = removeUpgradeOrphans(plan, lockFiles, dryRun);
+
   if (!dryRun) writeLockEntry(plan, lockFiles, extraPaths);
 
   return summary;
+}
+
+// On upgrade (install over an existing install), delete files the PRIOR version wrote that the
+// new version no longer ships — otherwise they linger forever and vanish from the lockfile, so
+// even a later uninstall can't remove them. Only touch files we still own (current sha matches
+// what we recorded); a user-modified orphan is left in place. Must run before writeLockEntry,
+// which replaces the prior entry.
+function removeUpgradeOrphans(plan, newFiles, dryRun) {
+  const prior = findInstall(readLock(lockPath(plan.primaryCursorDir)), plan.packId, plan.scope);
+  if (!prior) return 0;
+  const keep = new Set(newFiles.map((f) => f.path));
+  let removed = 0;
+  for (const f of prior.files || []) {
+    if (keep.has(f.path) || !existsSync(f.path)) continue;
+    if (f.sha256 != null && safeSha(f.path) !== f.sha256) continue; // user changed it → leave it
+    if (!dryRun) rmSync(f.path);
+    removed++;
+  }
+  return removed;
 }
 
 function safeSha(path) {

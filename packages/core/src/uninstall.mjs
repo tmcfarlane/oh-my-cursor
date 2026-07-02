@@ -2,7 +2,7 @@
 // hook), prune now-empty directories, and drop the install entry.
 import { existsSync, rmSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { pruneEmptyDirsRecursive } from "./util.mjs";
+import { pruneEmptyDirsRecursive, sha256 } from "./util.mjs";
 import { lockPath, readLock, writeLock, removeLockIfEmpty, findInstall } from "./lock.mjs";
 import { primaryCursorDir, toolDir } from "./paths.mjs";
 
@@ -15,13 +15,18 @@ export function uninstallPack({ packId, scope = "user", home = homedir(), repo =
 
   if (!install) return { notFound: true, removed: 0 };
 
-  const summary = { removed: 0, gitHook: false, dryRun };
+  const summary = { removed: 0, keptModified: 0, gitHook: false, dryRun };
 
   for (const f of install.files || []) {
-    if (existsSync(f.path)) {
-      if (!dryRun) rmSync(f.path);
-      summary.removed++;
+    if (!existsSync(f.path)) continue;
+    // Don't destroy a file the user has edited since we installed it. Only remove files whose
+    // content still matches what we recorded (we own them); leave modified ones and report them.
+    if (f.sha256 != null && sha256(f.path) !== f.sha256) {
+      summary.keptModified++;
+      continue;
     }
+    if (!dryRun) rmSync(f.path);
+    summary.removed++;
   }
 
   for (const extra of install.extraPaths || []) {

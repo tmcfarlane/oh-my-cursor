@@ -9,7 +9,7 @@ import {
   copyFileSync,
   rmdirSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve, relative, isAbsolute } from "node:path";
 
 // Translate the glob subset our manifests use (* ** ? literals) to a RegExp.
 export function globToRegExp(glob) {
@@ -62,6 +62,19 @@ export function ensureDir(path) {
 export function copy(src, dest) {
   ensureDir(dirname(dest));
   copyFileSync(src, dest);
+}
+
+// Path-traversal guard: return the resolved `target` iff it stays inside `base`, else throw.
+// Used to ensure a (potentially attacker-controlled) pack file can never resolve to a
+// destination outside its intended install directory.
+export function assertWithin(base, target, label = "path") {
+  const b = resolve(base);
+  const t = resolve(target);
+  const rel = relative(b, t);
+  if (rel !== "" && (rel === ".." || rel.startsWith(".." + "/") || rel.startsWith(".." + "\\") || isAbsolute(rel))) {
+    throw new Error(`refusing to write outside the install directory: "${label}" escapes to ${t}`);
+  }
+  return t;
 }
 
 // Post-order remove every empty directory under `dir` (and `dir` itself if it ends up
