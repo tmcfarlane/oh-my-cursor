@@ -40,7 +40,7 @@ export function deriveAgents(pack: PackDetail): DerivedAgent[] {
     return {
       name,
       key,
-      portrait: `/agents/${key}.png`,
+      portrait: `/agents/${key}.svg`,
       model,
       isOverride: key in overrides,
       invalidSlug: !VALID_SLUGS.has(model),

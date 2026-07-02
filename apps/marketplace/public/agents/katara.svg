@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Three horizontal S-wave lines — "flow / water / continuity" -->
+  <!-- Each wave: a single cubic bezier S-curve spanning left to right -->
+  <!-- Top wave, muted -->
+  <path d="M 11,22 C 23,16 41,28 53,22" stroke="#9ba1a9" stroke-width="2" stroke-linecap="round"/>
+  <!-- Middle wave — blue accent, the carrying current -->
+  <path d="M 11,32 C 23,26 41,38 53,32" stroke="#4c8dff" stroke-width="2" stroke-linecap="round"/>
+  <!-- Bottom wave, muted -->
+  <path d="M 11,42 C 23,36 41,48 53,42" stroke="#9ba1a9" stroke-width="2" stroke-linecap="round"/>
+</svg>

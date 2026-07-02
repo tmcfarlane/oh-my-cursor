@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Three stacked filled bars, decreasing width upward — "earth / foundation / weight" -->
+  <!-- Bottom bar: widest, muted -->
+  <rect x="10" y="44" width="44" height="5" rx="2.5" fill="#9ba1a9"/>
+  <!-- Mid bar: intermediate, bright -->
+  <rect x="17" y="33" width="30" height="5" rx="2.5" fill="#e9ebee"/>
+  <!-- Top bar: narrowest — blue accent, the summit / insight -->
+  <rect x="24" y="22" width="16" height="5" rx="2.5" fill="#4c8dff"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Targeting reticle — "strategy / precision / navigation" -->
+  <!-- Outer ring -->
+  <circle cx="32" cy="32" r="22" stroke="#9ba1a9" stroke-width="1.5"/>
+  <!-- Inner ring -->
+  <circle cx="32" cy="32" r="8" stroke="#e9ebee" stroke-width="2"/>
+  <!-- North tick — blue accent, marks direction / intent -->
+  <line x1="32" y1="21" x2="32" y2="11" stroke="#4c8dff" stroke-width="2" stroke-linecap="round"/>
+  <!-- South tick -->
+  <line x1="32" y1="43" x2="32" y2="53" stroke="#e9ebee" stroke-width="2" stroke-linecap="round"/>
+  <!-- West tick -->
+  <line x1="21" y1="32" x2="11" y2="32" stroke="#e9ebee" stroke-width="2" stroke-linecap="round"/>
+  <!-- East tick -->
+  <line x1="43" y1="32" x2="53" y2="32" stroke="#e9ebee" stroke-width="2" stroke-linecap="round"/>
+  <!-- Center pinpoint -->
+  <circle cx="32" cy="32" r="1.75" fill="#e9ebee"/>
+</svg>

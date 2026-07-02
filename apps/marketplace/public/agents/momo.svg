@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Triangulation array — "sensor / scout / detection" -->
+  <!-- Three nodes at equilateral triangle vertices on r=17 orbit -->
+  <!-- Node positions at 270°, 30°, 150° (SVG coords, y-down) -->
+  <!-- Top: (32, 15)  |  BR: (46.72, 23.5+8.5=→ let me recalc) -->
+  <!-- r=17, center (32,32): -->
+  <!-- 270°: (32, 32-17) = (32, 15) -->
+  <!-- 30°:  (32+17*cos30, 32+17*sin30) = (32+14.72, 32+8.5) = (46.72, 40.5) -->
+  <!-- 150°: (32-14.72, 32+8.5) = (17.28, 40.5) -->
+  <!-- Orbital ring -->
+  <circle cx="32" cy="32" r="17" stroke="#9ba1a9" stroke-width="1.5"/>
+  <!-- Inner triangle connecting nodes (faint structural guide) -->
+  <polygon points="32,15 46.72,40.5 17.28,40.5" stroke="#9ba1a9" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Nodes -->
+  <!-- Top node — blue accent -->
+  <circle cx="32" cy="15" r="3" fill="#4c8dff"/>
+  <!-- Bottom-right node -->
+  <circle cx="46.72" cy="40.5" r="3" fill="#e9ebee"/>
+  <!-- Bottom-left node -->
+  <circle cx="17.28" cy="40.5" r="3" fill="#e9ebee"/>
+  <!-- Nucleus -->
+  <circle cx="32" cy="32" r="2" fill="#e9ebee"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Double arch over a baseline — "carrier / bridge / passage" -->
+  <!-- Ground baseline -->
+  <line x1="9" y1="44" x2="55" y2="44" stroke="#e9ebee" stroke-width="2" stroke-linecap="round"/>
+  <!-- Outer arch: r=23, flat edge at y=44, sweeps upward (CW in SVG = up) -->
+  <path d="M 9,44 A 23,23 0 0 1 55,44" stroke="#9ba1a9" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Inner arch: r=15, flat edge at y=44 -->
+  <path d="M 17,44 A 15,15 0 0 1 47,44" stroke="#e9ebee" stroke-width="2" stroke-linecap="round"/>
+  <!-- Keystone: blue accent dot at peak of inner arch (y = 44-15 = 29) -->
+  <circle cx="32" cy="29" r="2.5" fill="#4c8dff"/>
+</svg>
