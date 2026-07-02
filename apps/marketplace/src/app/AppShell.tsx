@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Masthead } from "../components/Masthead";
+import { CommandPalette } from "../components/CommandPalette";
 import { useInstallTarget } from "./InstallTargetContext";
 import { useAsync } from "../lib/useAsync";
 import { api } from "../lib/api";
@@ -13,10 +14,10 @@ function ScopeChip({ value, scope, onClick }: { value: Scope; scope: Scope; onCl
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`omc-focusable rounded-[var(--omc-radius)] px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.1em] transition-colors ${
+      className={`omc-focusable rounded-[var(--omc-radius-sm)] border px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.1em] transition-colors ${
         active
-          ? "bg-[var(--omc-text)] text-[var(--omc-bg)]"
-          : "text-[var(--omc-muted)] hover:text-[var(--omc-text)]"
+          ? "border-[var(--omc-accent-line)] bg-[var(--omc-accent-quiet)] text-[var(--omc-accent)]"
+          : "border-transparent text-[var(--omc-muted)] hover:text-[var(--omc-text)]"
       }`}
     >
       {value}
@@ -33,6 +34,19 @@ export function AppShell() {
   );
   const installedCount = status.data?.installs.length ?? 0;
   const offline = !!health.error;
+
+  // ⌘K / Ctrl-K opens the command palette from anywhere.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // Self-heal the startup race: while the engine is unreachable (e.g. the desktop sidecar is
   // still coming up), retry; once it answers, remount the routed screens so they refetch.
@@ -61,7 +75,9 @@ export function AppShell() {
         Skip to content
       </a>
 
-      <Masthead installedCount={installedCount} />
+      <Masthead installedCount={installedCount} onOpenPalette={() => setPaletteOpen(true)} />
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
       {offline && (
         <div
@@ -73,7 +89,7 @@ export function AppShell() {
       )}
 
       {/* Global install target — every plan/install/status depends on this. */}
-      <div className="border-b border-[var(--omc-rule)] bg-[var(--omc-surface)]/60">
+      <div className="relative z-10 border-b border-[var(--omc-rule)] bg-[var(--omc-bg-2)]/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-5 gap-y-2 px-8 py-2">
           <span className="omc-kicker">Install Target</span>
           <div className="flex items-center gap-1" role="group" aria-label="Scope">
@@ -95,7 +111,8 @@ export function AppShell() {
               />
             </label>
           )}
-          <span className="font-mono text-[0.66rem] text-[var(--omc-muted)]">
+          <span className="omc-chip ml-auto">
+            <span aria-hidden="true" className="text-[var(--omc-accent)]">→</span>
             {scope === "user" ? "~/.cursor" : "<repo>/.cursor"}
           </span>
         </div>

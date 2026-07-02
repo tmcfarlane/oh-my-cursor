@@ -1,48 +1,70 @@
-/* "Console" — dark, near-monochrome, terminal-native design tokens.
-   Token NAMES are stable; only values changed when we moved off the
-   letterpress skin. Accent ≈ near-white (near-monochrome): semantics carry
-   color, white is reserved for primary actions + active state. */
+/* ────────────────────────────────────────────────────────────────────────────
+   "Console" — dark, terminal-native design tokens, elevated.
+   Near-monochrome surfaces carry the structure; ONE electric-blue accent marks
+   primary actions + active state; the four diff semantics (green/amber/grey/red)
+   are the only other place hue lives. Token NAMES are stable across the reskin.
+   ──────────────────────────────────────────────────────────────────────────── */
 :root {
-  /* surfaces — each step = one elevation level, lighten don't shadow */
-  --omc-bg: #0b0c0e;          /* app background (near-black, faintly cool) */
-  --omc-surface: #131417;     /* panels, cards */
+  /* surfaces — each step = one elevation level; layer by lightening, not shadow */
+  --omc-bg: #0a0b0d;            /* app background (near-black, faintly cool) */
+  --omc-bg-2: #0d0e11;         /* secondary bg (rails, chrome) */
+  --omc-surface: #141518;      /* panels, cards */
+  --omc-surface-2: #191b1f;    /* elevated / hover / popover */
   --omc-surface-sunken: #0e0f12; /* code/diff wells, inputs */
-  --omc-text: #e6e8eb;        /* primary (near-white, not pure) */
-  --omc-muted: #9ba1a9;       /* secondary */
-  --omc-border: #232529;      /* hairline default (decorative dividers) */
-  --omc-border-strong: #3a3e44; /* perceivable boundary for inputs/controls (WCAG 1.4.11 ≥3:1) */
-  --omc-rule: #1e2024;        /* large dividers, a hair darker */
+  --omc-text: #e9ebee;         /* primary (near-white, not pure) */
+  --omc-muted: #9ba1a9;        /* secondary */
+  --omc-faint: #6b7178;        /* tertiary / muted labels */
+  --omc-border: #232529;       /* hairline default (decorative dividers) */
+  --omc-border-strong: #34383e; /* perceivable boundary for inputs/controls (WCAG 1.4.11 ≥3:1) */
+  --omc-rule: #1c1e22;         /* large dividers, a hair darker */
 
-  /* accent — primary actions + active state ONLY. Near-mono: ≈ white. */
-  --omc-accent: #e6e8eb;      /* solid fills read as bright-on-dark */
-  --omc-accent-hover: #f4f5f7;
-  --omc-accent-ink: #c9cdd3;  /* secondary "interactive" tone (hover borders) */
+  /* accent — primary actions + active/selected state ONLY. Electric blue. */
+  --omc-accent: #4c8dff;
+  --omc-accent-hover: #6aa0ff;
+  --omc-accent-press: #3f7cf0;
+  --omc-accent-ink: #0a1220;   /* text/glyph ON a solid accent fill */
+  --omc-accent-quiet: rgba(76, 141, 255, 0.14);  /* active nav / selection wash */
+  --omc-accent-line: rgba(76, 141, 255, 0.45);    /* accent hairline borders */
+  --omc-accent-glow: 0 0 0 1px rgba(76, 141, 255, 0.5), 0 6px 22px -6px rgba(76, 141, 255, 0.5);
+
+  /* four diff statuses — the signature semantics (never collide with accent) */
   --omc-success: #3fb950;
   --omc-warning: #d29922;
   --omc-danger: #f85149;
+  --omc-status-new: var(--omc-success);      /* + added / installed */
+  --omc-status-update: var(--omc-warning);   /* ~ update */
+  --omc-status-unchanged: #8b9298;           /* · unchanged, de-emphasized (AA: 5.84:1) */
+  --omc-status-usermod: var(--omc-danger);   /* ! user-modified → backup */
 
-  /* four diff statuses — the signature semantics */
-  --omc-status-new: var(--omc-success);     /* + added / installed */
-  --omc-status-update: var(--omc-warning);  /* ~ update */
-  --omc-status-unchanged: #8b9298;          /* · unchanged, de-emphasized (AA: 5.84:1 on surface) */
-  --omc-status-usermod: var(--omc-danger);  /* ! user-modified → backup */
-
-  /* type — clean grotesk + real mono, no serif */
+  /* type — clean grotesk + real mono, no serif. Hierarchy = weight+size+color. */
   --omc-font-display: "Geist", system-ui, -apple-system, sans-serif;
   --omc-font-body: "Geist", system-ui, -apple-system, sans-serif;
   --omc-font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", "SF Mono", monospace;
-  --omc-text-hero: clamp(2.25rem, 4vw, 3.25rem);
+  --omc-text-hero: clamp(2.25rem, 4vw, 3.5rem);
   --omc-text-h2: 1.5rem;
-  --omc-kicker-tracking: 0.1em;
+  --omc-kicker-tracking: 0.14em;
   --omc-leading-body: 1.6;
+  --omc-tracking-tight: -0.02em;
 
   /* shape & elevation (dark) */
-  --omc-radius: 8px;
-  --omc-radius-stamp: 6px;    /* chip/segment radius (name kept for refs) */
+  --omc-radius: 9px;
+  --omc-radius-sm: 6px;
+  --omc-radius-lg: 14px;
+  --omc-radius-stamp: 6px;     /* chip/segment radius (name kept for refs) */
   --omc-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --omc-shadow-lift: 0 8px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--omc-border);
-  --omc-grain-opacity: 0;     /* no paper grain in Console */
+  --omc-shadow-lift: 0 10px 34px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--omc-border);
+  --omc-shadow-pop: 0 24px 70px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--omc-border-strong);
+  --omc-grain-opacity: 0;      /* no paper grain in Console */
 
-  /* a11y: always-visible focus ring on dark */
+  /* atmosphere — a faint top-glow so the near-black isn't flat */
+  --omc-halo: radial-gradient(1200px 520px at 50% -12%, rgba(76, 141, 255, 0.10), transparent 70%);
+
+  /* motion — fast + quiet (Linear/Raycast). transform+opacity only. */
+  --omc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --omc-dur-1: 130ms;
+  --omc-dur-2: 200ms;
+  --omc-dur-3: 320ms;
+
+  /* a11y: always-visible focus ring on dark, tinted to the accent */
   --omc-focus-ring: 0 0 0 2px var(--omc-bg), 0 0 0 4px var(--omc-accent);
 }

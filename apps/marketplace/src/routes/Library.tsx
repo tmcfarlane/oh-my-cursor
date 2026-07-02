@@ -175,7 +175,7 @@ function InstallRow({
             type="button"
             onClick={preview}
             disabled={busy}
-            className="omc-focusable inline-flex shrink-0 items-center gap-1.5 rounded-[var(--omc-radius)] border border-[var(--omc-border)] px-3 py-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-[var(--omc-muted)] transition-colors hover:border-[var(--omc-danger)] hover:text-[var(--omc-danger)] disabled:opacity-50"
+            className="omc-focusable inline-flex shrink-0 items-center gap-1.5 rounded-[var(--omc-radius)] border border-[var(--omc-danger)] px-3 py-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-[var(--omc-danger)] transition-[background-color,transform] duration-[130ms] ease-out hover:bg-[var(--omc-danger)]/10 hover:-translate-y-px disabled:opacity-50"
           >
             {busy ? (
               <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
@@ -254,7 +254,8 @@ function InstallRow({
                 type="button"
                 onClick={commit}
                 disabled={busy}
-                className="omc-focusable inline-flex items-center gap-1.5 rounded-[var(--omc-radius)] bg-[var(--omc-danger)] px-3.5 py-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-[var(--omc-bg)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="omc-focusable omc-btn"
+                style={{ background: "var(--omc-danger)", borderColor: "var(--omc-danger)", color: "var(--omc-bg)" }}
               >
                 {busy && <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />}
                 Confirm Eject
@@ -264,7 +265,7 @@ function InstallRow({
               type="button"
               onClick={cancel}
               disabled={busy}
-              className="omc-focusable inline-flex items-center rounded-[var(--omc-radius)] border border-[var(--omc-border)] px-3.5 py-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-[var(--omc-muted)] transition-colors hover:text-[var(--omc-text)] disabled:opacity-50"
+              className="omc-focusable omc-btn omc-btn-secondary"
             >
               Cancel
             </button>

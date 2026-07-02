@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAsync } from "../lib/useAsync";
@@ -44,6 +44,14 @@ export default function PlanReview() {
   const [installing, setInstalling] = useState(false);
   const [installError, setInstallError] = useState<string | null>(null);
 
+  // The review gate is bound to a specific destination. If the install target changes
+  // (scope/repo/tools) while this screen is open, drop the prior approval and error so an
+  // "I've reviewed the changes" given for one target can never arm an install into another.
+  useEffect(() => {
+    setApproved(false);
+    setInstallError(null);
+  }, [id, scope, tools, repo]);
+
   // Re-group plan items by tool → group, preserving the canonical group order.
   const grouped = useMemo(() => {
     if (!plan.data) return [];
@@ -76,7 +84,7 @@ export default function PlanReview() {
   const gitWillWrite = !!plan.data?.gitPreCommit?.willInstall;
   const changeCount = summary ? summary.new + summary.update + summary.userModified : 0;
   const upToDate = !!summary && changeCount === 0 && !gitWillWrite;
-  const canPress = approved && !upToDate && !installing && !!plan.data;
+  const canPress = approved && !upToDate && !installing && !plan.loading && !!plan.data;
 
   async function sendToPress() {
     if (!canPress) return;
@@ -247,13 +255,7 @@ export default function PlanReview() {
                 onClick={sendToPress}
                 disabled={!canPress}
                 aria-disabled={!canPress}
-                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] border px-5 py-2.5 font-mono text-[0.88rem] font-semibold transition-[transform,box-shadow] disabled:cursor-not-allowed enabled:hover:-translate-y-0.5"
-                style={{
-                  backgroundColor: canPress ? "var(--omc-accent)" : "var(--omc-surface-sunken)",
-                  borderColor: canPress ? "var(--omc-accent)" : "var(--omc-rule)",
-                  color: canPress ? "var(--omc-surface)" : "var(--omc-muted)",
-                  boxShadow: canPress ? "var(--omc-shadow-1)" : "none",
-                }}
+                className="omc-focusable omc-btn omc-btn-primary"
               >
                 {installing ? "Installing…" : "Install →"}
               </button>

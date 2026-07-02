@@ -59,7 +59,7 @@ export function ReviewCheckbox({ approved, onApprove }: Props) {
         )}
       </span>
       {/* Label */}
-      <span className="font-mono text-[0.8125rem] text-[var(--omc-muted)] transition-colors duration-[120ms] group-hover:text-[var(--omc-text)]">
+      <span className={`font-mono text-[0.8125rem] transition-colors duration-[120ms] ${approved ? "text-[var(--omc-accent)]" : "text-[var(--omc-muted)] group-hover:text-[var(--omc-text)]"}`}>
         I've reviewed the changes
       </span>
     </div>

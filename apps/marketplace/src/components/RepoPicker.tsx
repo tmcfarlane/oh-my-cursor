@@ -44,7 +44,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
           aria-describedby={showHint ? hintId : undefined}
           onChange={(e) => onChange(e.target.value)}
           placeholder="/path/to/your/repo"
-          className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border-strong)] bg-[var(--omc-surface-sunken)] px-2.5 py-1.5 font-mono text-[0.82rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)] transition-colors duration-150 focus:border-[var(--omc-accent-ink)] focus:outline-none"
+          className="omc-focusable min-w-0 flex-1 rounded-[var(--omc-radius)] border border-[var(--omc-border-strong)] bg-[var(--omc-surface-sunken)] px-2.5 py-1.5 font-mono text-[0.82rem] text-[var(--omc-text)] placeholder:text-[var(--omc-muted)] transition-colors duration-150 focus:border-[var(--omc-accent)] focus:outline-none"
         />
         {tauri && (
           <button
@@ -57,7 +57,7 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
                 /* dialog dismissed or unavailable — keep the typed value */
               }
             }}
-            className="omc-focusable shrink-0 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[var(--omc-text)] transition-colors duration-150 hover:border-[var(--omc-accent-ink)] hover:text-[var(--omc-accent-ink)]"
+            className="omc-focusable shrink-0 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] px-2.5 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[var(--omc-text)] transition-colors duration-150 hover:border-[var(--omc-accent-line)] hover:text-[var(--omc-accent)]"
           >
             Browse…
           </button>
@@ -92,8 +92,8 @@ export function RepoPicker({ value, recentRepos, required, onChange }: Props) {
                     title={repo}
                     className={`omc-focusable max-w-[22ch] truncate rounded-[var(--omc-radius-stamp)] border px-2 py-1 font-mono text-[0.72rem] transition-colors duration-150 ${
                       active
-                        ? "border-[var(--omc-text)] bg-[var(--omc-text)] text-[var(--omc-bg)]"
-                        : "border-[var(--omc-border)] bg-[var(--omc-surface)] text-[var(--omc-text)] hover:border-[var(--omc-accent-ink)] hover:text-[var(--omc-accent-ink)]"
+                        ? "border-[var(--omc-accent-line)] bg-[var(--omc-accent-quiet)] text-[var(--omc-accent)]"
+                        : "border-[var(--omc-border)] bg-[var(--omc-surface)] text-[var(--omc-text)] hover:border-[var(--omc-accent-line)] hover:text-[var(--omc-accent)]"
                     }`}
                   >
                     {repo}

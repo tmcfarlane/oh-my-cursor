@@ -4,10 +4,59 @@ import { motion, useReducedMotion } from "motion/react";
 import { CategoryKicker } from "../components/CategoryKicker";
 import { TrustStamps } from "../components/TrustStamps";
 import { FanImprint } from "../components/FanImprint";
+import { useInstallTarget } from "../app/InstallTargetContext";
 import { useAsync } from "../lib/useAsync";
 import { api } from "../lib/api";
 import { CATEGORY_LABEL, pluralize } from "../lib/format";
 import type { PackSummary } from "../lib/types";
+
+/** Illustrative terminal card on the hero — the product's "installs like a tool" signature. */
+function InstallPreview({ pack, dest }: { pack: PackSummary; dest: string }) {
+  const p = pack.permissions;
+  return (
+    <div className="omc-panel overflow-hidden font-mono text-[0.78rem] shadow-[var(--omc-shadow-lift)]">
+      <div className="flex items-center gap-1.5 border-b border-[var(--omc-border)] px-3.5 py-2.5">
+        <span aria-hidden="true" className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--omc-border-strong)]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--omc-border-strong)]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--omc-border-strong)]" />
+        </span>
+        <span className="ml-1.5 text-[0.66rem] uppercase tracking-[0.14em] text-[var(--omc-faint)]">
+          omc · install
+        </span>
+      </div>
+      <div className="space-y-1.5 p-4 leading-relaxed">
+        <div className="text-[var(--omc-text)]">
+          <span className="text-[var(--omc-faint)]">$ </span>omc install {pack.id}
+        </div>
+        <div className="text-[var(--omc-muted)]">
+          <span className="text-[var(--omc-accent)]">→</span> {dest}
+        </div>
+        <div className="pt-1.5">
+          <span className="text-[var(--omc-status-new)]">+ agents</span>
+          <span className="text-[var(--omc-status-new)]">  + rules</span>
+          <span className="text-[var(--omc-status-new)]">  + hooks</span>
+        </div>
+        <div className="text-[var(--omc-status-new)]">+ {pluralize(pack.skillCount, "skill")}</div>
+        <div className="flex gap-3 pt-1.5 text-[0.72rem]">
+          <span className={p.shellHooks ? "text-[var(--omc-warning)]" : "text-[var(--omc-faint)]"}>
+            shell {p.shellHooks ? "●" : "○"}
+          </span>
+          <span className={p.gitHooks ? "text-[var(--omc-warning)]" : "text-[var(--omc-faint)]"}>
+            git {p.gitHooks ? "●" : "○"}
+          </span>
+          <span className={!p.network ? "text-[var(--omc-success)]" : "text-[var(--omc-faint)]"}>
+            net {p.network ? "●" : "○"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 pt-2 text-[0.7rem] text-[var(--omc-faint)]">
+          <kbd className="omc-kbd">⌘K</kbd> search &amp; install
+          <span className="omc-caret text-[var(--omc-accent)]">▍</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 type Category = "team" | "role" | "harness" | "theme";
 const CATEGORIES: Category[] = ["team", "role", "harness", "theme"];
@@ -167,7 +216,8 @@ function PackTile({ pack, folio }: { pack: PackSummary; folio: number }) {
   return (
     <Link
       to={`/pack/${encodeURIComponent(pack.id)}`}
-      className="omc-focusable group flex flex-col gap-3 rounded-[var(--omc-radius)] border border-[var(--omc-border)] bg-[var(--omc-surface)] p-4 transition-[transform,border-color,box-shadow] duration-[140ms] ease-out hover:-translate-y-px hover:border-[var(--omc-accent-ink)] hover:shadow-[var(--omc-shadow-1)]"
+      style={{ ["--i" as string]: folio - 1 }}
+      className="omc-focusable omc-card omc-card-hover omc-reveal group flex flex-col gap-3 p-4"
     >
       <CategoryKicker category={pack.category} folio={folio} fan={fan} />
 
@@ -221,6 +271,8 @@ export default function Collection() {
   const { data, loading, error, reload } = useAsync(() => api.packs(), []);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const reduce = useReducedMotion();
+  const { scope, repo } = useInstallTarget();
+  const dest = scope === "user" ? "~/.cursor" : `${repo || "<repo>"}/.cursor`;
 
   const allPacks = data?.packs ?? [];
   const visible = useMemo(() => allPacks.filter((p) => matches(p, filters)), [allPacks, filters]);
@@ -280,7 +332,18 @@ export default function Collection() {
 
       <div className="min-w-0">
         {cover ? (
-          <motion.article {...coverMotion} className="max-w-3xl" aria-label={`Featured: ${cover.name}`}>
+          <motion.article
+            {...coverMotion}
+            className="grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_18.5rem]"
+            aria-label={`Featured: ${cover.name}`}
+          >
+            <div className="min-w-0">
+            <p className="mb-4 flex items-center gap-2 font-mono text-[0.66rem] uppercase tracking-[0.18em] text-[var(--omc-faint)]">
+              <span className="text-[var(--omc-accent)]">●</span>
+              The app store for your coding agent
+              <span aria-hidden="true" className="text-[var(--omc-border-strong)]">/</span>
+              featured
+            </p>
             <h1 className="font-display font-semibold leading-[0.92] tracking-[-0.02em] text-[var(--omc-text)]" style={{ fontSize: "var(--omc-text-hero)" }}>
               {cover.name}
             </h1>
@@ -297,7 +360,7 @@ export default function Collection() {
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
               <Link
                 to={`/pack/${encodeURIComponent(cover.id)}`}
-                className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] bg-[var(--omc-accent)] px-5 py-2.5 font-body text-[0.95rem] font-semibold text-[var(--omc-bg)] shadow-[var(--omc-shadow-1)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
+                className="omc-focusable omc-btn omc-btn-primary"
               >
                 View pack
                 <span aria-hidden="true">→</span>
@@ -305,6 +368,11 @@ export default function Collection() {
               <span className="font-mono text-[0.8rem] tabular text-[var(--omc-muted)]">
                 {pluralize(cover.skillCount, "skill")} · v{cover.version}
               </span>
+            </div>
+            </div>
+
+            <div className="lg:pt-1">
+              <InstallPreview pack={cover} dest={dest} />
             </div>
           </motion.article>
         ) : (

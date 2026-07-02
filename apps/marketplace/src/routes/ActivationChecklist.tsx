@@ -92,7 +92,7 @@ export default function ActivationChecklist() {
         role="note"
         className="mt-6 flex items-start gap-2 font-body text-[0.92rem] leading-relaxed text-[var(--omc-muted)]"
       >
-        <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--omc-accent-ink)]" />
+        <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--omc-accent)]" />
         <span>
           The installer guides and verifies these, but Cursor cannot let it click
           Always-Allow or restart for you. These steps require manual action.
@@ -208,8 +208,7 @@ export default function ActivationChecklist() {
       <div className="omc-rule mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 pt-6">
         <Link
           to="/library"
-          className="omc-focusable inline-flex items-center gap-2 rounded-[var(--omc-radius)] bg-[var(--omc-accent)] px-5 py-2.5 font-body text-[0.95rem] font-semibold text-[var(--omc-surface)] transition-transform hover:-translate-y-0.5"
-          style={{ boxShadow: "var(--omc-shadow-1)" }}
+          className="omc-focusable omc-btn omc-btn-primary gap-2"
         >
           Done
           <span aria-hidden="true">→</span>

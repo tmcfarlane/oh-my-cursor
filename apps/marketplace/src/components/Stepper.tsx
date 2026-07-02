@@ -22,7 +22,7 @@ export function Stepper({ current }: { current: Stop }) {
                 aria-current={isCurrent ? "step" : undefined}
                 className="inline-flex items-baseline gap-1.5 pb-1"
                 style={{
-                  color: isCurrent ? "var(--omc-text)" : "var(--omc-muted)",
+                  color: isCurrent ? "var(--omc-accent)" : "var(--omc-muted)",
                   borderBottom: isCurrent
                     ? "1px solid var(--omc-accent)"
                     : "1px solid transparent",

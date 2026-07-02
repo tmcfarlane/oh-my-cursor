@@ -52,8 +52,8 @@ export function ToolsSelect({ value, onChange }: Props) {
                   isLast ? "cursor-default" : "cursor-pointer"
                 } ${
                   checked
-                    ? "border-[var(--omc-accent)] bg-[var(--omc-surface)]"
-                    : "border-[var(--omc-border)] bg-[var(--omc-surface)] hover:border-[var(--omc-accent-ink)]"
+                    ? "border-[var(--omc-accent-line)] bg-[var(--omc-accent-quiet)]"
+                    : "border-[var(--omc-border)] bg-[var(--omc-surface)] hover:border-[var(--omc-accent-line)]"
                 }`}
               >
                 <input
@@ -72,7 +72,7 @@ export function ToolsSelect({ value, onChange }: Props) {
                 </span>
                 <span
                   className="font-mono text-[0.82rem] font-bold uppercase tracking-[0.1em] leading-none"
-                  style={{ color: checked ? "var(--omc-text)" : "var(--omc-muted)" }}
+                  style={{ color: checked ? "var(--omc-accent)" : "var(--omc-muted)" }}
                 >
                   {label}
                 </span>

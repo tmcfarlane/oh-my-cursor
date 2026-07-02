@@ -44,13 +44,7 @@ export function QuickInstall({ packId, divider = true }: { packId: string; divid
         onClick={install}
         disabled={installing || needsRepo}
         aria-disabled={installing || needsRepo}
-        className="omc-focusable inline-flex w-full items-center justify-center gap-2 rounded-[var(--omc-radius)] border px-5 py-3 font-body text-[0.95rem] font-semibold transition-transform disabled:cursor-not-allowed motion-safe:enabled:hover:-translate-y-0.5"
-        style={{
-          backgroundColor: needsRepo ? "var(--omc-surface-sunken)" : "var(--omc-accent)",
-          borderColor: needsRepo ? "var(--omc-rule)" : "var(--omc-accent)",
-          color: needsRepo ? "var(--omc-muted)" : "var(--omc-surface)",
-          boxShadow: needsRepo ? "none" : "var(--omc-shadow-1)",
-        }}
+        className="omc-focusable omc-btn omc-btn-primary w-full py-3"
       >
         {installing ? (
           <>

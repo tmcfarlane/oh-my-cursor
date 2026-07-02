@@ -25,7 +25,7 @@ export function CategoryKicker({ category, folio, fan }: Props) {
 
       {/* Fan variant chip */}
       {fan && (
-        <span className="inline-flex items-center rounded-[var(--omc-radius-stamp)] border border-[var(--omc-warning)] px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-warning">
+        <span className="inline-flex items-center rounded-[var(--omc-radius-stamp)] border border-[var(--omc-warning)] bg-surface px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-warning">
           fan
         </span>
       )}

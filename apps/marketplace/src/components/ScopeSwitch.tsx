@@ -31,13 +31,13 @@ export function ScopeSwitch({ value, onChange, variant = "bar" }: Props) {
               onClick={() => onChange(scope)}
               className={`omc-focusable group flex flex-col items-start rounded-[var(--omc-radius-stamp)] border px-4 py-3 text-left transition-colors duration-150 ${
                 active
-                  ? "bg-ink text-paper border-ink"
-                  : "border-[var(--omc-border)] bg-surface text-ink hover:border-[var(--omc-accent-ink)]"
+                  ? "border-[var(--omc-accent-line)] bg-[var(--omc-accent-quiet)] text-[var(--omc-accent)]"
+                  : "border-[var(--omc-border)] bg-[var(--omc-surface)] text-[var(--omc-text)] hover:border-[var(--omc-accent-line)]"
               }`}
             >
               <span
                 className="font-mono text-[0.6rem] tabular-nums"
-                style={{ color: active ? "var(--omc-bg)" : "var(--omc-muted)" }}
+                style={{ color: active ? "var(--omc-accent)" : "var(--omc-muted)" }}
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -46,7 +46,7 @@ export function ScopeSwitch({ value, onChange, variant = "bar" }: Props) {
               </span>
               <span
                 className="mt-1.5 font-mono text-[0.68rem] leading-snug"
-                style={{ color: active ? "var(--omc-bg)" : "var(--omc-muted)" }}
+                style={{ color: "var(--omc-muted)" }}
               >
                 {truth}
               </span>
@@ -72,8 +72,8 @@ export function ScopeSwitch({ value, onChange, variant = "bar" }: Props) {
               onClick={() => onChange(scope)}
               className={`omc-focusable rounded-[var(--omc-radius-stamp)] border px-3 py-1.5 font-mono text-[0.74rem] font-bold uppercase tracking-[0.1em] transition-colors duration-150 ${
                 active
-                  ? "bg-ink text-paper border-ink"
-                  : "border-[var(--omc-border)] bg-surface text-[var(--omc-muted)] hover:border-[var(--omc-accent-ink)] hover:text-ink"
+                  ? "border-[var(--omc-accent-line)] bg-[var(--omc-accent-quiet)] text-[var(--omc-accent)]"
+                  : "border-[var(--omc-border)] bg-[var(--omc-surface)] text-[var(--omc-muted)] hover:border-[var(--omc-accent-line)] hover:text-[var(--omc-text)]"
               }`}
             >
               {label}

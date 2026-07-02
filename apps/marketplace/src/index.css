@@ -3,18 +3,23 @@
 
 /* Map the design tokens into Tailwind v4 so utilities resolve them:
    bg-paper, text-ink, text-muted, border-rule, text-accent, font-display, font-mono, …
-   ("paper"/"ink" names are historical — they now resolve to the dark Console palette,
-   so existing utility classes flip to dark with no per-component rename.) */
+   ("paper"/"ink" names are historical — they resolve to the dark Console palette, so
+   existing utility classes flip to dark with no per-component rename.) "teal" is the
+   secondary interactive tone; it now resolves to the electric-blue accent. */
 @theme {
-  --color-paper: #0b0c0e;
-  --color-surface: #131417;
+  --color-paper: #0a0b0d;
+  --color-bg2: #0d0e11;
+  --color-surface: #141518;
+  --color-surface2: #191b1f;
   --color-sunken: #0e0f12;
-  --color-ink: #e6e8eb;
+  --color-ink: #e9ebee;
   --color-muted: #9ba1a9;
+  --color-faint: #6b7178;
   --color-rule: #232529;
   --color-edge: #232529;
-  --color-accent: #e6e8eb;
-  --color-teal: #c9cdd3;
+  --color-edge-strong: #34383e;
+  --color-accent: #4c8dff;
+  --color-teal: #4c8dff;
   --color-success: #3fb950;
   --color-warning: #d29922;
   --color-danger: #f85149;
@@ -44,10 +49,43 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Console primitives shared across the app. */
+/* Faint accent halo bleeding from the top so the near-black never reads flat. Fixed so it
+   stays put while content scrolls. Pointer-events-none, behind everything. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--omc-halo);
+}
 
-/* Small mono overline used as a section/field label. No decorative tick — the
-   dev-tool signal comes from the mono itself. */
+::selection {
+  background: var(--omc-accent-quiet);
+  color: var(--omc-accent-hover);
+}
+
+/* Quiet, thin scrollbars that match the surface — not the chunky OS default. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--omc-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--omc-border-strong);
+  border: 3px solid var(--omc-bg);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--omc-faint);
+}
+
+/* ── Console primitives ─────────────────────────────────────────────────────── */
+
+/* Small mono overline used as a section/field label. */
 .omc-kicker {
   font-family: var(--omc-font-mono);
   font-size: 0.7rem;
@@ -61,11 +99,211 @@ body {
   border-top: 1px solid var(--omc-rule);
 }
 
+/* Accent-tinted focus ring, visible on dark, applied on keyboard focus only. */
 .omc-focusable:focus-visible {
   outline: none;
   box-shadow: var(--omc-focus-ring);
+  border-radius: var(--omc-radius-sm);
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* Buttons — one base + intents. Fast, quiet hover lift; always a focus ring. */
+.omc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--omc-radius);
+  padding: 0.6rem 1.1rem;
+  font-family: var(--omc-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--omc-dur-1) var(--omc-ease),
+    background-color var(--omc-dur-1) var(--omc-ease),
+    border-color var(--omc-dur-1) var(--omc-ease), box-shadow var(--omc-dur-2) var(--omc-ease),
+    color var(--omc-dur-1) var(--omc-ease);
+}
+.omc-btn:active {
+  transform: translateY(0);
+}
+.omc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.omc-btn-primary {
+  background: var(--omc-accent);
+  color: var(--omc-accent-ink);
+  border-color: transparent;
+}
+.omc-btn-primary:not(:disabled):hover {
+  background: var(--omc-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--omc-accent-glow);
+}
+
+.omc-btn-secondary {
+  background: var(--omc-surface-2);
+  color: var(--omc-text);
+  border-color: var(--omc-border-strong);
+}
+.omc-btn-secondary:not(:disabled):hover {
+  border-color: var(--omc-accent-line);
+  transform: translateY(-1px);
+}
+
+.omc-btn-ghost {
+  background: transparent;
+  color: var(--omc-muted);
+  border-color: transparent;
+}
+.omc-btn-ghost:not(:disabled):hover {
+  color: var(--omc-text);
+  background: var(--omc-surface);
+}
+
+.omc-btn-danger {
+  background: transparent;
+  color: var(--omc-danger);
+  border-color: color-mix(in oklab, var(--omc-danger) 55%, transparent);
+}
+.omc-btn-danger:not(:disabled):hover {
+  background: color-mix(in oklab, var(--omc-danger) 16%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Card / panel surfaces. */
+.omc-card {
+  background: var(--omc-surface);
+  border: 1px solid var(--omc-border);
+  border-radius: var(--omc-radius);
+  transition: transform var(--omc-dur-1) var(--omc-ease),
+    border-color var(--omc-dur-1) var(--omc-ease), box-shadow var(--omc-dur-2) var(--omc-ease),
+    background-color var(--omc-dur-1) var(--omc-ease);
+}
+.omc-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--omc-border-strong);
+  background: var(--omc-surface-2);
+  box-shadow: var(--omc-shadow-lift);
+}
+
+.omc-panel {
+  background: var(--omc-surface);
+  border: 1px solid var(--omc-border);
+  border-radius: var(--omc-radius-lg);
+}
+
+/* Small mono chip. */
+.omc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--omc-radius-sm);
+  border: 1px solid var(--omc-border);
+  background: var(--omc-surface-2);
+  padding: 0.15rem 0.5rem;
+  font-family: var(--omc-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--omc-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Keyboard hint. */
+.omc-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: var(--omc-radius-sm);
+  border: 1px solid var(--omc-border-strong);
+  border-bottom-width: 2px;
+  background: var(--omc-surface-2);
+  font-family: var(--omc-font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--omc-muted);
+}
+
+/* ── Motion: staggered page-load reveal ─────────────────────────────────────── */
+@keyframes omc-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.omc-reveal {
+  opacity: 0;
+  animation: omc-rise var(--omc-dur-3) var(--omc-ease) forwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes omc-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.omc-pop {
+  animation: omc-pop var(--omc-dur-2) var(--omc-ease) forwards;
+}
+
+@keyframes omc-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.omc-scrim {
+  animation: omc-scrim-in var(--omc-dur-1) var(--omc-ease) forwards;
+}
+
+/* Blinking terminal caret for the wordmark / hero. */
+@keyframes omc-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+.omc-caret {
+  animation: omc-blink 1.15s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .omc-reveal,
+  .omc-pop,
+  .omc-scrim,
+  .omc-caret {
+    animation: none;
+    opacity: 1;
+  }
+  .omc-btn,
+  .omc-card {
+    transition: none;
+  }
 }
